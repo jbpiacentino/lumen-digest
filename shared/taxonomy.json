@@ -1,0 +1,41 @@
+{
+  "version": "2.0.0",
+  "source": "IPTC Media Topics (Adapted)",
+  "taxonomy": [
+    {
+      "id": "technology_computing",
+      "labels": { "en": "Technology & Computing" },
+      "anchors": ["software", "hardware", "computing", "internet", "telecommunications", "networking", "information technology", "coding", "development", "data science"]
+    },
+    {
+      "id": "artificial_intelligence",
+      "labels": { "en": "Artificial Intelligence" },
+      "anchors": ["machine learning", "deep learning", "neural networks", "LLM", "generative ai", "nlp", "computer vision", "automation", "robotics", "ai ethics"]
+    },
+    {
+      "id": "cyber_security",
+      "labels": { "en": "Security & Privacy" },
+      "anchors": ["cybersecurity", "vulnerability", "hacking", "encryption", "privacy", "data protection", "malware", "threat", "breach", "authentication"]
+    },
+    {
+      "id": "economy_business",
+      "labels": { "en": "Economy, Business & Finance" },
+      "anchors": ["market", "company", "enterprise", "finance", "investment", "venture capital", "startup", "earnings", "mergers", "acquisition", "labor", "workforce"]
+    },
+    {
+      "id": "science_innovation",
+      "labels": { "en": "Science & Technology" },
+      "anchors": ["research", "innovation", "physics", "space", "energy", "fusion", "biotechnology", "engineering", "discovery", "laboratory"]
+    },
+    {
+      "id": "politics_law",
+      "labels": { "en": "Politics, Law & Government" },
+      "anchors": ["regulation", "legislation", "geopolitics", "policy", "lawsuit", "government", "international relations", "trade", "compliance", "diplomacy"]
+    },
+    {
+      "id": "society_culture",
+      "labels": { "en": "Society & Culture" },
+      "anchors": ["social media", "ethics", "impact of technology", "digital culture", "education", "lifestyle", "human rights", "philosophy"]
+    }
+  ]
+}
