@@ -1,13 +1,3 @@
-To help you work quickly, I propose a "Curation Dashboard" layout.
-
-Instead of one long scrolling list, we will move to a Sidebar + Content view. This allows you to:
-
-    Spot Trends: See instantly how many articles fell into "Uncategorized" vs. other categories.
-    Focus: Click a specific category to review its contents without noise.
-    Identify Weaknesses: If "Uncategorized" is high, you know your taxonomy needs work.
-
-Here is the updated app.vue:
-
 <template>
   <div class="min-h-screen bg-gray-100 flex flex-col">
     <!-- Top Navigation -->
@@ -49,16 +39,16 @@ Here is the updated app.vue:
           </button>
 
           <button 
-            v-for="(count, cat) in categoryStats" 
-            :key="cat"
-            @click="activeCategory = cat"
+            v-for="(count, catId) in categoryStats" 
+            :key="catId"
+            @click="activeCategory = catId"
             :class="[
               'w-full flex justify-between items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
-              activeCategory === cat ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50',
+              activeCategory === catId ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50',
               cat === 'Uncategorized' && count > 0 ? 'text-red-600 font-bold' : ''
             ]"
           >
-            <span class="truncate pr-2">{{ cat }}</span>
+            <span class="truncate pr-2">{{ categoryLabel(catId) }}</span>
             <span :class="['text-xs px-2 rounded-full', cat === 'Uncategorized' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700']">
               {{ count }}
             </span>
@@ -82,8 +72,8 @@ Here is the updated app.vue:
               <div class="flex justify-between items-start gap-4">
                 <div class="flex-1">
                   <div class="flex items-center gap-2 mb-2">
-                    <span :class="['text-[10px] font-bold uppercase tracking-tighter px-2 py-0.5 rounded border', article.category === 'Uncategorized' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-indigo-50 text-indigo-600 border-indigo-100']">
-                      {{ article.category }}
+                    <span :class="['text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full border', (article.category_id || 'uncategorized') === 'uncategorized' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-indigo-50 text-indigo-600 border-indigo-100']">
+                      {{ categoryLabel(article.category_id || 'uncategorized') }}
                     </span>
                     <span class="text-gray-400 text-[10px]">{{ new Date(article.published_at * 1000).toLocaleDateString() }}</span>
                   </div>
@@ -122,33 +112,63 @@ const config = useRuntimeConfig();
 const articles = ref([]);
 const loading = ref(false);
 const activeCategory = ref('all');
+const lang = ref('en');
+const categoryLabels = ref({});
+
+// Infer UI language (simple heuristic). You can later replace this with a proper i18n switch.
+onMounted(async () => {
+  try {
+    const navLang = (navigator.language || 'en').toLowerCase();
+    if (navLang.startsWith('fr')) lang.value = 'fr';
+    else lang.value = 'en';
+  } catch (_) {
+    lang.value = 'en';
+  }
+  await loadCategories();
+});
 
 // Simple stats for the sidebar
 const categoryStats = computed(() => {
   const stats = {};
   articles.value.forEach(a => {
-    stats[a.category] = (stats[a.category] || 0) + 1;
+    const id = a.category_id || 'uncategorized';
+    stats[id] = (stats[id] || 0) + 1;
   });
   return stats;
 });
 
-const uncategorizedCount = computed(() => categoryStats.value['Uncategorized'] || 0);
+const uncategorizedCount = computed(() => categoryStats.value['uncategorized'] || 0);
 
 // Filtering logic
 const filteredArticles = computed(() => {
   if (activeCategory.value === 'all') return articles.value;
-  return articles.value.filter(a => a.category === activeCategory.value);
+  return articles.value.filter(a => (a.category_id || 'uncategorized') === activeCategory.value);
 });
+
+function categoryLabel(categoryId) {
+  return categoryLabels.value[categoryId] || categoryId;
+}
+
+async function loadCategories() {
+  try {
+    categoryLabels.value = await $fetch(`${config.public.apiBase}/digest/categories?lang=${lang.value}`);
+  } catch (err) {
+    // Non-fatal: the UI can fall back to category_id
+    categoryLabels.value = {};
+    console.warn('Failed to load category labels:', err);
+  }
+}
 
 async function syncDigest() {
   loading.value = true;
   try {
+    await loadCategories();
     // Increased limit to 50 for a better birds-eye view
     const data = await $fetch(`${config.public.apiBase}/digest/sync?limit=50`);
     articles.value = data.articles;
     // Switch to Uncategorized view if there are many, to help you fix them
     if (uncategorizedCount.value > 0) {
-      activeCategory.value = 'Uncategorized';
+      activeCategory.value = 'uncategorized';
     }
   } catch (err) {
     alert("Error: " + err.message);
