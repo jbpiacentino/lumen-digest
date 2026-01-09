@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>Validated Science & Environment Feeds — Batch 3</title>
+    <dateCreated>Thu, 08 Jan 2026</dateCreated>
+  </head>
+  <body>
+
+    <outline text="Science & Environment">
+
+      <outline text="Nature"
+               type="rss"
+               xmlUrl="https://www.nature.com/subjects/science/rss"
+               htmlUrl="https://www.nature.com"/>
+
+      <outline text="Science Magazine (AAAS)"
+               type="rss"
+               xmlUrl="https://www.science.org/rss/news_current.xml"
+               htmlUrl="https://www.science.org"/>
+
+      <outline text="PNAS"
+               type="rss"
+               xmlUrl="https://www.pnas.org/rss/current.xml"
+               htmlUrl="https://www.pnas.org"/>
+
+      <outline text="New Scientist"
+               type="rss"
+               xmlUrl="https://www.newscientist.com/feed/home/"
+               htmlUrl="https://www.newscientist.com"/>
+
+      <outline text="Scientific American"
+               type="rss"
+               xmlUrl="https://www.scientificamerican.com/feed/"
+               htmlUrl="https://www.scientificamerican.com"/>
+
+      <outline text="Phys.org"
+               type="rss"
+               xmlUrl="https://phys.org/rss-feed/"
+               htmlUrl="https://phys.org"/>
+
+      <outline text="Ars Technica – Science"
+               type="rss"
+               xmlUrl="https://feeds.arstechnica.com/arstechnica/science"
+               htmlUrl="https://arstechnica.com/science/"/>
+
+      <outline text="NASA Breaking News"
+               type="rss"
+               xmlUrl="https://www.nasa.gov/rss/dyn/breaking_news.rss"
+               htmlUrl="https://www.nasa.gov"/>
+
+      <outline text="NOAA News"
+               type="rss"
+               xmlUrl="https://www.noaa.gov/rss-feeds"
+               htmlUrl="https://www.noaa.gov"/>
+
+      <outline text="The Guardian – Science"
+               type="rss"
+               xmlUrl="https://www.theguardian.com/science/rss"
+               htmlUrl="https://www.theguardian.com/science"/>
+
+      <outline text="CNRS"
+               type="rss"
+               xmlUrl="https://www.cnrs.fr/fr/rss"
+               htmlUrl="https://www.cnrs.fr"/>
+
+      <outline text="Futura Sciences"
+               type="rss"
+               xmlUrl="https://www.futura-sciences.com/rss/"
+               htmlUrl="https://www.futura-sciences.com"/>
+
+      <outline text="Pour la Science"
+               type="rss"
+               xmlUrl="https://www.pourlascience.fr/rss"
+               htmlUrl="https://www.pourlascience.fr"/>
+
+      <outline text="INRAE"
+               type="rss"
+               xmlUrl="https://www.inrae.fr/rss"
+               htmlUrl="https://www.inrae.fr"/>
+
+    </outline>
+
+  </body>
+</opml>

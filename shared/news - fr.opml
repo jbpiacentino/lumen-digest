@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>Actualités France — Batch 5</title>
+    <dateCreated>Thu, 08 Jan 2026</dateCreated>
+  </head>
+  <body>
+
+    <outline text="Actualités (FR)">
+
+      <outline text="Le Monde – À la Une"
+               type="rss"
+               xmlUrl="https://www.lemonde.fr/rss/une.xml"
+               htmlUrl="https://www.lemonde.fr"/>
+
+      <outline text="Franceinfo"
+               type="rss"
+               xmlUrl="https://www.francetvinfo.fr/titres.rss"
+               htmlUrl="https://www.francetvinfo.fr"/>
+
+      <outline text="Libération"
+               type="rss"
+               xmlUrl="https://www.liberation.fr/rss/"
+               htmlUrl="https://www.liberation.fr"/>
+
+      <outline text="Le Figaro – Actualités"
+               type="rss"
+               xmlUrl="https://www.lefigaro.fr/rss/figaro_actualites.xml"
+               htmlUrl="https://www.lefigaro.fr"/>
+
+      <outline text="Les Échos"
+               type="rss"
+               xmlUrl="https://www.lesechos.fr/rss/rss_une.xml"
+               htmlUrl="https://www.lesechos.fr"/>
+
+      <outline text="Mediapart"
+               type="rss"
+               xmlUrl="https://www.mediapart.fr/articles/feed"
+               htmlUrl="https://www.mediapart.fr"/>
+
+      <outline text="Ouest-France"
+               type="rss"
+               xmlUrl="https://www.ouest-france.fr/rss/une.xml"
+               htmlUrl="https://www.ouest-france.fr"/>
+
+      <outline text="La Croix"
+               type="rss"
+               xmlUrl="https://www.la-croix.com/RSS/UNIVERS"
+               htmlUrl="https://www.la-croix.com"/>
+
+      <outline text="20 Minutes"
+               type="rss"
+               xmlUrl="https://www.20minutes.fr/feeds/rss-une.xml"
+               htmlUrl="https://www.20minutes.fr"/>
+
+      <outline text="BFMTV"
+               type="rss"
+               xmlUrl="https://www.bfmtv.com/rss/news-24-7/"
+               htmlUrl="https://www.bfmtv.com"/>
+
+      <outline text="France 24 (FR)"
+               type="rss"
+               xmlUrl="https://www.france24.com/fr/rss"
+               htmlUrl="https://www.france24.com/fr/"/>
+
+      <outline text="Courrier International"
+               type="rss"
+               xmlUrl="https://www.courrierinternational.com/feed/all/rss.xml"
+               htmlUrl="https://www.courrierinternational.com"/>
+
+    </outline>
+
+  </body>
+</opml>

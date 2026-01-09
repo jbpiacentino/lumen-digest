@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>Validated Tech Feeds — Batch 1</title>
+    <dateCreated>Thu, 08 Jan 2026</dateCreated>
+  </head>
+  <body>
+
+    <outline text="Technology">
+
+      <outline text="Ars Technica"
+               type="rss"
+               xmlUrl="https://feeds.arstechnica.com/arstechnica/index"
+               htmlUrl="https://arstechnica.com"/>
+
+      <outline text="TechCrunch"
+               type="rss"
+               xmlUrl="https://techcrunch.com/feed/"
+               htmlUrl="https://techcrunch.com"/>
+
+      <outline text="The Verge"
+               type="rss"
+               xmlUrl="https://www.theverge.com/rss/index.xml"
+               htmlUrl="https://www.theverge.com"/>
+
+      <outline text="Wired"
+               type="rss"
+               xmlUrl="https://www.wired.com/feed/rss"
+               htmlUrl="https://www.wired.com"/>
+
+      <outline text="Engadget"
+               type="rss"
+               xmlUrl="https://www.engadget.com/rss.xml"
+               htmlUrl="https://www.engadget.com"/>
+
+      <outline text="MIT Technology Review"
+               type="rss"
+               xmlUrl="https://www.technologyreview.com/feed/"
+               htmlUrl="https://www.technologyreview.com"/>
+
+      <outline text="IEEE Spectrum"
+               type="rss"
+               xmlUrl="https://spectrum.ieee.org/rss/fulltext"
+               htmlUrl="https://spectrum.ieee.org"/>
+
+      <outline text="InfoQ"
+               type="rss"
+               xmlUrl="https://feed.infoq.com/"
+               htmlUrl="https://www.infoq.com"/>
+
+      <outline text="Smashing Magazine"
+               type="rss"
+               xmlUrl="https://www.smashingmagazine.com/feed/"
+               htmlUrl="https://www.smashingmagazine.com"/>
+
+      <outline text="CSS-Tricks"
+               type="rss"
+               xmlUrl="https://css-tricks.com/feed/"
+               htmlUrl="https://css-tricks.com"/>
+
+      <outline text="XDA Developers"
+               type="rss"
+               xmlUrl="https://www.xda-developers.com/feed/"
+               htmlUrl="https://www.xda-developers.com"/>
+
+      <outline text="OSNews"
+               type="rss"
+               xmlUrl="https://www.osnews.com/feed/"
+               htmlUrl="https://www.osnews.com"/>
+
+      <outline text="Phoronix"
+               type="rss"
+               xmlUrl="https://www.phoronix.com/rss.php"
+               htmlUrl="https://www.phoronix.com"/>
+
+      <outline text="The Register"
+               type="rss"
+               xmlUrl="https://www.theregister.com/headlines.atom"
+               htmlUrl="https://www.theregister.com"/>
+
+      <outline text="ZDNet (Global)"
+               type="rss"
+               xmlUrl="https://www.zdnet.com/news/rss.xml"
+               htmlUrl="https://www.zdnet.com"/>
+
+    </outline>
+
+  </body>
+</opml>

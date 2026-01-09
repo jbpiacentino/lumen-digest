@@ -22,6 +22,7 @@ services:
     volumes:
       - ./backend:/app
       - ./shared:/shared  # Shared taxonomy access
+      - hf_cache:/root/.cache/huggingface  # Maps the cache to a persistent volume
     ports:
       - "8000:8000"
     env_file:
@@ -30,7 +31,8 @@ services:
       - db
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     environment:
-      - PYTHONUNBUFFERED=1
+      - HF_HOME=/root/.cache/huggingface   # Tells Transformers where to look
+      # - PYTHONUNBUFFERED=1
 
   # --- FRONTEND ---
   frontend:
@@ -53,4 +55,5 @@ services:
 
 volumes:
   postgres_data:
+  hf_cache:
 

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>General News (English) — Batch 4</title>
+    <dateCreated>Thu, 08 Jan 2026</dateCreated>
+  </head>
+  <body>
+
+    <outline text="General News (EN)">
+
+      <outline text="BBC News"
+               type="rss"
+               xmlUrl="https://feeds.bbci.co.uk/news/rss.xml"
+               htmlUrl="https://www.bbc.com/news"/>
+
+      <outline text="Reuters – World News"
+               type="rss"
+               xmlUrl="https://www.reuters.com/rssFeed/worldNews"
+               htmlUrl="https://www.reuters.com"/>
+
+      <outline text="Associated Press"
+               type="rss"
+               xmlUrl="https://apnews.com/rss"
+               htmlUrl="https://apnews.com"/>
+
+      <outline text="The Guardian"
+               type="rss"
+               xmlUrl="https://www.theguardian.com/international/rss"
+               htmlUrl="https://www.theguardian.com"/>
+
+      <outline text="The New York Times – Home"
+               type="rss"
+               xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml"
+               htmlUrl="https://www.nytimes.com"/>
+
+      <outline text="Financial Times"
+               type="rss"
+               xmlUrl="https://www.ft.com/rss/home"
+               htmlUrl="https://www.ft.com"/>
+
+      <outline text="The Economist"
+               type="rss"
+               xmlUrl="https://www.economist.com/rss"
+               htmlUrl="https://www.economist.com"/>
+
+      <outline text="Al Jazeera English"
+               type="rss"
+               xmlUrl="https://www.aljazeera.com/xml/rss/all.xml"
+               htmlUrl="https://www.aljazeera.com"/>
+
+      <outline text="CNN – Top Stories"
+               type="rss"
+               xmlUrl="https://rss.cnn.com/rss/edition.rss"
+               htmlUrl="https://edition.cnn.com"/>
+
+      <outline text="NBC News"
+               type="rss"
+               xmlUrl="https://feeds.nbcnews.com/nbcnews/public/news"
+               htmlUrl="https://www.nbcnews.com"/>
+
+      <outline text="Bloomberg"
+               type="rss"
+               xmlUrl="https://www.bloomberg.com/feed/podcast/etf-report.xml"
+               htmlUrl="https://www.bloomberg.com"/>
+
+      <outline text="Politico"
+               type="rss"
+               xmlUrl="https://www.politico.com/rss/politics08.xml"
+               htmlUrl="https://www.politico.com"/>
+
+    </outline>
+
+  </body>
+</opml>

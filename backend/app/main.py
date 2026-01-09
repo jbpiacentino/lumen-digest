@@ -5,7 +5,7 @@ start_time = time.time()
 import os
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-print(f"DEBUG: FastAPI imported in {time.time() - start_time:.2f}s")
+import json
 
 from typing import List, Optional
 import logging
@@ -64,11 +64,12 @@ async def sync_and_classify(limit: int = Query(default=10, le=50)):
         logger.info(f"Got {len(raw_articles)} raw articles.")
 
         # Limit processing for performance/cost control
-        # to_process = raw_articles[:limit]
-        to_process = raw_articles
+        to_process = raw_articles[:limit]
+        logger.info(f"to_process len = {len(to_process)} .")
         processed_items = []
 
         logger.info(f"Syncing {len(to_process)} articles. AI Summaries: {SUMMARIZATION_ENABLED}")
+        
 
         for entry in to_process:
             # Extract content (prioritize content over summary)
@@ -90,15 +91,15 @@ async def sync_and_classify(limit: int = Query(default=10, le=50)):
             # otherwise the classifier doesn't have enough data.
             classification_text = f"{title}: {raw_content[:1000]}"
             
-            category = classifier_engine.classify_text(classification_text)
+            category_id = classifier_engine.classify_text(classification_text)
             
-            logger.debug(f"Article: {title[:40]}... -> Category: {category}")
+            logger.debug(f"Article: {title[:40]}... -> Category: {category_id}")
 
             processed_items.append({
                 "id": entry.get("id"),
                 "title": title,
                 "url": entry.get("alternate", [{}])[0].get("href"),
-                "category": category,
+                "category_id": category_id,
                 "summary": summary,
                 "published_at": entry.get("published")
             })
@@ -132,3 +133,10 @@ async def reload_taxonomy():
     """
     classifier_engine.load_taxonomy()
     return {"message": "Taxonomy centroids recalculated successfully."}
+
+@app.get("/digest/categories")
+async def get_categories(lang: str = "en"):
+    """
+    Returns taxonomy labels. Usage: /digest/categories?lang=en
+    """
+    return classifier_engine.get_taxonomy_labels(lang=lang)

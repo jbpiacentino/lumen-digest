@@ -1,41 +1,95 @@
 {
-  "version": "2.0.0",
-  "source": "IPTC Media Topics (Adapted)",
+  "version": "2.1.0",
+  "source": "Lumen News Optimized Taxonomy",
   "taxonomy": [
     {
       "id": "technology_computing",
-      "labels": { "en": "Technology & Computing" },
-      "anchors": ["software", "hardware", "computing", "internet", "telecommunications", "networking", "information technology", "coding", "development", "data science"]
+      "labels": { "en": "IT Infrastructure & Software" },
+      "anchors": [
+        "cloud computing and infrastructure",
+        "software development and engineering",
+        "enterprise IT operations and server outages",
+        "networking hardware, switches, and DNS protocols",
+        "operating systems and system administration",
+        "web technologies and internet protocols",
+        "database management and data engineering",
+        "devops, CI/CD, and site reliability engineering"
+      ]
     },
     {
       "id": "artificial_intelligence",
-      "labels": { "en": "Artificial Intelligence" },
-      "anchors": ["machine learning", "deep learning", "neural networks", "LLM", "generative ai", "nlp", "computer vision", "automation", "robotics", "ai ethics"]
+      "labels": { "en": "AI & Autonomous Systems" },
+      "anchors": [
+        "artificial intelligence and machine learning research",
+        "large language models and generative AI",
+        "autonomous vehicles, self-driving cars, and FSD",
+        "robotics and automated systems",
+        "neural networks and computer vision",
+        "AI agents and intelligent automation",
+        "natural language processing and chatbots"
+      ]
     },
     {
       "id": "cyber_security",
       "labels": { "en": "Security & Privacy" },
-      "anchors": ["cybersecurity", "vulnerability", "hacking", "encryption", "privacy", "data protection", "malware", "threat", "breach", "authentication"]
+      "anchors": [
+        "cybersecurity threats, malware, and hacking",
+        "data breaches and software vulnerabilities",
+        "multi-factor authentication and identity management",
+        "encryption and cryptographic protocols",
+        "online privacy and digital surveillance",
+        "information security and threat intelligence",
+        "network security and firewalls"
+      ]
     },
     {
       "id": "economy_business",
-      "labels": { "en": "Economy, Business & Finance" },
-      "anchors": ["market", "company", "enterprise", "finance", "investment", "venture capital", "startup", "earnings", "mergers", "acquisition", "labor", "workforce"]
+      "labels": { "en": "Business & VC" },
+      "anchors": [
+        "technology business news and market trends",
+        "venture capital, Series A funding, and valuations",
+        "startups and entrepreneurship",
+        "mergers, acquisitions, and corporate buyouts",
+        "semiconductor industry and hardware manufacturing",
+        "stock market earnings and financial reports",
+        "tech industry labor and workforce news"
+      ]
     },
     {
       "id": "science_innovation",
-      "labels": { "en": "Science & Technology" },
-      "anchors": ["research", "innovation", "physics", "space", "energy", "fusion", "biotechnology", "engineering", "discovery", "laboratory"]
+      "labels": { "en": "Science & Space" },
+      "anchors": [
+        "scientific research and breakthroughs",
+        "space exploration, astronauts, and moon missions",
+        "biotechnology and medical research",
+        "physics, energy, and fusion technology",
+        "consumer electronics innovation and hardware gadgets",
+        "advanced materials and engineering"
+      ]
     },
     {
       "id": "politics_law",
-      "labels": { "en": "Politics, Law & Government" },
-      "anchors": ["regulation", "legislation", "geopolitics", "policy", "lawsuit", "government", "international relations", "trade", "compliance", "diplomacy"]
+      "labels": { "en": "Politics & Geopolitics" },
+      "anchors": [
+        "government policy and technology regulation",
+        "geopolitics, international relations, and global conflict",
+        "legal battles, lawsuits, and court rulings",
+        "military technology and air strikes",
+        "trade sanctions and international diplomacy",
+        "compliance, legislation, and digital rights",
+        "agriculture"
+      ]
     },
     {
       "id": "society_culture",
       "labels": { "en": "Society & Culture" },
-      "anchors": ["social media", "ethics", "impact of technology", "digital culture", "education", "lifestyle", "human rights", "philosophy"]
+      "anchors": [
+        "social media trends and digital culture",
+        "the psychological and social impact of technology",
+        "ethics in technology and philosophy",
+        "online misinformation and conspiracy theories",
+        "education, lifestyle, and human rights in the digital age"
+      ]
     }
   ]
 }

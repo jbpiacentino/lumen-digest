@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>Long‑Form Essays & Blogs</title>
+    <dateCreated>Thu, 08 Jan 2026</dateCreated>
+  </head>
+  <body>
+
+    <outline text="Long‑Form / Essays">
+
+      <!-- 🧠 Tech & Society -->
+      <outline text="Paul Graham Essays"
+               type="rss"
+               xmlUrl="http://www.aaronsw.com/2002/feeds/pgessays.rss"
+               htmlUrl="https://paulgraham.com"/>
+
+      <outline text="Stratechery (Ben Thompson)"
+               type="rss"
+               xmlUrl="https://stratechery.com/feed/"
+               htmlUrl="https://stratechery.com"/>
+
+      <outline text="Benedict Evans"
+               type="rss"
+               xmlUrl="https://www.ben-evans.com/benedictevans?format=rss"
+               htmlUrl="https://www.ben-evans.com"/>
+
+      <outline text="Ribbonfarm"
+               type="rss"
+               xmlUrl="https://www.ribbonfarm.com/feed/"
+               htmlUrl="https://www.ribbonfarm.com"/>
+
+      <!-- 🧪 Science & Ideas -->
+      <outline text="Aeon"
+               type="rss"
+               xmlUrl="https://aeon.co/feed"
+               htmlUrl="https://aeon.co"/>
+
+      <outline text="Quanta Magazine"
+               type="rss"
+               xmlUrl="https://www.quantamagazine.org/feed/"
+               htmlUrl="https://www.quantamagazine.org"/>
+
+      <outline text="Edge.org"
+               type="rss"
+               xmlUrl="https://www.edge.org/feed"
+               htmlUrl="https://www.edge.org"/>
+
+      <!-- 🌍 Culture, History, Society -->
+      <outline text="The Atlantic – Ideas"
+               type="rss"
+               xmlUrl="https://www.theatlantic.com/feed/channel/ideas/"
+               htmlUrl="https://www.theatlantic.com"/>
+
+      <outline text="The New Yorker – Long Reads"
+               type="rss"
+               xmlUrl="https://www.newyorker.com/feed/everything"
+               htmlUrl="https://www.newyorker.com"/>
+
+      <outline text="London Review of Books"
+               type="rss"
+               xmlUrl="https://www.lrb.co.uk/rss"
+               htmlUrl="https://www.lrb.co.uk"/>
+
+      <!-- 🧑‍💻 Personal Blogs (High Signal) -->
+      <outline text="Wait But Why"
+               type="rss"
+               xmlUrl="https://waitbutwhy.com/feed"
+               htmlUrl="https://waitbutwhy.com"/>
+
+      <outline text="Gwern"
+               type="rss"
+               xmlUrl="https://www.gwern.net/rss.xml"
+               htmlUrl="https://www.gwern.net"/>
+
+      <outline text="Slate Star Codex / Astral Codex Ten"
+               type="rss"
+               xmlUrl="https://www.astralcodexten.com/feed"
+               htmlUrl="https://www.astralcodexten.com"/>
+
+      <!-- 🇫🇷 French long‑form -->
+      <outline text="Usbek & Rica"
+               type="rss"
+               xmlUrl="https://usbeketrica.com/rss"
+               htmlUrl="https://usbeketrica.com"/>
+
+      <outline text="Le Grand Continent"
+               type="rss"
+               xmlUrl="https://legrandcontinent.eu/fr/feed/"
+               htmlUrl="https://legrandcontinent.eu"/>
+
+    </outline>
+
+  </body>
+</opml>

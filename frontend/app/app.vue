@@ -1,64 +1,118 @@
+To help you work quickly, I propose a "Curation Dashboard" layout.
+
+Instead of one long scrolling list, we will move to a Sidebar + Content view. This allows you to:
+
+    Spot Trends: See instantly how many articles fell into "Uncategorized" vs. other categories.
+    Focus: Click a specific category to review its contents without noise.
+    Identify Weaknesses: If "Uncategorized" is high, you know your taxonomy needs work.
+
+Here is the updated app.vue:
+
 <template>
-  <div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-4xl mx-auto">
-      
-      <!-- Header -->
-      <header class="flex justify-between items-center mb-10">
-        <div>
-          <h1 class="text-3xl font-bold text-gray-900">Lumen Digest</h1>
-          <p class="text-gray-600">AI-Powered FreshRSS Intelligence</p>
+  <div class="min-h-screen bg-gray-100 flex flex-col">
+    <!-- Top Navigation -->
+    <header class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-10">
+      <div class="flex items-center gap-4">
+        <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Lumen Digest</h1>
+        <div v-if="articles.length > 0" class="flex gap-2">
+          <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded">
+            {{ articles.length }} Total Articles
+          </span>
+          <span :class="['px-2 py-1 text-xs font-medium rounded', uncategorizedCount > 0 ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600']">
+            {{ uncategorizedCount }} Uncategorized
+          </span>
         </div>
-        <button 
-          @click="syncDigest" 
-          :disabled="loading"
-          class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none disabled:opacity-50 transition-all"
-        >
-          <span v-if="loading" class="animate-spin mr-2">🔄</span>
-          {{ loading ? 'Analyzing Articles...' : 'Sync & Generate' }}
-        </button>
-      </header>
-
-      <!-- Loading State -->
-      <div v-if="loading" class="text-center py-20">
-        <div class="text-lg text-gray-500 italic">OpenAI is summarizing and your local ML is classifying entries...</div>
       </div>
+      
+      <button 
+        @click="syncDigest" 
+        :disabled="loading"
+        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 transition-all"
+      >
+        <span v-if="loading" class="animate-spin mr-2">🔄</span>
+        {{ loading ? 'Processing...' : 'Sync & Classify' }}
+      </button>
+    </header>
 
-      <!-- Article Feed -->
-      <div v-else-if="articles.length > 0" class="space-y-8">
-        <div v-for="(group, category) in groupedArticles" :key="category">
-          <h2 class="text-xs font-semibold uppercase tracking-wider text-indigo-500 mb-4 border-b border-indigo-100 pb-1">
-            {{ category }}
-          </h2>
+    <div class="flex-1 flex overflow-hidden">
+      <!-- Sidebar Navigation -->
+      <aside class="w-64 bg-white border-r border-gray-200 overflow-y-auto hidden md:block">
+        <nav class="p-4 space-y-1">
+          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-3 mb-2">Categories</p>
           
-          <div class="grid gap-6">
-            <div v-for="article in group" :key="article.id" class="bg-white overflow-hidden shadow rounded-lg border border-gray-100 hover:shadow-md transition-shadow">
-              <div class="px-6 py-5">
-                <div class="flex justify-between items-start mb-2">
-                  <a :href="article.url" target="_blank" class="text-xl font-semibold text-gray-900 hover:text-indigo-600 leading-tight">
+          <button 
+            @click="activeCategory = 'all'"
+            :class="['w-full flex justify-between items-center px-3 py-2 text-sm font-medium rounded-md transition-colors', activeCategory === 'all' ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50']"
+          >
+            <span>All Articles</span>
+            <span class="text-xs bg-gray-200 text-gray-800 px-2 rounded-full">{{ articles.length }}</span>
+          </button>
+
+          <button 
+            v-for="(count, cat) in categoryStats" 
+            :key="cat"
+            @click="activeCategory = cat"
+            :class="[
+              'w-full flex justify-between items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
+              activeCategory === cat ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50',
+              cat === 'Uncategorized' && count > 0 ? 'text-red-600 font-bold' : ''
+            ]"
+          >
+            <span class="truncate pr-2">{{ cat }}</span>
+            <span :class="['text-xs px-2 rounded-full', cat === 'Uncategorized' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700']">
+              {{ count }}
+            </span>
+          </button>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-1 overflow-y-auto bg-gray-50 p-6">
+        
+        <!-- Loading -->
+        <div v-if="loading" class="flex flex-col items-center justify-center h-64 text-gray-500">
+          <div class="animate-bounce text-4xl mb-4">🤖</div>
+          <p class="italic text-lg">Lumen AI is reading and sorting your news...</p>
+        </div>
+
+        <!-- Feed -->
+        <div v-else-if="filteredArticles.length > 0" class="max-w-3xl mx-auto space-y-6">
+          <div v-for="article in filteredArticles" :key="article.id" class="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden hover:border-indigo-300 transition-colors">
+            <div class="p-6">
+              <div class="flex justify-between items-start gap-4">
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 mb-2">
+                    <span :class="['text-[10px] font-bold uppercase tracking-tighter px-2 py-0.5 rounded border', article.category === 'Uncategorized' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-indigo-50 text-indigo-600 border-indigo-100']">
+                      {{ article.category }}
+                    </span>
+                    <span class="text-gray-400 text-[10px]">{{ new Date(article.published_at * 1000).toLocaleDateString() }}</span>
+                  </div>
+                  <a :href="article.url" target="_blank" class="text-lg font-bold text-gray-900 hover:text-indigo-600 leading-snug">
                     {{ article.title }}
                   </a>
                 </div>
-                
-                <!-- OpenAI Summary (Bullet points) -->
-                <div class="mt-3 text-gray-700 text-sm prose prose-indigo">
-                  <div v-html="formatSummary(article.summary)"></div>
-                </div>
+              </div>
 
-                <div class="mt-4 flex items-center text-xs text-gray-400">
-                  <span>{{ new Date(article.published_at * 1000).toLocaleDateString() }}</span>
-                  <span class="mx-2">•</span>
-                  <a :href="article.url" target="_blank" class="underline">View Source</a>
-                </div>
+              <!-- OpenAI Summary -->
+              <div class="mt-4 text-gray-700 text-sm leading-relaxed">
+                <div v-html="formatSummary(article.summary)" class="prose prose-sm prose-indigo custom-summary"></div>
+              </div>
+
+              <div class="mt-4 pt-4 border-t border-gray-50 flex justify-end">
+                <a :href="article.url" target="_blank" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center">
+                  Full Article 
+                  <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                </a>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Empty State -->
-      <div v-else class="text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-200">
-        <p class="text-gray-400">No articles fetched yet. Click "Sync" to start.</p>
-      </div>
+        <!-- Empty State -->
+        <div v-else class="text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-200 max-w-3xl mx-auto">
+          <p class="text-gray-400">No articles found in this category.</p>
+        </div>
+      </main>
     </div>
   </div>
 </template>
@@ -67,40 +121,59 @@
 const config = useRuntimeConfig();
 const articles = ref([]);
 const loading = ref(false);
+const activeCategory = ref('all');
 
-// Group articles by their ML-assigned category
-const groupedArticles = computed(() => {
-  return articles.value.reduce((acc, obj) => {
-    const key = obj.category;
-    if (!acc[key]) acc[key] = [];
-    acc[key].push(obj);
-    return acc;
-  }, {});
+// Simple stats for the sidebar
+const categoryStats = computed(() => {
+  const stats = {};
+  articles.value.forEach(a => {
+    stats[a.category] = (stats[a.category] || 0) + 1;
+  });
+  return stats;
+});
+
+const uncategorizedCount = computed(() => categoryStats.value['Uncategorized'] || 0);
+
+// Filtering logic
+const filteredArticles = computed(() => {
+  if (activeCategory.value === 'all') return articles.value;
+  return articles.value.filter(a => a.category === activeCategory.value);
 });
 
 async function syncDigest() {
   loading.value = true;
   try {
-    const data = await $fetch(`${config.public.apiBase}/digest/sync?limit=10`);
+    // Increased limit to 50 for a better birds-eye view
+    const data = await $fetch(`${config.public.apiBase}/digest/sync?limit=50`);
     articles.value = data.articles;
+    // Switch to Uncategorized view if there are many, to help you fix them
+    if (uncategorizedCount.value > 0) {
+      activeCategory.value = 'Uncategorized';
+    }
   } catch (err) {
-    alert("Error syncing digest: " + err.message);
+    alert("Error: " + err.message);
   } finally {
     loading.value = false;
   }
 }
 
-// Convert OpenAI bullet points into basic HTML
 function formatSummary(text) {
   if (!text) return "";
-  // Replaces markdown bullets (-) or (*) with HTML bullet points
-  return text.replace(/^\s*[-*]\s+(.*)$/gm, '<li>$1</li>')
-             .replace(/(<li>.*<\/li>)/s, '<ul class="list-disc pl-5">$1</ul>');
+  // More robust bullet point formatting
+  let formatted = text.trim();
+  if (formatted.includes('- ') || formatted.includes('* ')) {
+    formatted = formatted.replace(/^\s*[-*]\s+(.*)$/gm, '<li>$1</li>');
+    return `<ul class="list-disc pl-5 space-y-1">${formatted}</ul>`;
+  }
+  return formatted;
 }
 </script>
 
 <style>
-/* Basic styling to make the summaries look clean */
-.prose ul { margin-top: 0.5rem; }
-.prose li { margin-bottom: 0.25rem; }
+.custom-summary ul {
+  list-style-type: disc;
+}
+.custom-summary li::marker {
+  color: #6366f1; /* indigo-500 */
+}
 </style>

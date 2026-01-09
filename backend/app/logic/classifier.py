@@ -47,34 +47,55 @@ class NewsClassifier:
 
         print(f"Classifier initialized with {len(self.categories)} categories.")
 
-    def classify_text(self, text: str, threshold: float = 0.25):
-        """
-        Compares text embedding to category centroids using Cosine Similarity.
-        Returns the name of the best category or 'Uncategorized'.
-        """
-        if not self.categories:
-            return "Uncategorized"
+    def classify_text(self, text, threshold=0.38):
+            if not text or len(text) < 10:
+                return "uncategorized" # Use lowercase ID
 
-        # 1. Embed the incoming text (article title or summary)
-        text_embedding = self.model.encode(text)
-
-        best_category = "Uncategorized"
-        highest_score = 0
-
-        # 2. Compare against every category centroid
-        for name, data in self.categories.items():
-            # util.cos_sim returns a tensor, we convert to float
-            score = float(util.cos_sim(text_embedding, data["centroid"]))
+            query_embedding = self.model.encode(text, convert_to_tensor=True)
             
-            if score > highest_score:
-                highest_score = score
-                best_category = name
+            best_category_id = None
+            highest_score = -1
 
-        # 3. Apply threshold logic
-        if highest_score < threshold:
-            return "Uncategorized"
+            for cat_id, data in self.categories.items():
+                score = util.cos_sim(query_embedding, data["centroid"]).item()
+                if score > highest_score:
+                    highest_score = score
+                    best_category_id = cat_id
 
-        return best_category
+            if highest_score < threshold:
+                return "uncategorized"
+
+            return best_category_id
+    
+    def get_taxonomy_labels(self, lang="en"):
+        """
+        Returns a dictionary of {id: label} for the specified language.
+        """
+        labels = {}
+
+        # Define translations for the system-generated 'uncategorized' key
+        # You can expand this list as needed
+        uncat_translations = {
+            "en": "Uncategorized",
+            "es": "Sin categoría",
+            "fr": "Non classé",
+            "pt": "Não categorizado"
+        }
+
+        for cat_id, data in self.categories.items():
+            # 1. Look for the specific language
+            # 2. Fallback to English ("en")
+            # 3. Fallback to the ID itself if all else fails
+            category_labels = data.get("labels", {})
+            label = category_labels.get(lang) or category_labels.get("en") or cat_id
+            labels[cat_id] = label
+
+        # Add the uncategorized label for the requested language
+        labels["uncategorized"] = uncat_translations.get(lang, "Uncategorized")
+        
+        return labels
+
+
 
 # Initialize a singleton instance to be used across the FastAPI app
 # This ensures the model is only loaded into memory ONCE.

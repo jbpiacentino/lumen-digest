@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>Culture, Entertainment & Sports — Batch 6</title>
+    <dateCreated>Thu, 08 Jan 2026</dateCreated>
+  </head>
+  <body>
+
+    <outline text="Culture / Entertainment / Sports">
+
+      <!-- 🎬 Cinema & TV -->
+      <outline text="IMDb News"
+               type="rss"
+               xmlUrl="https://www.imdb.com/news/rss"
+               htmlUrl="https://www.imdb.com/news"/>
+
+      <outline text="Variety"
+               type="rss"
+               xmlUrl="https://variety.com/feed/"
+               htmlUrl="https://variety.com"/>
+
+      <outline text="Hollywood Reporter"
+               type="rss"
+               xmlUrl="https://www.hollywoodreporter.com/feed/"
+               htmlUrl="https://www.hollywoodreporter.com"/>
+
+      <outline text="IndieWire"
+               type="rss"
+               xmlUrl="https://www.indiewire.com/feed/"
+               htmlUrl="https://www.indiewire.com"/>
+
+      <outline text="Allociné"
+               type="rss"
+               xmlUrl="https://www.allocine.fr/rss/news.xml"
+               htmlUrl="https://www.allocine.fr"/>
+
+      <!-- 🎮 Gaming -->
+      <outline text="IGN"
+               type="rss"
+               xmlUrl="https://feeds.ign.com/ign/all"
+               htmlUrl="https://www.ign.com"/>
+
+      <outline text="GameSpot"
+               type="rss"
+               xmlUrl="https://www.gamespot.com/feeds/mashup/"
+               htmlUrl="https://www.gamespot.com"/>
+
+      <outline text="Polygon"
+               type="rss"
+               xmlUrl="https://www.polygon.com/rss/index.xml"
+               htmlUrl="https://www.polygon.com"/>
+
+      <!-- 🎵 Music & Culture -->
+      <outline text="Pitchfork"
+               type="rss"
+               xmlUrl="https://pitchfork.com/rss/news/"
+               htmlUrl="https://pitchfork.com"/>
+
+      <outline text="Rolling Stone"
+               type="rss"
+               xmlUrl="https://www.rollingstone.com/feed/"
+               htmlUrl="https://www.rollingstone.com"/>
+
+      <outline text="Les Inrockuptibles"
+               type="rss"
+               xmlUrl="https://www.lesinrocks.com/feed/"
+               htmlUrl="https://www.lesinrocks.com"/>
+
+      <!-- ⚽ Sports -->
+      <outline text="BBC Sport"
+               type="rss"
+               xmlUrl="https://feeds.bbci.co.uk/sport/rss.xml"
+               htmlUrl="https://www.bbc.com/sport"/>
+
+      <outline text="L'Équipe"
+               type="rss"
+               xmlUrl="https://www.lequipe.fr/rss/actu_rss.xml"
+               htmlUrl="https://www.lequipe.fr"/>
+
+      <outline text="ESPN"
+               type="rss"
+               xmlUrl="https://www.espn.com/espn/rss/news"
+               htmlUrl="https://www.espn.com"/>
+
+      <outline text="FIFA News"
+               type="rss"
+               xmlUrl="https://www.fifa.com/rss-feeds/news"
+               htmlUrl="https://www.fifa.com"/>
+
+      <outline text="Formula 1"
+               type="rss"
+               xmlUrl="https://www.formula1.com/en/latest/all.xml"
+               htmlUrl="https://www.formula1.com"/>
+
+    </outline>
+
+  </body>
+</opml>

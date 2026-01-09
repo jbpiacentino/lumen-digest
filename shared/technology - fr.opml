@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>Validated French Tech Feeds — Batch 2</title>
+    <dateCreated>Thu, 08 Jan 2026</dateCreated>
+  </head>
+  <body>
+
+    <outline text="Technologie (FR)">
+
+      <outline text="Numerama"
+               type="rss"
+               xmlUrl="https://www.numerama.com/feed/"
+               htmlUrl="https://www.numerama.com"/>
+
+      <outline text="01net"
+               type="rss"
+               xmlUrl="https://www.01net.com/feed/"
+               htmlUrl="https://www.01net.com"/>
+
+      <outline text="Clubic"
+               type="rss"
+               xmlUrl="https://www.clubic.com/feed/"
+               htmlUrl="https://www.clubic.com"/>
+
+      <outline text="Frandroid"
+               type="rss"
+               xmlUrl="https://www.frandroid.com/feed"
+               htmlUrl="https://www.frandroid.com"/>
+
+      <outline text="Presse-citron"
+               type="rss"
+               xmlUrl="https://www.presse-citron.net/feed/"
+               htmlUrl="https://www.presse-citron.net"/>
+
+      <outline text="Developpez.com"
+               type="rss"
+               xmlUrl="https://www.developpez.com/index/rss"
+               htmlUrl="https://www.developpez.com"/>
+
+      <outline text="LinuxFr.org"
+               type="rss"
+               xmlUrl="https://linuxfr.org/news.atom"
+               htmlUrl="https://linuxfr.org"/>
+
+      <outline text="ZDNet France"
+               type="rss"
+               xmlUrl="https://www.zdnet.fr/feeds/rss/actualites/"
+               htmlUrl="https://www.zdnet.fr"/>
+
+      <outline text="Silicon.fr"
+               type="rss"
+               xmlUrl="https://www.silicon.fr/feed"
+               htmlUrl="https://www.silicon.fr"/>
+
+      <outline text="BFM Tech & Co"
+               type="rss"
+               xmlUrl="https://www.bfmtv.com/rss/tech/"
+               htmlUrl="https://www.bfmtv.com/tech/"/>
+
+      <outline text="Journal du Geek"
+               type="rss"
+               xmlUrl="https://www.journaldugeek.com/feed/"
+               htmlUrl="https://www.journaldugeek.com"/>
+
+      <outline text="MacGeneration"
+               type="rss"
+               xmlUrl="https://www.macg.co/rss.xml"
+               htmlUrl="https://www.macg.co"/>
+
+      <outline text="iGeneration"
+               type="rss"
+               xmlUrl="https://www.igen.fr/rss.xml"
+               htmlUrl="https://www.igen.fr"/>
+
+      <outline text="Next INpact"
+               type="rss"
+               xmlUrl="https://www.nextinpact.com/rss/news.xml"
+               htmlUrl="https://www.nextinpact.com"/>
+
+    </outline>
+
+  </body>
+</opml>
