@@ -13,15 +13,24 @@
           </span>
         </div>
       </div>
-      
-      <button 
-        @click="syncDigest" 
-        :disabled="loading"
-        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 transition-all"
-      >
-        <span v-if="loading" class="animate-spin mr-2">🔄</span>
-        {{ loading ? 'Processing...' : 'Sync & Classify' }}
-      </button>
+
+      <div class="flex items-center gap-3">
+        <button 
+          @click="fetchArticles" 
+          class="p-2 text-gray-400 hover:text-indigo-600 transition-colors"
+          title="Refresh view"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+        </button>
+        <button 
+          @click="syncDigest" 
+          :disabled="loading"
+          class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 transition-all"
+        >
+          <span v-if="loading" class="animate-spin mr-2">🔄</span>
+          {{ loading ? 'Processing...' : 'Sync & Classify' }}
+        </button>
+      </div>
     </header>
 
     <div class="flex-1 flex overflow-hidden">
@@ -29,7 +38,7 @@
       <aside class="w-64 bg-white border-r border-gray-200 overflow-y-auto hidden md:block">
         <nav class="p-4 space-y-1">
           <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-3 mb-2">Categories</p>
-          
+
           <button 
             @click="activeCategory = 'all'"
             :class="['w-full flex justify-between items-center px-3 py-2 text-sm font-medium rounded-md transition-colors', activeCategory === 'all' ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50']"
@@ -45,11 +54,11 @@
             :class="[
               'w-full flex justify-between items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
               activeCategory === catId ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50',
-              cat === 'Uncategorized' && count > 0 ? 'text-red-600 font-bold' : ''
+              catId === 'uncategorized' && count > 0 ? 'text-red-600 font-bold' : ''
             ]"
           >
             <span class="truncate pr-2">{{ categoryLabel(catId) }}</span>
-            <span :class="['text-xs px-2 rounded-full', cat === 'Uncategorized' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700']">
+            <span :class="['text-xs px-2 rounded-full', catId === 'uncategorized' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700']">
               {{ count }}
             </span>
           </button>
@@ -58,9 +67,9 @@
 
       <!-- Main Content -->
       <main class="flex-1 overflow-y-auto bg-gray-50 p-6">
-        
+
         <!-- Loading -->
-        <div v-if="loading" class="flex flex-col items-center justify-center h-64 text-gray-500">
+        <div v-if="loading && articles.length === 0" class="flex flex-col items-center justify-center h-64 text-gray-500">
           <div class="animate-bounce text-4xl mb-4">🤖</div>
           <p class="italic text-lg">Lumen AI is reading and sorting your news...</p>
         </div>
@@ -73,9 +82,11 @@
                 <div class="flex-1">
                   <div class="flex items-center gap-2 mb-2">
                     <span :class="['text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full border', (article.category_id || 'uncategorized') === 'uncategorized' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-indigo-50 text-indigo-600 border-indigo-100']">
-                      {{ categoryLabel(article.category_id || 'uncategorized') }}
+                      {{ categoryLabel(article.category_id) }}
                     </span>
-                    <span class="text-gray-400 text-[10px]">{{ new Date(article.published_at * 1000).toLocaleDateString() }}</span>
+                    <span class="text-gray-400 text-[10px] font-medium">
+                      {{ new Date(article.published_at).toLocaleDateString() }}
+                    </span>
                   </div>
                   <a :href="article.url" target="_blank" class="text-lg font-bold text-gray-900 hover:text-indigo-600 leading-snug">
                     {{ article.title }}
@@ -100,7 +111,7 @@
 
         <!-- Empty State -->
         <div v-else class="text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-200 max-w-3xl mx-auto">
-          <p class="text-gray-400">No articles found in this category.</p>
+          <p class="text-gray-400">No articles found. Click "Sync" to fetch new content.</p>
         </div>
       </main>
     </div>
@@ -115,19 +126,44 @@ const activeCategory = ref('all');
 const lang = ref('en');
 const categoryLabels = ref({});
 
-// Infer UI language (simple heuristic). You can later replace this with a proper i18n switch.
+// Load database content
+async function fetchArticles() {
+  try {
+    // Fetches last 3 days by default from your new GET /articles endpoint
+    const data = await $fetch(`${config.public.apiBase}/articles?days=3`);
+    articles.value = data;
+  } catch (err) {
+    console.error('Error fetching articles:', err);
+  }
+}
+
+// Load category mapping
+async function loadCategories() {
+  try {
+    categoryLabels.value = await $fetch(`${config.public.apiBase}/digest/categories?lang=${lang.value}`);
+  } catch (err) {
+    categoryLabels.value = {};
+    console.warn('Failed to load category labels:', err);
+  }
+}
+
 onMounted(async () => {
+  // 1. Detect language
   try {
     const navLang = (navigator.language || 'en').toLowerCase();
-    if (navLang.startsWith('fr')) lang.value = 'fr';
-    else lang.value = 'en';
+    lang.value = navLang.startsWith('fr') ? 'fr' : 'en';
   } catch (_) {
     lang.value = 'en';
   }
-  await loadCategories();
+
+  // 2. Initial load from local DB
+  await Promise.all([
+    loadCategories(),
+    fetchArticles()
+  ]);
 });
 
-// Simple stats for the sidebar
+// Sidebar stats logic
 const categoryStats = computed(() => {
   const stats = {};
   articles.value.forEach(a => {
@@ -139,39 +175,31 @@ const categoryStats = computed(() => {
 
 const uncategorizedCount = computed(() => categoryStats.value['uncategorized'] || 0);
 
-// Filtering logic
 const filteredArticles = computed(() => {
   if (activeCategory.value === 'all') return articles.value;
   return articles.value.filter(a => (a.category_id || 'uncategorized') === activeCategory.value);
 });
 
 function categoryLabel(categoryId) {
+  if (!categoryId || categoryId === 'uncategorized') return 'Uncategorized';
   return categoryLabels.value[categoryId] || categoryId;
-}
-
-async function loadCategories() {
-  try {
-    categoryLabels.value = await $fetch(`${config.public.apiBase}/digest/categories?lang=${lang.value}`);
-  } catch (err) {
-    // Non-fatal: the UI can fall back to category_id
-    categoryLabels.value = {};
-    console.warn('Failed to load category labels:', err);
-  }
 }
 
 async function syncDigest() {
   loading.value = true;
   try {
+    // 1. Run the heavy RSS sync & AI classification
+    await $fetch(`${config.public.apiBase}/digest/sync?limit=50`);
+    
+    // 2. Refresh categories and local articles list
     await loadCategories();
-    // Increased limit to 50 for a better birds-eye view
-    const data = await $fetch(`${config.public.apiBase}/digest/sync?limit=50`);
-    articles.value = data.articles;
-    // Switch to Uncategorized view if there are many, to help you fix them
+    await fetchArticles();
+
     if (uncategorizedCount.value > 0) {
       activeCategory.value = 'uncategorized';
     }
   } catch (err) {
-    alert("Error: " + err.message);
+    alert("Sync failed: " + err.message);
   } finally {
     loading.value = false;
   }
@@ -179,7 +207,6 @@ async function syncDigest() {
 
 function formatSummary(text) {
   if (!text) return "";
-  // More robust bullet point formatting
   let formatted = text.trim();
   if (formatted.includes('- ') || formatted.includes('* ')) {
     formatted = formatted.replace(/^\s*[-*]\s+(.*)$/gm, '<li>$1</li>');

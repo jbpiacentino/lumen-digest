@@ -1,14 +1,15 @@
-import datetime
+from datetime import datetime, timezone, timedelta
 import time
 start_time = time.time()
 
 import os
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Depends
 from fastapi.middleware.cors import CORSMiddleware
 import json
 
-from .database import engine, Base, SessionLocal # Import your DB setup
+from .database import engine, Base, SessionLocal, get_db # Import your DB setup
 from .models import Article
+from sqlalchemy.orm import Session
 from sqlalchemy.dialects.postgresql import insert # For idempotency (no duplicates)
 
 from typing import List, Optional
@@ -59,9 +60,65 @@ async def startup_event():
 async def root():
     return {"status": "online", "message": "Lumen Digest AI Backend", "LOG_LEVEL": LOG_LEVEL, "summarization_active": SUMMARIZATION_ENABLED}
 
+@app.get("/articles")
+def get_articles(
+    days: int = Query(default=1, description="Number of days to look back"),
+    category_id: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    """
+    Retrieves a list of classified articles from the internal database.
+
+    This is the primary endpoint for the frontend UI. It does not trigger new 
+    external fetches; instead, it queries already-processed data.
+
+    Args:
+        days (int): The look-back window in days. Defaults to 1 (last 24 hours).
+        category_id (Optional[str]): If provided, filters articles by a specific 
+            category (e.g., 'tech', 'finance').
+        db (Session): SQLAlchemy database session.
+
+    Returns:
+        List[Article]: A JSON array of article objects sorted by newest first.
+    """
+    # Calculate the cutoff time (default 24h ago)
+    # Using timezone-aware UTC if your DB stores it that way
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    
+    # Start the query
+    query = db.query(Article).filter(
+        Article.published_at >= cutoff
+        )
+    
+    # Optional: Filter by category if provided
+    if category_id:
+        query = query.filter(Article.category_id == category_id)
+        
+    # Sort by newest first
+    articles = query.order_by(Article.published_at.desc()).all()
+    
+    return articles
+
 @app.get("/digest/sync")
-async def sync_and_classify(limit: int = Query(default=10, le=50)):
-    db = SessionLocal()
+async def sync_and_classify(limit: int = Query(default=10, le=50), db: Session = Depends(get_db)):
+ 
+    """
+    Worker endpoint to synchronize FreshRSS entries with the local database.
+
+    This function performs the heavy lifting:
+    1. Fetches the latest unread headers from the FreshRSS (GReader) API.
+    2. Filters for items not yet present in the local database.
+    3. Uses LLM analysis to assign a `category_id` based on title and snippet.
+    4. Persists the enriched articles to PostgreSQL.
+
+    Args:
+        limit (int): Maximum number of new articles to process in this batch 
+            to manage API costs and latency.
+        db (Session): SQLAlchemy database session.
+
+    Returns:
+        dict: A status message indicating how many articles were processed.
+    """
     try:        
         # 1. Fetch from FreshRSS (GReader API)
         to_process = await get_unread_entries()
@@ -77,10 +134,11 @@ async def sync_and_classify(limit: int = Query(default=10, le=50)):
             raw_pub_date = entry.get("published") 
             try:
                 # Convert timestamp to datetime object
-                pub_date = datetime.datetime.fromtimestamp(int(raw_pub_date), tz=datetime.timezone.utc)
+                # Remove the "datetime." prefix before timezone
+                pub_date = datetime.fromtimestamp(int(raw_pub_date), tz=timezone.utc)
             except (ValueError, TypeError):
                 # Fallback to now if date is missing/malformed
-                pub_date = datetime.datetime.now(datetime.timezone.utc)
+                pub_date = datetime.now(datetime.timezone.utc)
             
             # Generate AI Summary
             if SUMMARIZATION_ENABLED:
@@ -109,28 +167,14 @@ async def sync_and_classify(limit: int = Query(default=10, le=50)):
             }
 
             # Insert into DB
-            # Use 'on_conflict_do_nothing' so you don't get errors if you sync the same item twice
-            print("inserting ", article_data["title"])
+            # Use 'on_conflict_do_nothing' so we don't get errors if we sync the same item twice
             stmt = insert(Article).values(**article_data).on_conflict_do_nothing(
                 index_elements=['freshrss_id'] # Assumes you have a unique constraint on this
             )
             db.execute(stmt)
             db.commit() 
 
-            # processed_items.append(article_data)
-            processed_items.append({
-                "id": entry.get("id"),
-                "title": title,
-                "url": entry.get("alternate", [{}])[0].get("href"),
-                "category_id": category_id,
-                "summary": summary,
-                "published_at": entry.get("published")
-            })
-
-        return {
-            "count": len(processed_items),
-            "articles": processed_items
-        }
+        return {"status": "success", "message": f"Synced up to {limit} articles"}
 
     except Exception as e:
         db.rollback()
