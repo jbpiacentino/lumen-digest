@@ -47,7 +47,8 @@ async def get_unread_entries():
     params = {
         "output": "json",
         "xt": "user/-/state/com.google/read", # Unread only
-        "n": 50                               # Limit for speed
+        "n": 50,                              # Limit for speed
+        "r": "o"                              # Oldest first
     }
 
     async with httpx.AsyncClient(verify=VERIFY_SSL) as client:
@@ -61,4 +62,5 @@ async def get_unread_entries():
         data = resp.json()
         items = data.get("items", [])
         logger.info(f"Successfully fetched {len(items)} unread articles.")
+        
         return items
