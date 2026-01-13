@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, func, Float, JSON
+from sqlalchemy import Column, Integer, String, Text, DateTime, func, Float, JSON, Boolean
 from .database import Base
 
 class Article(Base):
@@ -13,7 +13,12 @@ class Article(Base):
     summary = Column(Text)
     category_id = Column(String, nullable=False, index=True)
     confidence = Column(Float)
+    needs_review = Column(Boolean)
+    reason=Column(Text)
+    runner_up_confidence=Column(Float)
+    margin=Column(Float)
     source = Column(String)
     published_at = Column(DateTime(timezone=True), nullable=False, index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     # raw = Column(JSON)
+    

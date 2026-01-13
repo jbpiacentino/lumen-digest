@@ -1,5 +1,6 @@
 from datetime import datetime, timezone, timedelta
 import time
+import asyncio
 start_time = time.time()
 
 import os
@@ -17,17 +18,20 @@ import logging
 from dotenv import load_dotenv
 
 # Import our logic modules
-from .logic.freshrss import get_unread_entries
+from .logic.freshrss import get_unread_entries, mark_entries_read
 from .logic.summarizer import summarize_article
-from .logic.classifier import classifier_engine
+from .logic.classifier import get_classifier_engine
 
 # Load environment variables from .env file
 load_dotenv()
 
-# Set the logging level based on an environment variable, defaulting to INFO
+
 LOG_LEVEL = os.getenv("LOG_LEVEL", "DEBUG").upper()
-# Helper to convert string env var to boolean
 SUMMARIZATION_ENABLED = os.getenv("SUMMARIZATION_ENABLED", "true").lower() == "true"
+POLL_INTERVAL_SECONDS = int(os.getenv("POLL_INTERVAL_SECONDS", "300"))
+POLL_ENABLED = os.getenv("POLL_ENABLED", "true").lower() == "true"
+
+SYNC_LIMIT = int(os.getenv("FRESHRSS_SYNC_LIMIT", "200"))
 
 logging.basicConfig(
     level=getattr(logging, LOG_LEVEL),
@@ -52,9 +56,89 @@ app.add_middleware(
 )
 
 
+
+async def sync_entries(limit: int, db: Session):
+    # 1. Fetch from FreshRSS (GReader API)
+    to_process = await get_unread_entries(limit=limit)
+    logger.info(f"to_process len = {len(to_process)} .")
+    processed_ids = []
+
+    for entry in to_process[:limit]:
+        # Extract content (prioritize content over summary)
+        title = entry.get("title", "No Title")
+        raw_content = entry.get("content", {}).get("content", "") or \
+                      entry.get("summary", {}).get("content", "") or \
+                      title
+        raw_pub_date = entry.get("published") 
+        try:
+            # Convert timestamp to datetime object
+            # Remove the "datetime." prefix before timezone
+            pub_date = datetime.fromtimestamp(int(raw_pub_date), tz=timezone.utc)
+        except (ValueError, TypeError):
+            # Fallback to now if date is missing/malformed
+            pub_date = datetime.now(datetime.timezone.utc)
+        
+        # Generate AI Summary
+        if SUMMARIZATION_ENABLED:
+            logger.debug(f"Summarizing: {title}")
+            summary = await summarize_article(raw_content[:2000])
+        else:
+            # If disabled, we just use a snippet of the raw content for the UI
+            summary = raw_content[:300] + "..."
+
+        # Classify Category (Local ML)
+        # If AI is off, we MUST use the title + raw_content to classify, 
+        # otherwise the classifier doesn't have enough data.
+        classification_text = f"{title}: {raw_content[:1000]}"
+        category_id = get_classifier_engine().classify_text(classification_text)
+        
+        logger.debug(f"Article: {title[:40]}... -> Category: {category_id}")
+
+        # Prepare the data dictionary
+        article_data = {
+            "freshrss_id": str(entry.get("id")), # This provides our uniqueness
+            "title": entry.get("title"),
+            "url": entry.get("alternate", [{}])[0].get("href"),
+            "summary": summary,
+            "category_id": category_id,
+            "published_at": pub_date
+        }
+
+        # Insert into DB
+        # Use 'on_conflict_do_nothing' so we don't get errors if we sync the same item twice
+        stmt = insert(Article).values(**article_data).on_conflict_do_nothing(
+            index_elements=['freshrss_id'] # Assumes you have a unique constraint on this
+        )
+        db.execute(stmt)
+        db.commit()
+        entry_id = entry.get("id")
+        if entry_id:
+            processed_ids.append(str(entry_id))
+
+    await mark_entries_read(processed_ids)
+
+async def polling_loop():
+    logger.info("FreshRSS polling loop started.")
+    while True:
+        try:
+            with SessionLocal() as db:
+                await sync_entries(limit=SYNC_LIMIT, db=db)
+        except Exception as e:
+            logger.error(f"Background polling failed: {str(e)}", exc_info=True)
+        await asyncio.sleep(POLL_INTERVAL_SECONDS)
+
 @app.on_event("startup")
 async def startup_event():
     print("DEBUG: Startup event triggered - App is ready")
+    if POLL_ENABLED:
+        app.state.polling_task = asyncio.create_task(polling_loop())
+        logger.info("FreshRSS polling enabled.")
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    polling_task = getattr(app.state, "polling_task", None)
+    if polling_task:
+        polling_task.cancel()
 
 @app.get("/")
 async def root():
@@ -62,7 +146,7 @@ async def root():
 
 @app.get("/articles")
 def get_articles(
-    days: int = Query(default=1, description="Number of days to look back"),
+    days: int = Query(default=0, description="Number of days to look back (0 for all)"),
     category_id: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
@@ -81,14 +165,14 @@ def get_articles(
     Returns:
         List[Article]: A JSON array of article objects sorted by newest first.
     """
-    # Calculate the cutoff time (default 24h ago)
-    # Using timezone-aware UTC if your DB stores it that way
-    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
-    
     # Start the query
-    query = db.query(Article).filter(
-        Article.published_at >= cutoff
-        )
+    query = db.query(Article)
+
+    if days and days > 0:
+        # Calculate the cutoff time (default 24h ago)
+        # Using timezone-aware UTC if your DB stores it that way
+        cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+        query = query.filter(Article.published_at >= cutoff)
     
     # Optional: Filter by category if provided
     if category_id:
@@ -100,7 +184,7 @@ def get_articles(
     return articles
 
 @app.get("/digest/sync")
-async def sync_and_classify(limit: int = Query(default=10, le=50), db: Session = Depends(get_db)):
+async def sync_and_classify(limit: int = Query(default=SYNC_LIMIT, le=SYNC_LIMIT), db: Session = Depends(get_db)):
  
     """
     Worker endpoint to synchronize FreshRSS entries with the local database.
@@ -120,59 +204,7 @@ async def sync_and_classify(limit: int = Query(default=10, le=50), db: Session =
         dict: A status message indicating how many articles were processed.
     """
     try:        
-        # 1. Fetch from FreshRSS (GReader API)
-        to_process = await get_unread_entries()
-        logger.info(f"to_process len = {len(to_process)} .")
-        processed_items = []
-
-        for entry in to_process:
-            # Extract content (prioritize content over summary)
-            title = entry.get("title", "No Title")
-            raw_content = entry.get("content", {}).get("content", "") or \
-                          entry.get("summary", {}).get("content", "") or \
-                          title
-            raw_pub_date = entry.get("published") 
-            try:
-                # Convert timestamp to datetime object
-                # Remove the "datetime." prefix before timezone
-                pub_date = datetime.fromtimestamp(int(raw_pub_date), tz=timezone.utc)
-            except (ValueError, TypeError):
-                # Fallback to now if date is missing/malformed
-                pub_date = datetime.now(datetime.timezone.utc)
-            
-            # Generate AI Summary
-            if SUMMARIZATION_ENABLED:
-                logger.debug(f"Summarizing: {title}")
-                summary = await summarize_article(raw_content[:2000])
-            else:
-                # If disabled, we just use a snippet of the raw content for the UI
-                summary = raw_content[:300] + "..."
-
-            # Classify Category (Local ML)
-            # If AI is off, we MUST use the title + raw_content to classify, 
-            # otherwise the classifier doesn't have enough data.
-            classification_text = f"{title}: {raw_content[:1000]}"
-            category_id = classifier_engine.classify_text(classification_text)
-            
-            logger.debug(f"Article: {title[:40]}... -> Category: {category_id}")
-
-            # Prepare the data dictionary
-            article_data = {
-                "freshrss_id": str(entry.get("id")), # This provides our uniqueness
-                "title": entry.get("title"),
-                "url": entry.get("alternate", [{}])[0].get("href"),
-                "summary": entry.get("summary", {}).get("content", ""),
-                "category_id": category_id,
-                "published_at": pub_date
-            }
-
-            # Insert into DB
-            # Use 'on_conflict_do_nothing' so we don't get errors if we sync the same item twice
-            stmt = insert(Article).values(**article_data).on_conflict_do_nothing(
-                index_elements=['freshrss_id'] # Assumes you have a unique constraint on this
-            )
-            db.execute(stmt)
-            db.commit() 
+        await sync_entries(limit=limit, db=db)
 
         return {"status": "success", "message": f"Synced up to {limit} articles"}
 
@@ -186,7 +218,7 @@ async def test_classifier(text: str):
     """
     Utility endpoint to test how the DNA engine categorizes a specific string.
     """
-    category = classifier_engine.classify_text(text)
+    category = get_classifier_engine().classify_text(text)
     return {
         "input": text,
         "assigned_category": category
@@ -197,7 +229,7 @@ async def reload_taxonomy():
     """
     Call this if you update your taxonomy.json while the server is running.
     """
-    classifier_engine.load_taxonomy()
+    get_classifier_engine().load_taxonomy()
     return {"message": "Taxonomy centroids recalculated successfully."}
 
 @app.get("/digest/categories")
@@ -205,4 +237,4 @@ async def get_categories(lang: str = "en"):
     """
     Returns taxonomy labels. Usage: /digest/categories?lang=en
     """
-    return classifier_engine.get_taxonomy_labels(lang=lang)
+    return get_classifier_engine().get_taxonomy_labels(lang=lang)

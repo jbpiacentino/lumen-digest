@@ -9,3 +9,10 @@ A news digest experiment
 - Review the generated migration in /backend/migrations/versions/xxxx_migration_description
 - apply migration : ```docker-compose exec backend alembic upgrade head```
 
+# Reclasification
+```
+python3 backend/tools/reclassify.py \
+  --db postgresql://lumen_admin:password@localhost:5432/lumen_digest \
+  --taxonomy shared/taxonomy.json
+```
+

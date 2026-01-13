@@ -15,6 +15,21 @@
       </div>
 
       <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
+          <label for="time-window" class="text-xs font-medium text-gray-500">Window</label>
+          <select
+            id="time-window"
+            v-model="timeWindowDays"
+            @change="fetchArticles"
+            class="text-xs rounded-md border-gray-300 bg-white px-2 py-1 text-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          >
+            <option :value="0">All time</option>
+            <option :value="1">Last 24 hours</option>
+            <option :value="3">Last 3 days</option>
+            <option :value="7">Last 7 days</option>
+            <option :value="30">Last 30 days</option>
+          </select>
+        </div>
         <button 
           @click="fetchArticles" 
           class="p-2 text-gray-400 hover:text-indigo-600 transition-colors"
@@ -125,12 +140,12 @@ const loading = ref(false);
 const activeCategory = ref('all');
 const lang = ref('en');
 const categoryLabels = ref({});
+const timeWindowDays = ref(3);
 
 // Load database content
 async function fetchArticles() {
   try {
-    // Fetches last 3 days by default from your new GET /articles endpoint
-    const data = await $fetch(`${config.public.apiBase}/articles?days=3`);
+    const data = await $fetch(`${config.public.apiBase}/articles?days=${timeWindowDays.value}`);
     articles.value = data;
   } catch (err) {
     console.error('Error fetching articles:', err);
@@ -173,7 +188,7 @@ const categoryStats = computed(() => {
   return stats;
 });
 
-const uncategorizedCount = computed(() => categoryStats.value['uncategorized'] || 0);
+const uncategorizedCount = computed(() => categoryStats.value['other'] || 0);
 
 const filteredArticles = computed(() => {
   if (activeCategory.value === 'all') return articles.value;
@@ -189,7 +204,7 @@ async function syncDigest() {
   loading.value = true;
   try {
     // 1. Run the heavy RSS sync & AI classification
-    await $fetch(`${config.public.apiBase}/digest/sync?limit=50`);
+    // await $fetch(`${config.public.apiBase}/digest/sync?limit=50`);
     
     // 2. Refresh categories and local articles list
     await loadCategories();
