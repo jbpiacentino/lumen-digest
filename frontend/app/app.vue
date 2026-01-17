@@ -4,9 +4,9 @@
     <header class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-10">
       <div class="flex items-center gap-4">
         <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Lumen Digest</h1>
-        <div v-if="articles.length > 0" class="flex gap-2">
+        <div v-if="totalArticles > 0" class="flex gap-2">
           <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded">
-            {{ articles.length }} Total Articles
+            {{ totalArticles }} Total Articles
           </span>
           <span :class="['px-2 py-1 text-xs font-medium rounded', uncategorizedCount > 0 ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600']">
             {{ uncategorizedCount }} Uncategorized
@@ -20,7 +20,6 @@
           <select
             id="time-window"
             v-model="timeWindowDays"
-            @change="fetchArticles"
             class="text-xs rounded-md border-gray-300 bg-white px-2 py-1 text-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
           >
             <option :value="0">All time</option>
@@ -30,20 +29,20 @@
             <option :value="30">Last 30 days</option>
           </select>
         </div>
-        <button 
-          @click="fetchArticles" 
+        <!-- <button 
+          @click="syncAndRefresh" 
           class="p-2 text-gray-400 hover:text-indigo-600 transition-colors"
           title="Refresh view"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-        </button>
+        </button> -->
         <button 
-          @click="syncDigest" 
+          @click="syncAndRefresh" 
           :disabled="loading"
           class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 transition-all"
         >
           <span v-if="loading" class="animate-spin mr-2">🔄</span>
-          {{ loading ? 'Processing...' : 'Sync & Classify' }}
+          {{ loading ? 'Processing...' : 'Refresh' }}
         </button>
       </div>
     </header>
@@ -59,14 +58,14 @@
             :class="['w-full flex justify-between items-center px-3 py-2 text-sm font-medium rounded-md transition-colors', activeCategory === 'all' ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50']"
           >
             <span>All Articles</span>
-            <span class="text-xs bg-gray-200 text-gray-800 px-2 rounded-full">{{ articles.length }}</span>
+            <span class="text-xs bg-gray-200 text-gray-800 px-2 rounded-full">{{ totalArticles }}</span>
           </button>
 
           <div v-for="node in categoryTreeWithCounts" :key="node.id" class="space-y-1">
             <button 
               @click="activeCategory = node.id"
               :class="[
-                'w-full flex justify-between items-center px-3 py-2 text-xs font-semibold rounded-md transition-colors',
+                'w-full flex justify-between items-center px-3 py-2 text-sm font-semibold rounded-md transition-colors',
                 activeCategory === node.id ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700 hover:bg-gray-50'
               ]"
             >
@@ -163,39 +162,52 @@
 <script setup>
 const config = useRuntimeConfig();
 const articles = ref([]);
+const allArticles = ref([]);
 const loading = ref(false);
 const activeCategory = ref('all');
 const lang = ref('en');
-const categoryLabels = ref({});
-const categoryTree = ref([]);
+const taxonomy = ref({ labels: {}, tree: [] });
 const timeWindowDays = ref(3);
+
+function selectedCategoryIds() {
+  if (activeCategory.value === 'all') return null;
+  if (activeCategory.value === 'other') return ['other', 'uncategorized'];
+  return categoryDescendants.value[activeCategory.value] || [activeCategory.value];
+}
 
 // Load database content
 async function fetchArticles() {
   try {
-    const data = await $fetch(`${config.public.apiBase}/articles?days=${timeWindowDays.value}`);
+    const params = new URLSearchParams({ days: String(timeWindowDays.value) });
+    const ids = selectedCategoryIds();
+    if (ids && ids.length) {
+      ids.forEach((id) => params.append('category_ids', id));
+    }
+    const data = await $fetch(`${config.public.apiBase}/articles?${params.toString()}`);
     articles.value = data;
   } catch (err) {
     console.error('Error fetching articles:', err);
   }
 }
 
-// Load category mapping
-async function loadCategories() {
+async function fetchAllArticles() {
   try {
-    categoryLabels.value = await $fetch(`${config.public.apiBase}/digest/categories?lang=${lang.value}`);
+    const params = new URLSearchParams({ days: String(timeWindowDays.value) });
+    const data = await $fetch(`${config.public.apiBase}/articles?${params.toString()}`);
+    allArticles.value = data;
   } catch (err) {
-    categoryLabels.value = {};
-    console.warn('Failed to load category labels:', err);
+    allArticles.value = [];
+    console.error('Error fetching articles:', err);
   }
 }
 
-async function loadCategoryTree() {
+// Load taxonomy mapping + tree
+async function loadTaxonomy() {
   try {
-    categoryTree.value = await $fetch(`${config.public.apiBase}/digest/category-tree?lang=${lang.value}`);
+    taxonomy.value = await $fetch(`${config.public.apiBase}/digest/taxonomy?lang=${lang.value}`);
   } catch (err) {
-    categoryTree.value = [];
-    console.warn('Failed to load category tree:', err);
+    taxonomy.value = { labels: {}, tree: [] };
+    console.warn('Failed to load taxonomy:', err);
   }
 }
 
@@ -209,17 +221,13 @@ onMounted(async () => {
   }
 
   // 2. Initial load from local DB
-  await Promise.all([
-    loadCategories(),
-    loadCategoryTree(),
-    fetchArticles()
-  ]);
+  await syncAndRefresh();
 });
 
 // Sidebar stats logic
 const categoryStats = computed(() => {
   const stats = {};
-  articles.value.forEach(a => {
+  allArticles.value.forEach(a => {
     const id = a.category_id || 'uncategorized';
     stats[id] = (stats[id] || 0) + 1;
   });
@@ -239,7 +247,7 @@ const categoryTreeWithCounts = computed(() => {
     const count = descendants.reduce((sum, id) => sum + (stats[id] || 0), 0);
     return { ...node, children, descendants, count };
   };
-  return (categoryTree.value || []).map(buildNode);
+  return (taxonomy.value.tree || []).map(buildNode);
 });
 
 const categoryDescendants = computed(() => {
@@ -253,26 +261,26 @@ const categoryDescendants = computed(() => {
 });
 
 const filteredArticles = computed(() => {
-  if (activeCategory.value === 'all') return articles.value;
-  const ids = categoryDescendants.value[activeCategory.value] || [activeCategory.value];
-  return articles.value.filter(a => ids.includes(a.category_id || 'uncategorized'));
+  return articles.value;
 });
 
 function categoryLabel(categoryId) {
   if (!categoryId || categoryId === 'uncategorized') return 'Uncategorized';
-  return categoryLabels.value[categoryId] || categoryId;
+  return taxonomy.value.labels?.[categoryId] || categoryId;
 }
 
-async function syncDigest() {
+async function syncAndRefresh() {
   loading.value = true;
   try {
     // 1. Run the heavy RSS sync & AI classification
     // await $fetch(`${config.public.apiBase}/digest/sync?limit=50`);
-    
+
     // 2. Refresh categories and local articles list
-    await loadCategories();
-    await loadCategoryTree();
-    await fetchArticles();
+    await loadTaxonomy();
+    await Promise.all([
+      fetchAllArticles(),
+      fetchArticles()
+    ]);
 
     if (uncategorizedCount.value > 0) {
       activeCategory.value = 'other';
@@ -283,6 +291,16 @@ async function syncDigest() {
     loading.value = false;
   }
 }
+
+watch(activeCategory, () => {
+  fetchArticles();
+});
+
+watch(timeWindowDays, () => {
+  syncAndRefresh();
+});
+
+const totalArticles = computed(() => allArticles.value.length);
 
 function formatSummary(text) {
   if (!text) return "";

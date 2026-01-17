@@ -208,58 +208,48 @@ class NewsClassifier:
         )
         return result["category_id"]
     
-    def get_taxonomy_labels(self, lang="en"):
+    def get_taxonomy(self, lang="en"):
         """
-        Returns a dictionary of {id: label} for the specified language.
+        Returns taxonomy labels and tree for the specified language.
         """
         labels = {}
+        tree = []
 
-        # Define translations for the system-generated 'uncategorized' key
-        # You can expand this list as needed
         uncat_translations = {
             "en": "Uncategorized",
             "es": "Sin categoría",
             "fr": "Non classé",
-            "pt": "Não categorizado"
+            "pt": "Não categorizado",
         }
 
-        for cat_id, data in self.categories.items():
-            # 1. Look for the specific language
-            # 2. Fallback to English ("en")
-            # 3. Fallback to the ID itself if all else fails
-            category_labels = data.get("labels", {})
-            label = category_labels.get(lang) or category_labels.get("en") or cat_id
-            labels[cat_id] = label
-
-        # Add the uncategorized label for the requested language
-        labels["uncategorized"] = uncat_translations.get(lang, "Uncategorized")
-        
-        return labels
-
-    def get_taxonomy_tree(self, lang="en"):
-        """
-        Returns a tree of categories for the specified language.
-        """
         if not self.taxonomy_data:
-            return []
+            labels["uncategorized"] = uncat_translations.get(lang, "Uncategorized")
+            return {"labels": labels, "tree": tree}
 
         if "categories" not in self.taxonomy_data:
-            labels = self.get_taxonomy_labels(lang=lang)
-            return [
+            for cat_id, data in self.categories.items():
+                category_labels = data.get("labels", {})
+                label = category_labels.get(lang) or category_labels.get("en") or cat_id
+                labels[cat_id] = label
+            labels["uncategorized"] = uncat_translations.get(lang, "Uncategorized")
+            tree = [
                 {
                     "id": cat_id,
                     "label": labels.get(cat_id, cat_id),
                     "children": [],
                 }
                 for cat_id in sorted(labels.keys())
+                if cat_id != "uncategorized"
             ]
+            return {"labels": labels, "tree": tree}
 
-        tree = []
         for category in self.taxonomy_data.get("categories", []):
             label = category.get("labels", {}).get(lang) or category.get("labels", {}).get("en") or category.get("id")
+            labels[category.get("id")] = label
             children = []
             for subcategory in category.get("subcategories", []):
                 sub_label = subcategory.get("labels", {}).get(lang) or subcategory.get("labels", {}).get("en") or subcategory.get("id")
+                labels[subcategory.get("id")] = sub_label
                 children.append(
                     {
                         "id": subcategory.get("id"),
@@ -274,7 +264,10 @@ class NewsClassifier:
                     "children": children,
                 }
             )
-        return tree
+
+        labels["uncategorized"] = uncat_translations.get(lang, "Uncategorized")
+
+        return {"labels": labels, "tree": tree}
 
 
 

@@ -12,6 +12,7 @@ from .database import engine, Base, SessionLocal, get_db # Import your DB setup
 from .models import Article
 from sqlalchemy.orm import Session
 from sqlalchemy.dialects.postgresql import insert # For idempotency (no duplicates)
+from sqlalchemy import or_
 
 from typing import List, Optional
 import logging
@@ -161,7 +162,7 @@ async def root():
 @app.get("/articles")
 def get_articles(
     days: int = Query(default=0, description="Number of days to look back (0 for all)"),
-    category_id: Optional[str] = None,
+    category_ids: Optional[List[str]] = Query(default=None),
     db: Session = Depends(get_db)
 ):
     """
@@ -189,8 +190,18 @@ def get_articles(
         query = query.filter(Article.published_at >= cutoff)
     
     # Optional: Filter by category if provided
-    if category_id:
-        query = query.filter(Article.category_id == category_id)
+    ids = [i.strip() for i in (category_ids or []) if i and i.strip()]
+
+    if ids:
+        if "uncategorized" in ids:
+            query = query.filter(
+                or_(
+                    Article.category_id.in_(ids),
+                    Article.category_id.is_(None),
+                )
+            )
+        else:
+            query = query.filter(Article.category_id.in_(ids))
         
     # Sort by newest first
     articles = query.order_by(Article.published_at.desc()).all()
@@ -272,16 +283,9 @@ async def reload_taxonomy():
     get_classifier_engine().load_taxonomy()
     return {"message": "Taxonomy centroids recalculated successfully."}
 
-@app.get("/digest/categories")
-async def get_categories(lang: str = "en"):
+@app.get("/digest/taxonomy")
+async def get_taxonomy(lang: str = "en"):
     """
-    Returns taxonomy labels. Usage: /digest/categories?lang=en
+    Returns taxonomy labels and tree. Usage: /digest/taxonomy?lang=en
     """
-    return get_classifier_engine().get_taxonomy_labels(lang=lang)
-
-@app.get("/digest/category-tree")
-async def get_category_tree(lang: str = "en"):
-    """
-    Returns taxonomy tree. Usage: /digest/category-tree?lang=en
-    """
-    return get_classifier_engine().get_taxonomy_tree(lang=lang)
+    return get_classifier_engine().get_taxonomy(lang=lang)
