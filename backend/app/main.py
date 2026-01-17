@@ -16,6 +16,7 @@ from sqlalchemy.dialects.postgresql import insert # For idempotency (no duplicat
 from typing import List, Optional
 import logging
 from dotenv import load_dotenv
+from pydantic import BaseModel
 
 # Import our logic modules
 from .logic.freshrss import get_unread_entries, mark_entries_read
@@ -55,6 +56,19 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
+class ClassifyBatchRequest(BaseModel):
+    texts: List[str]
+    threshold: float = 0.36
+    margin_threshold: float = 0.07
+    min_len: int = 30
+    low_bucket: str = "other"
+
+class ClassifyRequest(BaseModel):
+    text: str
+    threshold: float = 0.36
+    margin_threshold: float = 0.07
+    min_len: int = 30
+    low_bucket: str = "other"
 
 
 async def sync_entries(limit: int, db: Session):
@@ -223,6 +237,32 @@ async def test_classifier(text: str):
         "input": text,
         "assigned_category": category
     }
+
+@app.post("/classify")
+async def classify(payload: ClassifyRequest):
+    result = get_classifier_engine().classify_text_with_scores(
+        payload.text,
+        threshold=payload.threshold,
+        margin_threshold=payload.margin_threshold,
+        min_len=payload.min_len,
+        low_bucket=payload.low_bucket,
+    )
+    return {"result": result}
+
+@app.post("/classify/batch")
+async def classify_batch(payload: ClassifyBatchRequest):
+    clf = get_classifier_engine()
+    results = [
+        clf.classify_text_with_scores(
+            text,
+            threshold=payload.threshold,
+            margin_threshold=payload.margin_threshold,
+            min_len=payload.min_len,
+            low_bucket=payload.low_bucket,
+        )
+        for text in payload.texts
+    ]
+    return {"results": results}
 
 @app.get("/taxonomy/reload")
 async def reload_taxonomy():

@@ -1,4 +1,4 @@
-# lumen-digest
+**lumen-digest**
 A news digest experiment
 
 
@@ -9,7 +9,8 @@ A news digest experiment
 - Review the generated migration in /backend/migrations/versions/xxxx_migration_description
 - apply migration : ```docker-compose exec backend alembic upgrade head```
 
-# Reclasification
+# Tools
+## Reclassification CLI
 ```
 python3 backend/tools/reclassify.py \
   --db postgresql://lumen_admin:password@localhost:5432/lumen_digest \

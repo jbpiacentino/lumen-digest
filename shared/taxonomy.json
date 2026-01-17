@@ -1,5 +1,5 @@
 {
-  "version": "2.1.0",
+  "version": "2.2.0",
   "source": "Lumen News Optimized Taxonomy",
   "taxonomy": [
     {
@@ -13,7 +13,8 @@
         "operating systems and system administration",
         "web technologies and internet protocols",
         "database management and data engineering",
-        "devops, CI/CD, and site reliability engineering"
+        "devops, CI/CD, and site reliability engineering",
+        "virtualization, hypervisors, and datacenter platforms"
       ]
     },
     {
@@ -22,11 +23,11 @@
       "anchors": [
         "artificial intelligence and machine learning research",
         "large language models and generative AI",
-        "autonomous vehicles, self-driving cars, and FSD",
-        "robotics and automated systems",
-        "neural networks and computer vision",
         "AI agents and intelligent automation",
-        "natural language processing and chatbots"
+        "natural language processing and chatbots",
+        "neural networks and computer vision",
+        "robotics and automated systems",
+        "autonomous vehicles, self-driving cars, and FSD"
       ]
     },
     {
@@ -35,11 +36,12 @@
       "anchors": [
         "cybersecurity threats, malware, and hacking",
         "data breaches and software vulnerabilities",
-        "multi-factor authentication and identity management",
-        "encryption and cryptographic protocols",
-        "online privacy and digital surveillance",
+        "identity and access management, multi-factor authentication",
+        "encryption, cryptography, and key management",
+        "online privacy, tracking, and digital surveillance",
         "information security and threat intelligence",
-        "network security and firewalls"
+        "network security and firewalls",
+        "zero trust architecture and security compliance"
       ]
     },
     {
@@ -47,12 +49,13 @@
       "labels": { "en": "Business & VC" },
       "anchors": [
         "technology business news and market trends",
-        "venture capital, Series A funding, and valuations",
+        "venture capital, funding rounds, and valuations",
         "startups and entrepreneurship",
         "mergers, acquisitions, and corporate buyouts",
         "semiconductor industry and hardware manufacturing",
         "stock market earnings and financial reports",
-        "tech industry labor and workforce news"
+        "tech industry labor, layoffs, and workforce news",
+        "product strategy, pricing, and go-to-market"
       ]
     },
     {
@@ -60,11 +63,11 @@
       "labels": { "en": "Science & Space" },
       "anchors": [
         "scientific research and breakthroughs",
-        "space exploration, astronauts, and moon missions",
+        "space exploration, launch vehicles, and moon missions",
         "biotechnology and medical research",
         "physics, energy, and fusion technology",
-        "consumer electronics innovation and hardware gadgets",
-        "advanced materials and engineering"
+        "advanced materials and engineering",
+        "consumer electronics innovation and hardware gadgets"
       ]
     },
     {
@@ -73,11 +76,10 @@
       "anchors": [
         "government policy and technology regulation",
         "geopolitics, international relations, and global conflict",
+        "trade sanctions, export controls, and international diplomacy",
         "legal battles, lawsuits, and court rulings",
-        "military technology and air strikes",
-        "trade sanctions and international diplomacy",
         "compliance, legislation, and digital rights",
-        "agriculture"
+        "defense policy and military modernization"
       ]
     },
     {
@@ -87,8 +89,32 @@
         "social media trends and digital culture",
         "the psychological and social impact of technology",
         "ethics in technology and philosophy",
-        "online misinformation and conspiracy theories",
-        "education, lifestyle, and human rights in the digital age"
+        "online misinformation, propaganda, and conspiracy theories",
+        "education, lifestyle, and human rights in the digital age",
+        "culture, media, and public discourse"
+      ]
+    },
+    {
+      "id": "general_news",
+      "labels": { "en": "General News" },
+      "anchors": [
+        "breaking news and headlines",
+        "local and national news",
+        "public policy not primarily about technology",
+        "culture and tourism news",
+        "economy and cost of living news",
+        "public services, transport, and strikes",
+        "sports news and major events",
+        "weather events and natural disasters"
+      ]
+    },
+    {
+      "id": "other",
+      "labels": { "en": "Other / Mixed" },
+      "anchors": [
+        "miscellaneous news with unclear topic",
+        "mixed topics without a dominant category",
+        "low-signal content, short snippets, or media-only posts"
       ]
     }
   ]
