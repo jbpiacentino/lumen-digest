@@ -278,3 +278,10 @@ async def get_categories(lang: str = "en"):
     Returns taxonomy labels. Usage: /digest/categories?lang=en
     """
     return get_classifier_engine().get_taxonomy_labels(lang=lang)
+
+@app.get("/digest/category-tree")
+async def get_category_tree(lang: str = "en"):
+    """
+    Returns taxonomy tree. Usage: /digest/category-tree?lang=en
+    """
+    return get_classifier_engine().get_taxonomy_tree(lang=lang)
