@@ -13,6 +13,7 @@ WS_RE  = re.compile(r"\s+")
 
 MODEL_NAME = "paraphrase-multilingual-mpnet-base-v2"
 # MODEL_NAME = "paraphrase-multilingual-MiniLM-L12-v2"
+DEFAULT_TAXONOMY_PATH = "/shared/lumen_taxonomy_iptc_l1l2_subcategories_tight_v3.1.0.json"
 
 def clean_text(raw: Optional[str]) -> str:
     if not raw:
@@ -30,7 +31,7 @@ def clean_text(raw: Optional[str]) -> str:
 class NewsClassifier:
     def __init__(
         self,
-        taxonomy_path: str = "/shared/taxonomy.json",
+        taxonomy_path: str = DEFAULT_TAXONOMY_PATH,
         model_name: str = MODEL_NAME,
         device: str = "cpu",
         centroids_cache: Optional[str] = None,
@@ -42,6 +43,7 @@ class NewsClassifier:
         self.centroids_cache = centroids_cache
         self.categories = {}
         self.taxonomy_version = None
+        self.taxonomy_data = None
 
         if cache_dir:
             os.environ["HF_HOME"] = cache_dir
@@ -64,6 +66,7 @@ class NewsClassifier:
             taxonomy_data = json.load(f)
 
         self.taxonomy_version = taxonomy_data.get("version")
+        self.taxonomy_data = taxonomy_data
 
         if self.centroids_cache and os.path.exists(self.centroids_cache):
             payload = torch.load(self.centroids_cache, map_location=self.device)
@@ -83,7 +86,17 @@ class NewsClassifier:
                     print(f"Classifier initialized with {len(self.categories)} categories (cache).")
                     return
 
-        items = taxonomy_data.get("taxonomy", [])
+        if "categories" in taxonomy_data:
+            classification_level = taxonomy_data.get("modeling", {}).get("classification_level")
+            items = []
+            for category in taxonomy_data.get("categories", []):
+                if classification_level is None or category.get("level") == classification_level:
+                    items.append(category)
+                for subcategory in category.get("subcategories", []):
+                    if classification_level is None or subcategory.get("level") == classification_level:
+                        items.append(subcategory)
+        else:
+            items = taxonomy_data.get("taxonomy", [])
         
         for category in items:
             cat_id = category.get("id")
@@ -223,6 +236,46 @@ class NewsClassifier:
         
         return labels
 
+    def get_taxonomy_tree(self, lang="en"):
+        """
+        Returns a tree of categories for the specified language.
+        """
+        if not self.taxonomy_data:
+            return []
+
+        if "categories" not in self.taxonomy_data:
+            labels = self.get_taxonomy_labels(lang=lang)
+            return [
+                {
+                    "id": cat_id,
+                    "label": labels.get(cat_id, cat_id),
+                    "children": [],
+                }
+                for cat_id in sorted(labels.keys())
+            ]
+
+        tree = []
+        for category in self.taxonomy_data.get("categories", []):
+            label = category.get("labels", {}).get(lang) or category.get("labels", {}).get("en") or category.get("id")
+            children = []
+            for subcategory in category.get("subcategories", []):
+                sub_label = subcategory.get("labels", {}).get(lang) or subcategory.get("labels", {}).get("en") or subcategory.get("id")
+                children.append(
+                    {
+                        "id": subcategory.get("id"),
+                        "label": sub_label,
+                        "children": [],
+                    }
+                )
+            tree.append(
+                {
+                    "id": category.get("id"),
+                    "label": label,
+                    "children": children,
+                }
+            )
+        return tree
+
 
 
 # Initialize a singleton instance to be used across the FastAPI app
@@ -231,7 +284,7 @@ _classifier_engine = None
 
 
 def get_classifier_engine(
-    taxonomy_path: str = "/shared/taxonomy.json",
+    taxonomy_path: str = DEFAULT_TAXONOMY_PATH,
     model_name: str = MODEL_NAME,
     device: str = "cpu",
     centroids_cache: Optional[str] = None,
