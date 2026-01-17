@@ -89,6 +89,8 @@ class NewsClassifier:
             cat_id = category.get("id")
             label = category.get("labels", {}).get("en", cat_id)
             anchors = category.get("anchors", [])
+            if isinstance(anchors, dict):
+                anchors = anchors.get("en", []) + anchors.get("fr", [])
 
             if not cat_id:
                 continue

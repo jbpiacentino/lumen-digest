@@ -5,117 +5,144 @@
     {
       "id": "technology_computing",
       "labels": { "en": "IT Infrastructure & Software" },
-      "anchors": [
-        "cloud computing and infrastructure",
-        "software development and engineering",
-        "enterprise IT operations and server outages",
-        "networking hardware, switches, and DNS protocols",
-        "operating systems and system administration",
-        "web technologies and internet protocols",
-        "database management and data engineering",
-        "devops, CI/CD, and site reliability engineering",
-        "virtualization, hypervisors, and datacenter platforms"
-      ]
+      "anchors": {
+        "en": [
+          "cloud computing and infrastructure",
+          "software development and engineering",
+          "enterprise IT operations and server outages",
+          "networking hardware, switches, and DNS protocols",
+          "operating systems and system administration",
+          "web technologies and internet protocols",
+          "database management and data engineering",
+          "devops, CI/CD, and site reliability engineering",
+          "virtualization, hypervisors, and datacenter platforms"
+        ],
+        "fr": []
+      }
     },
     {
       "id": "artificial_intelligence",
       "labels": { "en": "AI & Autonomous Systems" },
-      "anchors": [
-        "artificial intelligence and machine learning research",
-        "large language models and generative AI",
-        "AI agents and intelligent automation",
-        "natural language processing and chatbots",
-        "neural networks and computer vision",
-        "robotics and automated systems",
-        "autonomous vehicles, self-driving cars, and FSD"
-      ]
+      "anchors": {
+        "en": [
+          "artificial intelligence and machine learning research",
+          "large language models and generative AI",
+          "AI agents and intelligent automation",
+          "natural language processing and chatbots",
+          "neural networks and computer vision",
+          "robotics and automated systems",
+          "autonomous vehicles, self-driving cars, and FSD"
+        ],
+        "fr": []
+      }
     },
     {
       "id": "cyber_security",
       "labels": { "en": "Security & Privacy" },
-      "anchors": [
-        "cybersecurity threats, malware, and hacking",
-        "data breaches and software vulnerabilities",
-        "identity and access management, multi-factor authentication",
-        "encryption, cryptography, and key management",
-        "online privacy, tracking, and digital surveillance",
-        "information security and threat intelligence",
-        "network security and firewalls",
-        "zero trust architecture and security compliance"
-      ]
+      "anchors": {
+        "en": [
+          "cybersecurity threats, malware, and hacking",
+          "data breaches and software vulnerabilities",
+          "identity and access management, multi-factor authentication",
+          "encryption, cryptography, and key management",
+          "online privacy, tracking, and digital surveillance",
+          "information security and threat intelligence",
+          "network security and firewalls",
+          "zero trust architecture and security compliance"
+        ],
+        "fr": []
+      }
     },
     {
       "id": "economy_business",
       "labels": { "en": "Business & VC" },
-      "anchors": [
-        "technology business news and market trends",
-        "venture capital, funding rounds, and valuations",
-        "startups and entrepreneurship",
-        "mergers, acquisitions, and corporate buyouts",
-        "semiconductor industry and hardware manufacturing",
-        "stock market earnings and financial reports",
-        "tech industry labor, layoffs, and workforce news",
-        "product strategy, pricing, and go-to-market"
-      ]
+      "anchors": {
+        "en": [
+          "technology business news and market trends",
+          "venture capital, funding rounds, and valuations",
+          "startups and entrepreneurship",
+          "mergers, acquisitions, and corporate buyouts",
+          "semiconductor industry and hardware manufacturing",
+          "stock market earnings and financial reports",
+          "tech industry labor, layoffs, and workforce news",
+          "product strategy, pricing, and go-to-market"
+        ],
+        "fr": []
+      }
     },
     {
       "id": "science_innovation",
       "labels": { "en": "Science & Space" },
-      "anchors": [
-        "scientific research and breakthroughs",
-        "space exploration, launch vehicles, and moon missions",
-        "biotechnology and medical research",
-        "physics, energy, and fusion technology",
-        "advanced materials and engineering",
-        "consumer electronics innovation and hardware gadgets"
-      ]
+      "anchors": {
+        "en": [
+          "scientific research and breakthroughs",
+          "space exploration, launch vehicles, and moon missions",
+          "biotechnology and medical research",
+          "physics, energy, and fusion technology",
+          "advanced materials and engineering",
+          "consumer electronics innovation and hardware gadgets"
+        ],
+        "fr": []
+      }
     },
     {
       "id": "politics_law",
       "labels": { "en": "Politics & Geopolitics" },
-      "anchors": [
-        "government policy and technology regulation",
-        "geopolitics, international relations, and global conflict",
-        "trade sanctions, export controls, and international diplomacy",
-        "legal battles, lawsuits, and court rulings",
-        "compliance, legislation, and digital rights",
-        "defense policy and military modernization"
-      ]
+      "anchors": {
+        "en": [
+          "government policy and technology regulation",
+          "geopolitics, international relations, and global conflict",
+          "trade sanctions, export controls, and international diplomacy",
+          "legal battles, lawsuits, and court rulings",
+          "compliance, legislation, and digital rights",
+          "defense policy and military modernization"
+        ],
+        "fr": []
+      }
     },
     {
       "id": "society_culture",
       "labels": { "en": "Society & Culture" },
-      "anchors": [
-        "social media trends and digital culture",
-        "the psychological and social impact of technology",
-        "ethics in technology and philosophy",
-        "online misinformation, propaganda, and conspiracy theories",
-        "education, lifestyle, and human rights in the digital age",
-        "culture, media, and public discourse"
-      ]
+      "anchors": {
+        "en": [
+          "social media trends and digital culture",
+          "the psychological and social impact of technology",
+          "ethics in technology and philosophy",
+          "online misinformation, propaganda, and conspiracy theories",
+          "education, lifestyle, and human rights in the digital age",
+          "culture, media, and public discourse"
+        ],
+        "fr": []
+      }
     },
     {
       "id": "general_news",
       "labels": { "en": "General News" },
-      "anchors": [
-        "breaking news and headlines",
-        "local and national news",
-        "public policy not primarily about technology",
-        "culture and tourism news",
-        "economy and cost of living news",
-        "public services, transport, and strikes",
-        "sports news and major events",
-        "weather events and natural disasters"
-      ]
+      "anchors": {
+        "en": [
+          "breaking news and headlines",
+          "local and national news",
+          "public policy not primarily about technology",
+          "culture and tourism news",
+          "economy and cost of living news",
+          "public services, transport, and strikes",
+          "sports news and major events",
+          "weather events and natural disasters"
+        ],
+        "fr": []
+      }
     },
     {
       "id": "other",
       "labels": { "en": "Other / Mixed" },
-      "anchors": [
-        "miscellaneous news with unclear topic",
-        "mixed topics without a dominant category",
-        "low-signal content, short snippets, or media-only posts"
-      ]
+      "anchors": {
+        "en": [
+          "miscellaneous news with unclear topic",
+          "mixed topics without a dominant category",
+          "low-signal content, short snippets, or media-only posts"
+        ],
+        "fr": []
+      }
     }
   ]
 }
