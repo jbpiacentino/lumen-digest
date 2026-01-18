@@ -110,12 +110,15 @@ async def sync_entries(limit: int, db: Session):
         logger.debug(f"Article: {title[:40]}... -> Category: {category_id}")
 
         # Prepare the data dictionary
+        origin = entry.get("origin") or entry.get("source") or {}
+        source_name = origin.get("title") or entry.get("author")
         article_data = {
             "freshrss_id": str(entry.get("id")), # This provides our uniqueness
             "title": entry.get("title"),
             "url": entry.get("alternate", [{}])[0].get("href"),
             "summary": summary,
             "category_id": category_id,
+            "source": source_name,
             "published_at": pub_date
         }
 
@@ -163,6 +166,8 @@ async def root():
 def get_articles(
     days: int = Query(default=0, description="Number of days to look back (0 for all)"),
     category_ids: Optional[List[str]] = Query(default=None),
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=50, ge=0),
     db: Session = Depends(get_db)
 ):
     """
@@ -203,10 +208,20 @@ def get_articles(
         else:
             query = query.filter(Article.category_id.in_(ids))
         
+    total = query.order_by(None).count()
+
     # Sort by newest first
-    articles = query.order_by(Article.published_at.desc()).all()
+    query = query.order_by(Article.published_at.desc())
+    if page_size > 0:
+        query = query.offset((page - 1) * page_size).limit(page_size)
+    articles = query.all()
     
-    return articles
+    return {
+        "items": articles,
+        "total": total,
+        "page": page,
+        "page_size": page_size,
+    }
 
 @app.get("/digest/sync")
 async def sync_and_classify(limit: int = Query(default=SYNC_LIMIT, le=SYNC_LIMIT), db: Session = Depends(get_db)):

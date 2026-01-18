@@ -128,9 +128,12 @@
                     <span class="text-gray-400 text-[10px] font-medium">
                       {{ new Date(article.published_at).toLocaleDateString() }}
                     </span>
+                    <span v-if="articleSource(article)" class="text-gray-400 text-[10px] font-medium">
+                      • {{ articleSource(article) }}
+                    </span>
                   </div>
                   <a :href="article.url" target="_blank" class="text-lg font-bold text-gray-900 hover:text-indigo-600 leading-snug">
-                    {{ article.title }}
+                    {{ stripHtml(article.title) }}
                   </a>
                 </div>
               </div>
@@ -148,6 +151,51 @@
               </div>
             </div>
           </div>
+          <div class="flex items-center justify-between text-xs text-gray-500 border-t border-gray-100 pt-4">
+            <div>
+              Page {{ currentPage }} of {{ totalPages }}
+              <span v-if="filteredTotal">• {{ filteredTotal }} results</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button
+                @click="prevPage"
+                :disabled="currentPage <= 1"
+                class="px-2 py-1 rounded border border-gray-200 text-gray-600 disabled:opacity-40"
+              >
+                Prev
+              </button>
+              <button
+                v-for="pageNum in pageNumbers"
+                :key="pageNum"
+                @click="goToPage(pageNum)"
+                :class="[
+                  'px-2 py-1 rounded border text-gray-600',
+                  pageNum === currentPage ? 'border-indigo-300 bg-indigo-50 text-indigo-700' : 'border-gray-200'
+                ]"
+              >
+                {{ pageNum }}
+              </button>
+              <button
+                @click="nextPage"
+                :disabled="currentPage >= totalPages"
+                class="px-2 py-1 rounded border border-gray-200 text-gray-600 disabled:opacity-40"
+              >
+                Next
+              </button>
+              <label class="flex items-center gap-2 ml-2">
+                <span class="text-gray-500">Page size</span>
+                <select
+                  v-model="pageSize"
+                  class="text-xs rounded-md border-gray-300 bg-white px-2 py-1 text-gray-700"
+                >
+                  <option :value="10">10</option>
+                  <option :value="20">20</option>
+                  <option :value="50">50</option>
+                  <option :value="100">100</option>
+                </select>
+              </label>
+            </div>
+          </div>
         </div>
 
         <!-- Empty State -->
@@ -163,6 +211,9 @@
 const config = useRuntimeConfig();
 const articles = ref([]);
 const allArticles = ref([]);
+const filteredTotal = ref(0);
+const currentPage = ref(1);
+const pageSize = ref(20);
 const loading = ref(false);
 const activeCategory = ref('all');
 const lang = ref('en');
@@ -178,13 +229,23 @@ function selectedCategoryIds() {
 // Load database content
 async function fetchArticles() {
   try {
-    const params = new URLSearchParams({ days: String(timeWindowDays.value) });
+    const params = new URLSearchParams({
+      days: String(timeWindowDays.value),
+      page: String(currentPage.value),
+      page_size: String(pageSize.value)
+    });
     const ids = selectedCategoryIds();
     if (ids && ids.length) {
       ids.forEach((id) => params.append('category_ids', id));
     }
     const data = await $fetch(`${config.public.apiBase}/articles?${params.toString()}`);
-    articles.value = data;
+    articles.value = data.items || [];
+    filteredTotal.value = data.total ?? articles.value.length;
+    const maxPages = Math.max(1, Math.ceil(filteredTotal.value / pageSize.value));
+    if (currentPage.value > maxPages) {
+      currentPage.value = maxPages;
+      await fetchArticles();
+    }
   } catch (err) {
     console.error('Error fetching articles:', err);
   }
@@ -192,9 +253,9 @@ async function fetchArticles() {
 
 async function fetchAllArticles() {
   try {
-    const params = new URLSearchParams({ days: String(timeWindowDays.value) });
+    const params = new URLSearchParams({ days: String(timeWindowDays.value), page: "1", page_size: "0" });
     const data = await $fetch(`${config.public.apiBase}/articles?${params.toString()}`);
-    allArticles.value = data;
+    allArticles.value = data.items || [];
   } catch (err) {
     allArticles.value = [];
     console.error('Error fetching articles:', err);
@@ -277,6 +338,7 @@ async function syncAndRefresh() {
 
     // 2. Refresh categories and local articles list
     await loadTaxonomy();
+    currentPage.value = 1;
     await Promise.all([
       fetchAllArticles(),
       fetchArticles()
@@ -293,6 +355,7 @@ async function syncAndRefresh() {
 }
 
 watch(activeCategory, () => {
+  currentPage.value = 1;
   fetchArticles();
 });
 
@@ -301,15 +364,74 @@ watch(timeWindowDays, () => {
 });
 
 const totalArticles = computed(() => allArticles.value.length);
+const totalPages = computed(() => Math.max(1, Math.ceil(filteredTotal.value / pageSize.value)));
+const pageNumbers = computed(() => {
+  const total = totalPages.value;
+  const current = currentPage.value;
+  const windowSize = 2;
+  const start = Math.max(1, current - windowSize);
+  const end = Math.min(total, current + windowSize);
+  const pages = [];
+  for (let i = start; i <= end; i += 1) {
+    pages.push(i);
+  }
+  return pages;
+});
+
+function nextPage() {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value += 1;
+    fetchArticles();
+  }
+}
+
+function prevPage() {
+  if (currentPage.value > 1) {
+    currentPage.value -= 1;
+    fetchArticles();
+  }
+}
+
+function goToPage(pageNum) {
+  if (pageNum >= 1 && pageNum <= totalPages.value && pageNum !== currentPage.value) {
+    currentPage.value = pageNum;
+    fetchArticles();
+  }
+}
+
+watch(pageSize, () => {
+  currentPage.value = 1;
+  fetchArticles();
+});
+
+function stripHtml(text) {
+  if (!text) return "";
+  return text.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+}
 
 function formatSummary(text) {
   if (!text) return "";
-  let formatted = text.trim();
+  let formatted = stripHtml(text);
   if (formatted.includes('- ') || formatted.includes('* ')) {
     formatted = formatted.replace(/^\s*[-*]\s+(.*)$/gm, '<li>$1</li>');
     return `<ul class="list-disc pl-5 space-y-1">${formatted}</ul>`;
   }
   return formatted;
+}
+
+function sourceName(url) {
+  if (!url) return "";
+  try {
+    const host = new URL(url).hostname.replace(/^www\./, "");
+    return host;
+  } catch (_) {
+    return "";
+  }
+}
+
+function articleSource(article) {
+  if (!article) return "";
+  return stripHtml(article.source || "") || sourceName(article.url);
 }
 </script>
 
