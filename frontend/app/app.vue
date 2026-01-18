@@ -50,60 +50,13 @@
     <div class="flex-1 flex overflow-hidden">
       <!-- Sidebar Navigation -->
       <aside class="w-64 bg-white border-r border-gray-200 overflow-y-auto hidden md:block">
-        <nav class="p-4 space-y-2">
-          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-3 mb-2">Categories</p>
-
-          <button 
-            @click="activeCategory = 'all'"
-            :class="['w-full flex justify-between items-center px-3 py-2 text-sm font-medium rounded-md transition-colors', activeCategory === 'all' ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50']"
-          >
-            <span>All Articles</span>
-            <span class="text-xs bg-gray-200 text-gray-800 px-2 rounded-full">{{ totalArticles }}</span>
-          </button>
-
-          <div v-for="node in categoryTreeWithCounts" :key="node.id" class="space-y-1">
-            <button 
-              @click="activeCategory = node.id"
-              :class="[
-                'w-full flex justify-between items-center px-3 py-2 text-sm font-semibold rounded-md transition-colors',
-                activeCategory === node.id ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700 hover:bg-gray-50'
-              ]"
-            >
-              <span class="truncate pr-2">{{ node.label }}</span>
-              <span class="text-[10px] bg-gray-100 text-gray-700 px-2 rounded-full">
-                {{ node.count }}
-              </span>
-            </button>
-
-            <button
-              v-for="child in node.children"
-              :key="child.id"
-              @click="activeCategory = child.id"
-              :class="[
-                'w-full flex justify-between items-center pl-6 pr-3 py-2 text-sm font-medium rounded-md transition-colors',
-                activeCategory === child.id ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50'
-              ]"
-            >
-              <span class="truncate pr-2">{{ child.label }}</span>
-              <span class="text-[10px] bg-gray-100 text-gray-700 px-2 rounded-full">
-                {{ child.count }}
-              </span>
-            </button>
-          </div>
-
-          <button 
-            @click="activeCategory = 'other'"
-            :class="[
-              'w-full flex justify-between items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
-              activeCategory === 'other' ? 'bg-red-50 text-red-700' : 'text-gray-600 hover:bg-gray-50'
-            ]"
-          >
-            <span class="truncate pr-2">Other / Uncategorized</span>
-            <span class="text-xs px-2 rounded-full bg-red-100 text-red-700">
-              {{ uncategorizedCount }}
-            </span>
-          </button>
-        </nav>
+        <CategoryList
+          :category-tree-with-counts="categoryTreeWithCounts"
+          :active-category="activeCategory"
+          :total-articles="totalArticles"
+          :uncategorized-count="uncategorizedCount"
+          @select="activeCategory = $event"
+        />
       </aside>
 
       <!-- Main Content -->
@@ -117,85 +70,32 @@
 
         <!-- Feed -->
         <div v-else-if="filteredArticles.length > 0" class="max-w-3xl mx-auto space-y-6">
-          <div v-for="article in filteredArticles" :key="article.id" class="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden hover:border-indigo-300 transition-colors">
-            <div class="p-6">
-              <div class="flex justify-between items-start gap-4">
-                <div class="flex-1">
-                  <div class="flex items-center gap-2 mb-2">
-                    <span :class="['text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full border', (article.category_id || 'uncategorized') === 'uncategorized' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-indigo-50 text-indigo-600 border-indigo-100']">
-                      {{ categoryLabel(article.category_id) }}
-                    </span>
-                    <span class="text-gray-400 text-[10px] font-medium">
-                      {{ new Date(article.published_at).toLocaleDateString() }}
-                    </span>
-                    <span v-if="articleSource(article)" class="text-gray-400 text-[10px] font-medium">
-                      • {{ articleSource(article) }}
-                    </span>
-                  </div>
-                  <a :href="article.url" target="_blank" class="text-lg font-bold text-gray-900 hover:text-indigo-600 leading-snug">
-                    {{ stripHtml(article.title) }}
-                  </a>
-                </div>
-              </div>
-
-              <!-- OpenAI Summary -->
-              <div class="mt-4 text-gray-700 text-sm leading-relaxed">
-                <div v-html="formatSummary(article.summary)" class="prose prose-sm prose-indigo custom-summary"></div>
-              </div>
-
-              <div class="mt-4 pt-4 border-t border-gray-50 flex justify-end">
-                <a :href="article.url" target="_blank" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center">
-                  Full Article 
-                  <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                </a>
-              </div>
-            </div>
-          </div>
-          <div class="flex items-center justify-between text-xs text-gray-500 border-t border-gray-100 pt-4">
-            <div>
-              Page {{ currentPage }} of {{ totalPages }}
-              <span v-if="filteredTotal">• {{ filteredTotal }} results</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <button
-                @click="prevPage"
-                :disabled="currentPage <= 1"
-                class="px-2 py-1 rounded border border-gray-200 text-gray-600 disabled:opacity-40"
-              >
-                Prev
-              </button>
-              <button
-                v-for="pageNum in pageNumbers"
-                :key="pageNum"
-                @click="goToPage(pageNum)"
-                :class="[
-                  'px-2 py-1 rounded border text-gray-600',
-                  pageNum === currentPage ? 'border-indigo-300 bg-indigo-50 text-indigo-700' : 'border-gray-200'
-                ]"
-              >
-                {{ pageNum }}
-              </button>
-              <button
-                @click="nextPage"
-                :disabled="currentPage >= totalPages"
-                class="px-2 py-1 rounded border border-gray-200 text-gray-600 disabled:opacity-40"
-              >
-                Next
-              </button>
-              <label class="flex items-center gap-2 ml-2">
-                <span class="text-gray-500">Page size</span>
-                <select
-                  v-model="pageSize"
-                  class="text-xs rounded-md border-gray-300 bg-white px-2 py-1 text-gray-700"
-                >
-                  <option :value="10">10</option>
-                  <option :value="20">20</option>
-                  <option :value="50">50</option>
-                  <option :value="100">100</option>
-                </select>
-              </label>
-            </div>
-          </div>
+          <Pager
+            :current-page="currentPage"
+            :total-pages="totalPages"
+            :filtered-total="filteredTotal"
+            :page-size="pageSize"
+            @prev="prevPage"
+            @next="nextPage"
+            @go="goToPage"
+            @page-size="setPageSize"
+          />
+          <ArticleList
+            :articles="filteredArticles"
+            :category-label="categoryLabel"
+            :compact="true"
+            :date-format="dateFormatOptions"
+          />
+          <Pager
+            :current-page="currentPage"
+            :total-pages="totalPages"
+            :filtered-total="filteredTotal"
+            :page-size="pageSize"
+            @prev="prevPage"
+            @next="nextPage"
+            @go="goToPage"
+            @page-size="setPageSize"
+          />
         </div>
 
         <!-- Empty State -->
@@ -365,18 +265,7 @@ watch(timeWindowDays, () => {
 
 const totalArticles = computed(() => allArticles.value.length);
 const totalPages = computed(() => Math.max(1, Math.ceil(filteredTotal.value / pageSize.value)));
-const pageNumbers = computed(() => {
-  const total = totalPages.value;
-  const current = currentPage.value;
-  const windowSize = 2;
-  const start = Math.max(1, current - windowSize);
-  const end = Math.min(total, current + windowSize);
-  const pages = [];
-  for (let i = start; i <= end; i += 1) {
-    pages.push(i);
-  }
-  return pages;
-});
+const dateFormatOptions = { year: "numeric", month: "short", day: "numeric" };
 
 function nextPage() {
   if (currentPage.value < totalPages.value) {
@@ -399,40 +288,13 @@ function goToPage(pageNum) {
   }
 }
 
-watch(pageSize, () => {
+function setPageSize(newSize) {
+  if (newSize === pageSize.value) return;
+  pageSize.value = newSize;
   currentPage.value = 1;
   fetchArticles();
-});
-
-function stripHtml(text) {
-  if (!text) return "";
-  return text.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
 }
 
-function formatSummary(text) {
-  if (!text) return "";
-  let formatted = stripHtml(text);
-  if (formatted.includes('- ') || formatted.includes('* ')) {
-    formatted = formatted.replace(/^\s*[-*]\s+(.*)$/gm, '<li>$1</li>');
-    return `<ul class="list-disc pl-5 space-y-1">${formatted}</ul>`;
-  }
-  return formatted;
-}
-
-function sourceName(url) {
-  if (!url) return "";
-  try {
-    const host = new URL(url).hostname.replace(/^www\./, "");
-    return host;
-  } catch (_) {
-    return "";
-  }
-}
-
-function articleSource(article) {
-  if (!article) return "";
-  return stripHtml(article.source || "") || sourceName(article.url);
-}
 </script>
 
 <style>
