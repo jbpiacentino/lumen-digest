@@ -281,10 +281,10 @@ def get_classifier_engine(
     model_name: str = MODEL_NAME,
     device: str = "cpu",
     centroids_cache: Optional[str] = None,
-    cache_dir: Optional[str] = None,
 ):
     global _classifier_engine
     if _classifier_engine is None:
+        cache_dir = os.getenv("CLASSIFIER_CACHE_DIR") or None
         _classifier_engine = NewsClassifier(
             taxonomy_path=taxonomy_path,
             model_name=model_name,
