@@ -16,7 +16,28 @@
 
       <div class="flex items-center gap-3">
         <div class="flex items-center gap-2">
-          <label for="time-window" class="text-xs font-medium text-gray-500">Window</label>
+          <div class="relative w-72">
+            <MagnifyingGlassIcon class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              id="news-search"
+              v-model="searchQuery"
+              type="text"
+              class="input input-sm input-bordered w-full pl-9 pr-8"
+              placeholder="Search"
+            />
+            <button
+              class="btn btn-ghost btn-xs absolute right-2 top-1/2 -translate-y-1/2"
+              type="button"
+              :disabled="!searchQuery"
+              @click="searchQuery = ''"
+              aria-label="Clear search"
+            >
+              <XMarkIcon class="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <!-- <label for="time-window" class="text-xs font-medium text-gray-500">Window</label> -->
           <select
             id="time-window"
             v-model="timeWindowDays"
@@ -69,11 +90,11 @@
         </div>
 
         <!-- Feed -->
-        <div v-else-if="filteredArticles.length > 0" class="max-w-3xl mx-auto space-y-6">
+        <div v-else-if="displayArticles.length > 0" class="max-w-3xl mx-auto space-y-6">
           <Pager
             :current-page="currentPage"
             :total-pages="totalPages"
-            :filtered-total="filteredTotal"
+            :filtered-total="displayTotal"
             :page-size="pageSize"
             @prev="prevPage"
             @next="nextPage"
@@ -81,7 +102,7 @@
             @page-size="setPageSize"
           />
           <ArticleList
-            :articles="filteredArticles"
+            :articles="displayArticles"
             :category-label="categoryLabel"
             :compact="true"
             :date-format="dateFormatOptions"
@@ -89,7 +110,7 @@
           <Pager
             :current-page="currentPage"
             :total-pages="totalPages"
-            :filtered-total="filteredTotal"
+            :filtered-total="displayTotal"
             :page-size="pageSize"
             @prev="prevPage"
             @next="nextPage"
@@ -108,6 +129,8 @@
 </template>
 
 <script setup>
+import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/vue/24/solid';
+
 const config = useRuntimeConfig();
 const articles = ref([]);
 const allArticles = ref([]);
@@ -119,6 +142,7 @@ const activeCategory = ref('all');
 const lang = ref('en');
 const taxonomy = ref({ labels: {}, tree: [] });
 const timeWindowDays = ref(3);
+const searchQuery = ref('');
 
 function selectedCategoryIds() {
   if (activeCategory.value === 'all') return null;
@@ -221,8 +245,33 @@ const categoryDescendants = computed(() => {
   return map;
 });
 
-const filteredArticles = computed(() => {
-  return articles.value;
+const searchActive = computed(() => searchQuery.value.trim().length > 0);
+
+const searchResults = computed(() => {
+  if (!searchActive.value) return [];
+  const query = searchQuery.value.trim().toLowerCase();
+  const ids = selectedCategoryIds();
+  return allArticles.value.filter((article) => {
+    const categoryId = article.category_id || 'uncategorized';
+    const matchesCategory = !ids || ids.includes(categoryId);
+    if (!matchesCategory) return false;
+    const haystack = [
+      article.title || '',
+      article.summary || '',
+      article.source || ''
+    ].join(' ').toLowerCase();
+    return haystack.includes(query);
+  });
+});
+
+const displayTotal = computed(() => (
+  searchActive.value ? searchResults.value.length : filteredTotal.value
+));
+
+const displayArticles = computed(() => {
+  if (!searchActive.value) return articles.value;
+  const start = (currentPage.value - 1) * pageSize.value;
+  return searchResults.value.slice(start, start + pageSize.value);
 });
 
 function categoryLabel(categoryId) {
@@ -259,12 +308,16 @@ watch(activeCategory, () => {
   fetchArticles();
 });
 
+watch(searchQuery, () => {
+  currentPage.value = 1;
+});
+
 watch(timeWindowDays, () => {
   syncAndRefresh();
 });
 
 const totalArticles = computed(() => allArticles.value.length);
-const totalPages = computed(() => Math.max(1, Math.ceil(filteredTotal.value / pageSize.value)));
+const totalPages = computed(() => Math.max(1, Math.ceil(displayTotal.value / pageSize.value)));
 const dateFormatOptions = { year: "numeric", month: "short", day: "numeric" };
 
 function nextPage() {
