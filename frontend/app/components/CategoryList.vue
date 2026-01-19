@@ -1,65 +1,125 @@
 <template>
   <nav class="p-4 space-y-2">
-    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-3 mb-2">Categories</p>
+    <div class="flex items-center justify-between px-1">
+      <p class="text-xs font-semibold uppercase tracking-widest text-base-content/60">Categories</p>
+      <button
+        class="btn btn-outline btn-primary "
+        @click="collapseAll"
+        type="button"
+      >
+          Collapse all
+      </button>
+    </div>
 
     <button 
       @click="$emit('select', 'all')"
-      :class="['w-full flex justify-between items-center px-3 py-2 text-sm font-medium rounded-md transition-colors', activeCategory === 'all' ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50']"
+      :class="[
+        'btn btn-sm w-full justify-between',
+        activeCategory === 'all' ? 'btn-primary text-primary-content' : 'btn-ghost'
+      ]"
+      type="button"
     >
       <span>All Articles</span>
-      <span class="text-xs bg-gray-200 text-gray-800 px-2 rounded-full">{{ totalArticles }}</span>
+      <span class="badge badge-sm">{{ totalArticles }}</span>
     </button>
 
     <div v-for="node in categoryTreeWithCounts" :key="node.id" class="space-y-1">
-      <button 
-        @click="$emit('select', node.id)"
-        :class="[
-          'w-full flex justify-between items-center px-3 py-2 text-xs font-semibold rounded-md transition-colors',
-          activeCategory === node.id ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700 hover:bg-gray-50'
-        ]"
-      >
-        <span class="truncate pr-2">{{ node.label }}</span>
-        <span class="text-[10px] bg-gray-100 text-gray-700 px-2 rounded-full">
-          {{ node.count }}
-        </span>
-      </button>
+      <div class="flex items-center gap-2">
+        <button
+          class="btn btn-sm btn-square btn-ghost"
+          @click.stop="toggleNode(node.id)"
+          type="button"
+          :aria-label="isExpanded(node.id) ? 'Collapse category' : 'Expand category'"
+        >
+          <span class="text-base leading-none">{{ isExpanded(node.id) ? '▾' : '▸' }}</span>
+        </button>
+        <button 
+          @click="$emit('select', node.id)"
+          :class="[
+            'btn btn-sm w-full justify-between',
+            activeCategory === node.id ? 'btn-primary text-primary-content' : 'btn-ghost'
+          ]"
+          type="button"
+        >
+          <span class="truncate pr-2">{{ node.label }}</span>
+          <span class="badge badge-sm">{{ node.count }}</span>
+        </button>
+      </div>
 
       <button
-        v-for="child in node.children"
+        v-for="child in (isExpanded(node.id) ? node.children : [])"
         :key="child.id"
         @click="$emit('select', child.id)"
         :class="[
-          'w-full flex justify-between items-center pl-6 pr-3 py-2 text-sm font-medium rounded-md transition-colors',
-          activeCategory === child.id ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50'
+          'btn btn-sm w-full justify-between pl-10',
+          activeCategory === child.id ? 'btn-primary text-primary-content' : 'btn-ghost'
         ]"
+        type="button"
       >
         <span class="truncate pr-2">{{ child.label }}</span>
-        <span class="text-[10px] bg-gray-100 text-gray-700 px-2 rounded-full">
-          {{ child.count }}
-        </span>
+        <span class="badge badge-sm">{{ child.count }}</span>
       </button>
     </div>
 
     <button 
       @click="$emit('select', 'other')"
       :class="[
-        'w-full flex justify-between items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
-        activeCategory === 'other' ? 'bg-red-50 text-red-700' : 'text-gray-600 hover:bg-gray-50'
+        'btn btn-sm w-full justify-between',
+        activeCategory === 'other' ? 'btn-error text-error-content' : 'btn-ghost text-error'
       ]"
+      type="button"
     >
       <span class="truncate pr-2">Other / Uncategorized</span>
-      <span class="text-xs px-2 rounded-full bg-red-100 text-red-700">
-        {{ uncategorizedCount }}
-      </span>
+      <span class="badge badge-sm">{{ uncategorizedCount }}</span>
     </button>
   </nav>
 </template>
 
 <script setup>
-defineProps({
+import { ref, watch } from 'vue';
+
+const props = defineProps({
   categoryTreeWithCounts: { type: Array, required: true },
   activeCategory: { type: String, required: true },
   totalArticles: { type: Number, required: true },
   uncategorizedCount: { type: Number, required: true }
 });
+
+const expandedIds = ref(new Set());
+
+const initExpanded = (nodes) => {
+  if (!nodes || !nodes.length) {
+    expandedIds.value = new Set();
+    return;
+  }
+  const next = new Set(expandedIds.value);
+  if (next.size === 0) {
+    nodes.forEach((node) => next.add(node.id));
+  } else {
+    nodes.forEach((node) => next.add(node.id));
+  }
+  expandedIds.value = next;
+};
+
+watch(
+  () => props.categoryTreeWithCounts,
+  (nodes) => initExpanded(nodes),
+  { immediate: true }
+);
+
+const isExpanded = (id) => expandedIds.value.has(id);
+
+const toggleNode = (id) => {
+  const next = new Set(expandedIds.value);
+  if (next.has(id)) {
+    next.delete(id);
+  } else {
+    next.add(id);
+  }
+  expandedIds.value = next;
+};
+
+const collapseAll = () => {
+  expandedIds.value = new Set();
+};
 </script>
