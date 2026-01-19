@@ -102,11 +102,14 @@ async def sync_entries(limit: int, db: Session):
             summary = raw_content[:300] + "..."
 
         # Classify Category (Local ML)
-        # If AI is off, we MUST use the title + raw_content to classify, 
-        # otherwise the classifier doesn't have enough data.
+        # If AI is off, we MUST use the title + raw_content to classify,
+        # otherwise the classifier does not have enough data.
         classification_text = f"{title}: {raw_content[:1000]}"
-        category_id = get_classifier_engine().classify_text(classification_text)
-        
+        classify_result = get_classifier_engine().classify_text_with_scores(
+            classification_text
+        )
+        category_id = classify_result["category_id"]
+
         logger.debug(f"Article: {title[:40]}... -> Category: {category_id}")
 
         # Prepare the data dictionary
@@ -118,6 +121,11 @@ async def sync_entries(limit: int, db: Session):
             "url": entry.get("alternate", [{}])[0].get("href"),
             "summary": summary,
             "category_id": category_id,
+            "confidence": classify_result["confidence"],
+            "needs_review": classify_result["needs_review"],
+            "reason": classify_result["reason"],
+            "runner_up_confidence": classify_result["runner_up_confidence"],
+            "margin": classify_result["margin"],
             "source": source_name,
             "published_at": pub_date
         }
