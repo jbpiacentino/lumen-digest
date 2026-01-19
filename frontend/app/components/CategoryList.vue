@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between px-1">
       <p class="text-xs font-semibold uppercase tracking-widest text-base-content/60">Categories</p>
       <button
-        class="btn btn-outline btn-primary "
+        class="btn btn-xs btn-outline"
         @click="collapseAll"
         type="button"
       >
