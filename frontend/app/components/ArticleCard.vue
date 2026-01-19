@@ -24,10 +24,17 @@
         <div v-html="formatSummary(article.summary)" class="prose prose-sm prose-indigo custom-summary"></div>
       </div>
 
-      <div :class="[compact ? 'mt-3 pt-3' : 'mt-4 pt-4', 'border-t border-gray-50 flex justify-end']">
-        <a :href="article.url" target="_blank" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center">
+      <div :class="[compact ? 'mt-3 pt-3' : 'mt-4 pt-4', 'border-t border-gray-50 flex items-center justify-between gap-4']">
+        <div v-if="showReason" class="text-[11px] text-gray-500">
+          <span class="font-semibold text-gray-600">Why:</span>
+          {{ reasonLabel }}
+          <span v-if="confidenceText">• conf {{ confidenceText }}</span>
+          <span v-if="runnerUpText">• runner-up {{ runnerUpText }}</span>
+          <span v-if="marginText">• margin {{ marginText }}</span>
+        </div>
+        <a :href="article.url" target="_blank" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center ml-auto">
           Full Article 
-          <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+          <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002-2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
         </a>
       </div>
     </div>
@@ -83,5 +90,35 @@ const formattedDate = computed(() => {
     }
   }
   return date.toLocaleDateString();
+});
+
+const showReason = computed(() => {
+  return props.article.needs_review || (props.article.category_id || "uncategorized") === "other";
+});
+
+const reasonLabel = computed(() => {
+  const reason = (props.article.reason || "").toLowerCase();
+  if (reason === "no_text") return "short or missing text";
+  if (reason === "low_confidence") return "low confidence";
+  if (reason) return reason;
+  return "unclassified";
+});
+
+const confidenceText = computed(() => {
+  const value = props.article.confidence;
+  if (value === null || value === undefined) return "";
+  return Number(value).toFixed(3);
+});
+
+const runnerUpText = computed(() => {
+  const value = props.article.runner_up_confidence;
+  if (value === null || value === undefined) return "";
+  return Number(value).toFixed(3);
+});
+
+const marginText = computed(() => {
+  const value = props.article.margin;
+  if (value === null || value === undefined) return "";
+  return Number(value).toFixed(3);
 });
 </script>
