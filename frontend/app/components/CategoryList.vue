@@ -26,17 +26,19 @@
     <div v-for="node in categoryTreeWithCounts" :key="node.id" class="space-y-1">
       <div class="flex items-center gap-2">
         <button
-          class="btn btn-sm btn-square btn-ghost"
+          class="btn btn-xs btn-square btn-ghost text-primary "
           @click.stop="toggleNode(node.id)"
           type="button"
           :aria-label="isExpanded(node.id) ? 'Collapse category' : 'Expand category'"
         >
-          <span class="text-base leading-none">{{ isExpanded(node.id) ? '▾' : '▸' }}</span>
+          <MinusIcon v-if="isExpanded(node.id)" class="w-4 h-4"/>
+          <PlusCircleIcon v-else class="w-4 h-4"/>
+          
         </button>
         <button 
           @click="$emit('select', node.id)"
           :class="[
-            'btn btn-sm w-full justify-between',
+            'btn btn-sm w-full justify-between font-normal text-primary pl-1',
             activeCategory === node.id ? 'btn-primary text-primary-content' : 'btn-ghost'
           ]"
           type="button"
@@ -56,7 +58,7 @@
         ]"
         type="button"
       >
-        <span class="truncate pr-2">{{ child.label }}</span>
+        <span class="truncate pr-2 font-normal">{{ child.label }}</span>
         <span class="badge badge-sm">{{ child.count }}</span>
       </button>
     </div>
@@ -77,6 +79,7 @@
 
 <script setup>
 import { ref, watch } from 'vue';
+import { MinusIcon, PlusCircleIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
   categoryTreeWithCounts: { type: Array, required: true },
