@@ -5,17 +5,26 @@
       :key="article.id"
       :article="article"
       :category-label="categoryLabel"
+      :category-options="categoryOptions"
+      :debug-data="debugDataById?.[article.id]"
       :compact="compact"
       :date-format="dateFormat"
+      @update-review="emit('update-review', $event)"
+      @reclassify="emit('reclassify', $event)"
+      @load-debug="emit('load-debug', $event)"
     />
   </div>
 </template>
 
 <script setup>
-defineProps({
+const props = defineProps({
   articles: { type: Array, required: true },
   categoryLabel: { type: Function, required: true },
+  categoryOptions: { type: Array, default: () => [] },
+  debugDataById: { type: Object, default: () => ({}) },
   compact: { type: Boolean, default: false },
   dateFormat: { type: Object, default: null }
 });
+
+const emit = defineEmits(['update-review', 'reclassify', 'load-debug']);
 </script>

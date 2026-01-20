@@ -110,8 +110,13 @@
           <ArticleList
             :articles="displayArticles"
             :category-label="categoryLabel"
+            :category-options="categoryOptions"
+            :debug-data-by-id="debugDataById"
             :compact="true"
             :date-format="dateFormatOptions"
+            @update-review="updateArticleReview"
+            @reclassify="reclassifyArticle"
+            @load-debug="loadArticleDebug"
           />
           <Pager
             :current-page="currentPage"
@@ -153,6 +158,7 @@ const searchQuery = ref('');
 const sidebarWidth = ref(256);
 const sidebarMinWidth = 200;
 const sidebarMaxWidth = 420;
+const debugDataById = ref({});
 
 const startSidebarResize = (event) => {
   if (event.button !== 0) return;
@@ -287,6 +293,27 @@ const categoryDescendants = computed(() => {
   return map;
 });
 
+const categoryOptions = computed(() => {
+  const options = [];
+  const walk = (node, depth = 0) => {
+    options.push({ id: node.id, label: node.label, depth });
+    (node.children || []).forEach((child) => walk(child, depth + 1));
+  };
+  (taxonomy.value.tree || []).forEach((node) => walk(node, 0));
+
+  const hasOther = options.some((option) => option.id === 'other');
+  if (!hasOther) {
+    options.push({ id: 'other', label: 'Other / Uncategorized', depth: 0 });
+  }
+
+  const hasUncategorized = options.some((option) => option.id === 'uncategorized');
+  if (!hasUncategorized) {
+    options.push({ id: 'uncategorized', label: 'Uncategorized', depth: 0 });
+  }
+
+  return options;
+});
+
 const searchActive = computed(() => searchQuery.value.trim().length > 0);
 
 const searchResults = computed(() => {
@@ -319,6 +346,70 @@ const displayArticles = computed(() => {
 function categoryLabel(categoryId) {
   if (!categoryId || categoryId === 'uncategorized') return 'Uncategorized';
   return taxonomy.value.labels?.[categoryId] || categoryId;
+}
+
+function updateArticleInState(updated) {
+  if (!updated?.id) return;
+  const updateList = (list) => {
+    const idx = list.findIndex((item) => item.id === updated.id);
+    if (idx >= 0) {
+      list[idx] = { ...list[idx], ...updated };
+    }
+  };
+  updateList(articles.value);
+  updateList(allArticles.value);
+}
+
+async function updateArticleReview(payload) {
+  try {
+    const { articleId, ...body } = payload;
+    const data = await $fetch(`${config.public.apiBase}/articles/${articleId}/review`, {
+      method: 'PATCH',
+      body
+    });
+    updateArticleInState(data);
+  } catch (err) {
+    console.error('Failed to update review:', err);
+  }
+}
+
+async function loadArticleDebug(payload) {
+  try {
+    const { articleId, ...body } = payload;
+    const data = await $fetch(`${config.public.apiBase}/articles/${articleId}/reclassify`, {
+      method: 'POST',
+      body: { ...body, apply: false }
+    });
+    if (data?.debug) {
+      debugDataById.value = {
+        ...debugDataById.value,
+        [articleId]: data.debug
+      };
+    }
+  } catch (err) {
+    console.error('Failed to load debug data:', err);
+  }
+}
+
+async function reclassifyArticle(payload) {
+  try {
+    const { articleId, ...body } = payload;
+    const data = await $fetch(`${config.public.apiBase}/articles/${articleId}/reclassify`, {
+      method: 'POST',
+      body
+    });
+    if (data?.article) {
+      updateArticleInState(data.article);
+    }
+    if (data?.debug) {
+      debugDataById.value = {
+        ...debugDataById.value,
+        [articleId]: data.debug
+      };
+    }
+  } catch (err) {
+    console.error('Failed to reclassify article:', err);
+  }
 }
 
 async function syncAndRefresh() {

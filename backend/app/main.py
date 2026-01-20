@@ -5,6 +5,7 @@ start_time = time.time()
 
 import os
 from fastapi import FastAPI, HTTPException, Query, Depends
+from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 import json
 
@@ -70,6 +71,20 @@ class ClassifyRequest(BaseModel):
     margin_threshold: float = 0.07
     min_len: int = 30
     low_bucket: str = "other"
+
+class ReviewUpdateRequest(BaseModel):
+    review_status: Optional[str] = None
+    override_category_id: Optional[str] = None
+    review_flags: Optional[List[str]] = None
+    review_note: Optional[str] = None
+
+class ReclassifyRequest(BaseModel):
+    threshold: float = 0.36
+    margin_threshold: float = 0.07
+    min_len: int = 30
+    low_bucket: str = "other"
+    top_k: int = 5
+    apply: bool = True
 
 
 async def sync_entries(limit: int, db: Session):
@@ -229,6 +244,77 @@ def get_articles(
         "total": total,
         "page": page,
         "page_size": page_size,
+    }
+
+@app.patch("/articles/{article_id}/review")
+def update_article_review(
+    article_id: int,
+    payload: ReviewUpdateRequest,
+    db: Session = Depends(get_db),
+):
+    article = db.query(Article).filter(Article.id == article_id).first()
+    if not article:
+        raise HTTPException(status_code=404, detail="Article not found")
+
+    data = payload.dict(exclude_unset=True)
+    if "review_status" in data:
+        article.review_status = data["review_status"]
+    if "override_category_id" in data:
+        article.override_category_id = data["override_category_id"]
+    if "review_flags" in data:
+        article.review_flags = data["review_flags"]
+    if "review_note" in data:
+        article.review_note = data["review_note"]
+
+    db.commit()
+    db.refresh(article)
+    return jsonable_encoder(article)
+
+@app.post("/articles/{article_id}/reclassify")
+def reclassify_article(
+    article_id: int,
+    payload: ReclassifyRequest,
+    db: Session = Depends(get_db),
+):
+    article = db.query(Article).filter(Article.id == article_id).first()
+    if not article:
+        raise HTTPException(status_code=404, detail="Article not found")
+
+    raw_text = article.title or ""
+    if article.summary:
+        raw_text = f"{raw_text}: {article.summary}"
+
+    classifier = get_classifier_engine()
+    cleaned_text, scores = classifier.score_text(raw_text, min_len=payload.min_len)
+    result = classifier.classify_text_with_scores(
+        raw_text,
+        threshold=payload.threshold,
+        margin_threshold=payload.margin_threshold,
+        min_len=payload.min_len,
+        low_bucket=payload.low_bucket,
+    )
+
+    if payload.apply:
+        article.category_id = result["category_id"]
+        article.confidence = result["confidence"]
+        article.needs_review = result["needs_review"]
+        article.reason = result["reason"]
+        article.runner_up_confidence = result["runner_up_confidence"]
+        article.margin = result["margin"]
+        db.commit()
+        db.refresh(article)
+
+    top_k = scores[: max(payload.top_k, 0)] if payload.top_k else []
+
+    return {
+        "article": jsonable_encoder(article),
+        "applied": payload.apply,
+        "result": result,
+        "debug": {
+            "raw_text": raw_text,
+            "cleaned_text": cleaned_text,
+            "top_k": top_k,
+        },
     }
 
 @app.get("/digest/sync")

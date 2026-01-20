@@ -191,6 +191,26 @@ class NewsClassifier:
             "margin": None if second_score < 0 else float(margin),
         }
 
+    def score_text(self, text: str, min_len: int = 30):
+        cleaned = clean_text(text)
+        if not cleaned or len(cleaned) < min_len:
+            return cleaned, []
+
+        query_embedding = self.model.encode(cleaned, convert_to_tensor=True, normalize_embeddings=True)
+        query_embedding = query_embedding.to(self.device)
+        scores = []
+
+        for cat_id, data in self.categories.items():
+            score = util.cos_sim(query_embedding, data["centroid"].to(self.device)).item()
+            scores.append({
+                "category_id": cat_id,
+                "score": float(score),
+                "label": data.get("label") or cat_id,
+            })
+
+        scores.sort(key=lambda item: item["score"], reverse=True)
+        return cleaned, scores
+
     def classify_text(
         self,
         text: str,
