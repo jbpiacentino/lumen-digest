@@ -14,13 +14,15 @@
     <button 
       @click="$emit('select', 'all')"
       :class="[
-        'btn btn-sm w-full justify-between',
+        'btn btn-sm w-full',
         activeCategory === 'all' ? 'btn-primary text-primary-content' : 'btn-ghost'
       ]"
       type="button"
     >
-      <span>All Articles</span>
-      <span class="badge badge-sm">{{ totalArticles }}</span>
+      <span class="flex items-center gap-2 min-w-0 w-full">
+        <span class="truncate">All Articles</span>
+        <span class="badge badge-sm shrink-0 ml-auto">{{ totalArticles }}</span>
+      </span>
     </button>
 
     <div v-for="node in categoryTreeWithCounts" :key="node.id" class="space-y-1">
@@ -38,13 +40,15 @@
         <button 
           @click="$emit('select', node.id)"
           :class="[
-            'btn btn-sm w-full justify-between font-normal text-primary pl-1',
-            activeCategory === node.id ? 'btn-secondary text-secondary-content' : 'btn-ghost'
+            'btn btn-sm flex-1 w-full font-normal text-primary pl-1',
+            activeCategory === node.id ? 'btn-primary text-primary-content' : 'btn-ghost'
           ]"
           type="button"
         >
-          <span class="truncate pr-2">{{ node.label }}</span>
-          <span class="badge badge-sm">{{ node.count }}</span>
+          <span class="flex items-center gap-2 min-w-0 w-full">
+            <span class="truncate pr-2">{{ node.label }}</span>
+            <span class="badge badge-sm shrink-0 ml-auto">{{ node.count }}</span>
+          </span>
         </button>
       </div>
 
@@ -53,26 +57,30 @@
         :key="child.id"
         @click="$emit('select', child.id)"
         :class="[
-          'btn btn-sm w-full justify-between pl-10',
+          'btn btn-sm w-full pl-10',
           activeCategory === child.id ? 'btn-primary text-primary-content' : 'btn-ghost'
         ]"
         type="button"
       >
-        <span class="truncate pr-2 font-normal">{{ child.label }}</span>
-        <span class="badge badge-sm">{{ child.count }}</span>
+        <span class="flex items-center gap-2 min-w-0 w-full">
+          <span class="truncate pr-2 font-normal">{{ child.label }}</span>
+          <span class="badge badge-sm shrink-0 ml-auto">{{ child.count }}</span>
+        </span>
       </button>
     </div>
 
     <button 
       @click="$emit('select', 'other')"
       :class="[
-        'btn btn-sm w-full justify-between',
-        activeCategory === 'other' ? 'btn-error text-error-content' : 'btn-ghost text-error'
+        'btn btn-sm w-full',
+        activeCategory === 'other' ? 'btn-warning' : 'btn-ghost text-warning'
       ]"
       type="button"
     >
-      <span class="truncate pr-2">Other / Uncategorized</span>
-      <span class="badge badge-sm">{{ uncategorizedCount }}</span>
+      <span class="flex items-center gap-2 min-w-0 w-full">
+        <span class="truncate pr-2">Other / Uncategorized</span>
+        <span class="badge badge-sm shrink-0 ml-auto">{{ uncategorizedCount }}</span>
+      </span>
     </button>
   </nav>
 </template>

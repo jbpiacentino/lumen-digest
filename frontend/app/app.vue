@@ -64,15 +64,27 @@
 
     <div class="flex-1 flex overflow-hidden">
       <!-- Sidebar Navigation -->
-      <aside class="w-64 bg-white border-r border-gray-200 overflow-y-auto hidden md:block">
-        <CategoryList
-          :category-tree-with-counts="categoryTreeWithCounts"
-          :active-category="activeCategory"
-          :total-articles="totalArticles"
-          :uncategorized-count="uncategorizedCount"
-          @select="activeCategory = $event"
-        />
-      </aside>
+      <div
+        class="hidden md:flex flex-shrink-0 relative"
+        :style="{ width: `${sidebarWidth}px` }"
+      >
+        <aside class="w-full bg-white border-r border-gray-200 overflow-y-auto">
+          <CategoryList
+            :category-tree-with-counts="categoryTreeWithCounts"
+            :active-category="activeCategory"
+            :total-articles="totalArticles"
+            :uncategorized-count="uncategorizedCount"
+            @select="activeCategory = $event"
+          />
+        </aside>
+        <div
+          class="absolute right-0 top-0 h-full w-1 cursor-col-resize bg-transparent hover:bg-gray-200 transition-colors"
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Resize category sidebar"
+          @pointerdown="startSidebarResize"
+        ></div>
+      </div>
 
       <!-- Main Content -->
       <main class="flex-1 overflow-y-auto bg-gray-50 p-6">
@@ -124,6 +136,7 @@
 
 <script setup>
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/vue/24/solid';
+import { onMounted, ref } from 'vue';
 
 const config = useRuntimeConfig();
 const articles = ref([]);
@@ -137,6 +150,41 @@ const lang = ref('en');
 const taxonomy = ref({ labels: {}, tree: [] });
 const timeWindowDays = ref(3);
 const searchQuery = ref('');
+const sidebarWidth = ref(256);
+const sidebarMinWidth = 200;
+const sidebarMaxWidth = 420;
+
+const startSidebarResize = (event) => {
+  if (event.button !== 0) return;
+  const startX = event.clientX;
+  const startWidth = sidebarWidth.value;
+
+  const onMove = (moveEvent) => {
+    const nextWidth = startWidth + (moveEvent.clientX - startX);
+    sidebarWidth.value = Math.max(sidebarMinWidth, Math.min(sidebarMaxWidth, nextWidth));
+  };
+
+  const onUp = () => {
+    window.removeEventListener('pointermove', onMove);
+    window.removeEventListener('pointerup', onUp);
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+    localStorage.setItem('lumen.sidebarWidth', String(sidebarWidth.value));
+  };
+
+  document.body.style.cursor = 'col-resize';
+  document.body.style.userSelect = 'none';
+  window.addEventListener('pointermove', onMove);
+  window.addEventListener('pointerup', onUp);
+  event.preventDefault();
+};
+
+onMounted(() => {
+  const stored = Number(localStorage.getItem('lumen.sidebarWidth'));
+  if (!Number.isNaN(stored) && stored > 0) {
+    sidebarWidth.value = Math.max(sidebarMinWidth, Math.min(sidebarMaxWidth, stored));
+  }
+});
 
 function selectedCategoryIds() {
   if (activeCategory.value === 'all') return null;
