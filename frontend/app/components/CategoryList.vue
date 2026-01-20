@@ -31,15 +31,15 @@
           type="button"
           :aria-label="isExpanded(node.id) ? 'Collapse category' : 'Expand category'"
         >
-          <MinusIcon v-if="isExpanded(node.id)" class="w-4 h-4"/>
-          <PlusCircleIcon v-else class="w-4 h-4"/>
+          <MinusIcon v-if="isExpanded(node.id)" class="w-3 h-3"/>
+          <PlusCircleIcon v-else class="w-3 h-3"/>
           
         </button>
         <button 
           @click="$emit('select', node.id)"
           :class="[
             'btn btn-sm w-full justify-between font-normal text-primary pl-1',
-            activeCategory === node.id ? 'btn-primary text-primary-content' : 'btn-ghost'
+            activeCategory === node.id ? 'btn-secondary text-secondary-content' : 'btn-ghost'
           ]"
           type="button"
         >
