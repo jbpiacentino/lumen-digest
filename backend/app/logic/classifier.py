@@ -285,6 +285,10 @@ def get_classifier_engine(
     global _classifier_engine
     if _classifier_engine is None:
         cache_dir = os.getenv("CLASSIFIER_CACHE_DIR") or None
+        if not centroids_cache:
+            centroids_cache = os.getenv("CLASSIFIER_CENTROIDS_CACHE") or None
+        if not centroids_cache and os.path.isdir("/shared"):
+            centroids_cache = "/shared/lumen_classifier_centroids.pt"
         _classifier_engine = NewsClassifier(
             taxonomy_path=taxonomy_path,
             model_name=model_name,
