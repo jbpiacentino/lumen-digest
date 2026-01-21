@@ -34,6 +34,7 @@
           <span v-if="confidenceText">• conf {{ confidenceText }}</span>
           <span v-if="runnerUpText">• runner-up {{ runnerUpText }}</span>
           <span v-if="marginText">• margin {{ marginText }}</span>
+          <span v-if="article.language">• lang {{ article.language }}</span>
         </div>
         <a :href="article.url" target="_blank" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center ml-auto">
           Full Article 

@@ -24,6 +24,7 @@ from pydantic import BaseModel
 from .logic.freshrss import get_unread_entries, mark_entries_read
 from .logic.summarizer import summarize_article
 from .logic.classifier import get_classifier_engine
+from .logic.lang import detect_language
 
 # Load environment variables from .env file
 load_dotenv()
@@ -120,6 +121,7 @@ async def sync_entries(limit: int, db: Session):
         # If AI is off, we MUST use the title + raw_content to classify,
         # otherwise the classifier does not have enough data.
         classification_text = f"{title}: {raw_content[:1000]}"
+        detected_lang = detect_language(classification_text, default="en")
         classify_result = get_classifier_engine().classify_text_with_scores(
             classification_text
         )
@@ -141,6 +143,7 @@ async def sync_entries(limit: int, db: Session):
             "reason": classify_result["reason"],
             "runner_up_confidence": classify_result["runner_up_confidence"],
             "margin": classify_result["margin"],
+            "language": detected_lang,
             "source": source_name,
             "published_at": pub_date
         }

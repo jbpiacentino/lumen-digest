@@ -21,6 +21,7 @@ class Article(Base):
     override_category_id = Column(String)
     review_flags = Column(JSON)
     review_note = Column(Text)
+    language = Column(String)
     source = Column(String)
     published_at = Column(DateTime(timezone=True), nullable=False, index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

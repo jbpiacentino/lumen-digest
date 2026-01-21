@@ -14,12 +14,12 @@
         </div>
       </div>
 
-      <div class="flex items-center gap-3">
-        <div class="flex items-center gap-2">
-          <div class="relative w-72">
-            <MagnifyingGlassIcon class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              id="news-search"
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2">
+            <div class="relative w-72">
+              <MagnifyingGlassIcon class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                id="news-search"
               v-model="searchQuery"
               type="text"
               class="input input-sm input-bordered w-full pl-9 pr-8"
@@ -33,9 +33,22 @@
               :class="searchQuery ? 'opacity-100' : 'opacity-0 pointer-events-none'"
             >
               <XMarkIcon class="w-3.5 h-3.5" />
-            </button>
+              </button>
+            </div>
           </div>
-        </div>
+          <div class="flex items-center gap-2">
+            <label for="lang-filter" class="text-xs font-medium text-gray-500">Lang</label>
+            <select
+              id="lang-filter"
+              v-model="languageFilter"
+              class="text-xs rounded-md border-gray-300 bg-white px-2 py-1 text-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            >
+              <option value="">All</option>
+              <option v-for="langOption in languageOptions" :key="langOption" :value="langOption">
+                {{ langOption.toUpperCase() }}
+              </option>
+            </select>
+          </div>
         <div class="flex items-center gap-2">
           <!-- <label for="time-window" class="text-xs font-medium text-gray-500">Window</label> -->
           <select
@@ -155,6 +168,7 @@ const lang = ref('en');
 const taxonomy = ref({ labels: {}, tree: [] });
 const timeWindowDays = ref(3);
 const searchQuery = ref('');
+const languageFilter = ref('');
 const sidebarWidth = ref(256);
 const sidebarMinWidth = 200;
 const sidebarMaxWidth = 420;
@@ -324,6 +338,7 @@ const searchResults = computed(() => {
     const categoryId = article.category_id || 'uncategorized';
     const matchesCategory = !ids || ids.includes(categoryId);
     if (!matchesCategory) return false;
+    if (languageFilter.value && article.language !== languageFilter.value) return false;
     const haystack = [
       article.title || '',
       article.summary || '',
@@ -338,9 +353,20 @@ const displayTotal = computed(() => (
 ));
 
 const displayArticles = computed(() => {
-  if (!searchActive.value) return articles.value;
+  if (!searchActive.value) {
+    if (!languageFilter.value) return articles.value;
+    return articles.value.filter((article) => article.language === languageFilter.value);
+  }
   const start = (currentPage.value - 1) * pageSize.value;
   return searchResults.value.slice(start, start + pageSize.value);
+});
+
+const languageOptions = computed(() => {
+  const set = new Set();
+  allArticles.value.forEach((article) => {
+    if (article.language) set.add(article.language);
+  });
+  return Array.from(set).sort();
 });
 
 function categoryLabel(categoryId) {
@@ -443,6 +469,11 @@ watch(activeCategory, () => {
 
 watch(searchQuery, () => {
   currentPage.value = 1;
+});
+
+watch(languageFilter, () => {
+  currentPage.value = 1;
+  fetchArticles();
 });
 
 watch(timeWindowDays, () => {

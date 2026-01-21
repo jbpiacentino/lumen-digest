@@ -5,6 +5,7 @@ from typing import Dict, Any, Optional, List, Tuple
 import requests
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session
+from langdetect import DetectorFactory, LangDetectException, detect
 
 
 def to_float(x: Any) -> float:
@@ -29,6 +30,17 @@ def to_bool(x: Any) -> Optional[bool]:
 
 def float_changed(a: Any, b: Any, eps: float) -> bool:
     return abs(to_float(a) - to_float(b)) > eps
+
+
+DetectorFactory.seed = 0
+
+def detect_language(text_value: str, default: str = "en") -> str:
+    if not text_value or not text_value.strip():
+        return default
+    try:
+        return detect(text_value)
+    except LangDetectException:
+        return default
 
 
 def main():
@@ -60,8 +72,17 @@ def main():
 
     p.add_argument("--change-scope", choices=["category", "category_review", "all"], default="category_review")
     p.add_argument("--write-scope", choices=["category", "category_review", "all"], default="category_review")
+    p.add_argument("--backfill-language", action="store_true",
+                   help="Detect and store article language in the language column.")
+    p.add_argument("--force-language", action="store_true",
+                   help="Update language even if a value already exists.")
+    p.add_argument("--language-only", action="store_true",
+                   help="Only backfill language, skip classifier calls and category updates.")
 
     args = p.parse_args()
+
+    if args.language_only:
+        args.backfill_language = True
 
     classifier_url = args.classifier_url.rstrip("/")
     session_http = requests.Session()
@@ -69,7 +90,7 @@ def main():
     base_sql = """
       SELECT
         id, category_id, confidence, needs_review, reason,
-        runner_up_confidence, margin, title, summary
+        runner_up_confidence, margin, title, summary, language
       FROM articles
     """
 
@@ -109,6 +130,7 @@ def main():
         """,
     }
     update_sql = text(update_templates[args.write_scope])
+    language_update_sql = text("UPDATE articles SET language = :language WHERE id = :id")
 
     def is_changed(old: dict, new: dict) -> bool:
         if args.change_scope == "category":
@@ -155,6 +177,7 @@ def main():
     processed = 0
     would_change = 0
     updated = 0
+    language_updated = 0
     dist: Dict[str, int] = {}
     samples: List[Tuple[int, str, str, float, float, str, str]] = []
 
@@ -166,42 +189,53 @@ def main():
         batch: List[Tuple[dict, str]] = []
 
         def process_batch(items: List[Tuple[dict, str]]) -> None:
-            nonlocal pending, would_change, updated
+            nonlocal pending, would_change, updated, language_updated
             texts = [raw for _, raw in items]
-            results = classify_batch(texts)
+            results = [] if args.language_only else classify_batch(texts)
 
-            for (r, _), out in zip(items, results):
-                dist[out["category_id"]] = dist.get(out["category_id"], 0) + 1
+            for idx, (r, raw_text) in enumerate(items):
+                if not args.language_only:
+                    out = results[idx]
+                    dist[out["category_id"]] = dist.get(out["category_id"], 0) + 1
 
-                old = {
-                    "category_id": r["category_id"],
-                    "confidence": r["confidence"],
-                    "needs_review": r["needs_review"],
-                    "reason": r["reason"],
-                    "runner_up_confidence": r["runner_up_confidence"],
-                    "margin": r["margin"],
-                }
+                    old = {
+                        "category_id": r["category_id"],
+                        "confidence": r["confidence"],
+                        "needs_review": r["needs_review"],
+                        "reason": r["reason"],
+                        "runner_up_confidence": r["runner_up_confidence"],
+                        "margin": r["margin"],
+                    }
 
-                changed = is_changed(old, out)
-                if changed:
-                    would_change += 1
-                    if args.print_samples and len(samples) < args.print_samples:
-                        samples.append((
-                            r["id"],
-                            old["category_id"],
-                            out["category_id"],
-                            to_float(old["confidence"]),
-                            to_float(out["confidence"]),
-                            str(old["reason"] or ""),
-                            str(out["reason"] or ""),
-                        ))
+                    changed = is_changed(old, out)
+                    if changed:
+                        would_change += 1
+                        if args.print_samples and len(samples) < args.print_samples:
+                            samples.append((
+                                r["id"],
+                                old["category_id"],
+                                out["category_id"],
+                                to_float(old["confidence"]),
+                                to_float(out["confidence"]),
+                                str(old["reason"] or ""),
+                                str(out["reason"] or ""),
+                            ))
 
-                if args.dry_run or not changed:
-                    continue
+                    if not args.dry_run and changed:
+                        session.execute(update_sql, {"id": r["id"], **out})
+                        updated += 1
+                        pending += 1
 
-                session.execute(update_sql, {"id": r["id"], **out})
-                updated += 1
-                pending += 1
+                if args.backfill_language:
+                    existing_lang = (r.get("language") or "").strip()
+                    if args.force_language or not existing_lang:
+                        detected_lang = detect_language(raw_text, default="en")
+                        if args.dry_run:
+                            language_updated += 1
+                        else:
+                            session.execute(language_update_sql, {"id": r["id"], "language": detected_lang})
+                            language_updated += 1
+                            pending += 1
 
                 if pending >= args.batch_size:
                     session.commit()
@@ -226,6 +260,8 @@ def main():
     print(f"Processed: {processed}")
     print(f"Would change ({args.change_scope}): {would_change}")
     print(f"Updated: {0 if args.dry_run else updated}")
+    if args.backfill_language:
+        print(f"Language updated: {language_updated} (dry-run count if applicable)")
 
     print("\nNew assignment distribution:")
     for k in sorted(dist.keys()):
