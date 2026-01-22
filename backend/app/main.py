@@ -4,6 +4,8 @@ import asyncio
 start_time = time.time()
 
 import os
+import httpx
+import trafilatura
 from fastapi import FastAPI, HTTPException, Query, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
@@ -34,6 +36,10 @@ LOG_LEVEL = os.getenv("LOG_LEVEL", "DEBUG").upper()
 SUMMARIZATION_ENABLED = os.getenv("SUMMARIZATION_ENABLED", "true").lower() == "true"
 POLL_INTERVAL_SECONDS = int(os.getenv("POLL_INTERVAL_SECONDS", "300"))
 POLL_ENABLED = os.getenv("POLL_ENABLED", "true").lower() == "true"
+FULLTEXT_ENABLED = os.getenv("FULLTEXT_ENABLED", "true").lower() == "true"
+FULLTEXT_TIMEOUT_SECONDS = float(os.getenv("FULLTEXT_TIMEOUT_SECONDS", "10"))
+FULLTEXT_MAX_CHARS = int(os.getenv("FULLTEXT_MAX_CHARS", "20000"))
+FULLTEXT_CLASSIFY_MAX_CHARS = int(os.getenv("FULLTEXT_CLASSIFY_MAX_CHARS", "3000"))
 
 SYNC_LIMIT = int(os.getenv("FRESHRSS_SYNC_LIMIT", "200"))
 
@@ -88,6 +94,35 @@ class ReclassifyRequest(BaseModel):
     apply: bool = True
 
 
+def extract_full_text_from_html(html: str) -> str:
+    if not html:
+        return ""
+    extracted = trafilatura.extract(
+        html,
+        output_format="markdown",
+        include_comments=False,
+        include_tables=False,
+        include_links=False,
+    )
+    if not extracted:
+        return ""
+    return extracted.strip()[:FULLTEXT_MAX_CHARS]
+
+
+async def extract_full_text(url: str) -> str:
+    if not url:
+        return ""
+    headers = {
+        "User-Agent": "LumenDigestBot/1.0 (+https://github.com/)",
+        "Accept": "text/html,application/xhtml+xml",
+    }
+    async with httpx.AsyncClient(follow_redirects=True) as client:
+        resp = await client.get(url, headers=headers, timeout=FULLTEXT_TIMEOUT_SECONDS)
+        resp.raise_for_status()
+        html = resp.text
+    return extract_full_text_from_html(html)
+
+
 async def sync_entries(limit: int, db: Session):
     # 1. Fetch from FreshRSS (GReader API)
     to_process = await get_unread_entries(limit=limit)
@@ -100,6 +135,18 @@ async def sync_entries(limit: int, db: Session):
         raw_content = entry.get("content", {}).get("content", "") or \
                       entry.get("summary", {}).get("content", "") or \
                       title
+        url = entry.get("alternate", [{}])[0].get("href")
+        full_text = ""
+        full_text_source = None
+        full_text_format = None
+        if FULLTEXT_ENABLED and url:
+            try:
+                full_text = await extract_full_text(url)
+                if full_text:
+                    full_text_source = "trafilatura"
+                    full_text_format = "markdown"
+            except Exception as exc:
+                logger.warning(f"Full-text extraction failed for {url}: {exc}")
         raw_pub_date = entry.get("published") 
         try:
             # Convert timestamp to datetime object
@@ -110,17 +157,18 @@ async def sync_entries(limit: int, db: Session):
             pub_date = datetime.now(datetime.timezone.utc)
         
         # Generate AI Summary
+        summary_input = full_text or raw_content
         if SUMMARIZATION_ENABLED:
             logger.debug(f"Summarizing: {title}")
-            summary = await summarize_article(raw_content[:2000])
+            summary = await summarize_article(summary_input[:2000])
         else:
             # If disabled, we just use a snippet of the raw content for the UI
-            summary = raw_content[:300] + "..."
+            summary = summary_input[:300] + "..."
 
         # Classify Category (Local ML)
         # If AI is off, we MUST use the title + raw_content to classify,
         # otherwise the classifier does not have enough data.
-        classification_text = f"{title}: {raw_content[:1000]}"
+        classification_text = f"{title}: {summary_input[:FULLTEXT_CLASSIFY_MAX_CHARS]}"
         detected_lang = detect_language(classification_text, default="en")
         classify_result = get_classifier_engine().classify_text_with_scores(
             classification_text
@@ -135,8 +183,11 @@ async def sync_entries(limit: int, db: Session):
         article_data = {
             "freshrss_id": str(entry.get("id")), # This provides our uniqueness
             "title": entry.get("title"),
-            "url": entry.get("alternate", [{}])[0].get("href"),
+            "url": url,
             "summary": summary,
+            "full_text": full_text or None,
+            "full_text_source": full_text_source,
+            "full_text_format": full_text_format,
             "category_id": category_id,
             "confidence": classify_result["confidence"],
             "needs_review": classify_result["needs_review"],

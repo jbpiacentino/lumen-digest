@@ -61,6 +61,7 @@ def main():
     p.add_argument("--classify-batch-size", type=int, default=100,
                    help="Batch size for classifier API calls.")
     p.add_argument("--limit", type=int, default=0)
+    p.add_argument("--classify-max-chars", type=int, default=3000)
 
     p.add_argument("--reclassify-all", action="store_true")
     p.add_argument("--only-uncategorized", action="store_true")
@@ -90,7 +91,7 @@ def main():
     base_sql = """
       SELECT
         id, category_id, confidence, needs_review, reason,
-        runner_up_confidence, margin, title, summary, language
+        runner_up_confidence, margin, title, summary, full_text, language
       FROM articles
     """
 
@@ -243,7 +244,9 @@ def main():
 
         for r in rows:
             processed += 1
-            raw = (r["title"] or "") + "\n\n" + (r["summary"] or "")
+            body = r["full_text"] or r["summary"] or ""
+            raw = (r["title"] or "") + "\n\n" + body
+            raw = raw[: args.classify_max_chars + 2 + len(r["title"] or "")]
             batch.append((r, raw))
             if len(batch) >= args.classify_batch_size:
                 process_batch(batch)
