@@ -6,13 +6,13 @@ start_time = time.time()
 import os
 import httpx
 import trafilatura
-from fastapi import FastAPI, HTTPException, Query, Depends
+from fastapi import FastAPI, HTTPException, Query, Depends, Header
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 import json
 
 from .database import engine, Base, SessionLocal, get_db # Import your DB setup
-from .models import Article
+from .models import Article, User
 from sqlalchemy.orm import Session
 from sqlalchemy.dialects.postgresql import insert # For idempotency (no duplicates)
 from sqlalchemy import or_
@@ -21,6 +21,8 @@ from typing import List, Optional
 import logging
 from dotenv import load_dotenv
 from pydantic import BaseModel
+from passlib.context import CryptContext
+from jose import jwt, JWTError
 
 # Import our logic modules
 from .logic.freshrss import get_unread_entries, mark_entries_read
@@ -40,6 +42,10 @@ FULLTEXT_ENABLED = os.getenv("FULLTEXT_ENABLED", "true").lower() == "true"
 FULLTEXT_TIMEOUT_SECONDS = float(os.getenv("FULLTEXT_TIMEOUT_SECONDS", "10"))
 FULLTEXT_MAX_CHARS = int(os.getenv("FULLTEXT_MAX_CHARS", "20000"))
 FULLTEXT_CLASSIFY_MAX_CHARS = int(os.getenv("FULLTEXT_CLASSIFY_MAX_CHARS", "3000"))
+AUTH_ENABLED = os.getenv("AUTH_ENABLED", "true").lower() == "true"
+AUTH_SECRET = os.getenv("AUTH_SECRET", "change-me")
+AUTH_ALGORITHM = "HS256"
+AUTH_ACCESS_TOKEN_MINUTES = int(os.getenv("AUTH_ACCESS_TOKEN_MINUTES", "1440"))
 
 SYNC_LIMIT = int(os.getenv("FRESHRSS_SYNC_LIMIT", "200"))
 
@@ -52,8 +58,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-# This creates the table if it doesn't exist
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Lumen Digest API.")
 
@@ -92,6 +96,77 @@ class ReclassifyRequest(BaseModel):
     low_bucket: str = "other"
     top_k: int = 5
     apply: bool = True
+
+
+class AuthRequest(BaseModel):
+    email: str
+    password: str
+
+
+class AuthResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: dict
+
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+def normalize_email(value: str) -> str:
+    return (value or "").strip().lower()
+
+
+def validate_password(password: str) -> None:
+    if not password:
+        raise HTTPException(status_code=400, detail="Email and password required")
+    if len(password.encode("utf-8")) > 72:
+        raise HTTPException(status_code=400, detail="Password must be 72 bytes or fewer")
+
+
+def hash_password(password: str) -> str:
+    validate_password(password)
+    return pwd_context.hash(password)
+
+
+def verify_password(plain: str, hashed: str) -> bool:
+    try:
+        return pwd_context.verify(plain, hashed)
+    except Exception:
+        return False
+
+
+def create_access_token(user: User) -> str:
+    expire = datetime.now(timezone.utc) + timedelta(minutes=AUTH_ACCESS_TOKEN_MINUTES)
+    payload = {"sub": str(user.id), "email": user.email, "exp": expire}
+    return jwt.encode(payload, AUTH_SECRET, algorithm=AUTH_ALGORITHM)
+
+
+def get_user_from_token(token: str, db: Session) -> User:
+    try:
+        payload = jwt.decode(token, AUTH_SECRET, algorithms=[AUTH_ALGORITHM])
+        user_id = payload.get("sub")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    user = db.query(User).filter(User.id == int(user_id)).first()
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    return user
+
+
+def require_user(
+    db: Session = Depends(get_db),
+    authorization: Optional[str] = Header(default=None),
+) -> Optional[User]:
+    if not AUTH_ENABLED:
+        return None
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing auth token")
+    token = authorization.split(" ", 1)[1].strip()
+    if not token:
+        raise HTTPException(status_code=401, detail="Missing auth token")
+    return get_user_from_token(token, db)
 
 
 def extract_full_text_from_html(html: str) -> str:
@@ -235,6 +310,34 @@ async def shutdown_event():
     if polling_task:
         polling_task.cancel()
 
+@app.post("/auth/signup", response_model=AuthResponse)
+def signup(data: AuthRequest, db: Session = Depends(get_db)):
+    email = normalize_email(data.email)
+    if not email:
+        raise HTTPException(status_code=400, detail="Email and password required")
+    validate_password(data.password)
+    if db.query(User).filter(User.email == email).first():
+        raise HTTPException(status_code=400, detail="Email already registered")
+    user = User(email=email, password_hash=hash_password(data.password))
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    token = create_access_token(user)
+    return AuthResponse(access_token=token, user={"id": user.id, "email": user.email})
+
+
+@app.post("/auth/login", response_model=AuthResponse)
+def login(data: AuthRequest, db: Session = Depends(get_db)):
+    email = normalize_email(data.email)
+    if not email:
+        raise HTTPException(status_code=400, detail="Email and password required")
+    validate_password(data.password)
+    user = db.query(User).filter(User.email == email).first()
+    if not user or not verify_password(data.password, user.password_hash):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    token = create_access_token(user)
+    return AuthResponse(access_token=token, user={"id": user.id, "email": user.email})
+
 @app.get("/")
 async def root():
     return {"status": "online", "message": "Lumen Digest AI Backend", "LOG_LEVEL": LOG_LEVEL, "summarization_active": SUMMARIZATION_ENABLED}
@@ -245,7 +348,8 @@ def get_articles(
     category_ids: Optional[List[str]] = Query(default=None),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=50, ge=0),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    user: Optional[User] = Depends(require_user)
 ):
     """
     Retrieves a list of classified articles from the internal database.
@@ -305,6 +409,7 @@ def update_article_review(
     article_id: int,
     payload: ReviewUpdateRequest,
     db: Session = Depends(get_db),
+    user: Optional[User] = Depends(require_user),
 ):
     article = db.query(Article).filter(Article.id == article_id).first()
     if not article:
@@ -329,6 +434,7 @@ def reclassify_article(
     article_id: int,
     payload: ReclassifyRequest,
     db: Session = Depends(get_db),
+    user: Optional[User] = Depends(require_user),
 ):
     article = db.query(Article).filter(Article.id == article_id).first()
     if not article:
@@ -372,7 +478,11 @@ def reclassify_article(
     }
 
 @app.get("/digest/sync")
-async def sync_and_classify(limit: int = Query(default=SYNC_LIMIT, le=SYNC_LIMIT), db: Session = Depends(get_db)):
+async def sync_and_classify(
+    limit: int = Query(default=SYNC_LIMIT, le=SYNC_LIMIT),
+    db: Session = Depends(get_db),
+    user: Optional[User] = Depends(require_user),
+):
  
     """
     Worker endpoint to synchronize FreshRSS entries with the local database.
@@ -402,7 +512,7 @@ async def sync_and_classify(limit: int = Query(default=SYNC_LIMIT, le=SYNC_LIMIT
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/test-classifier")
-async def test_classifier(text: str):
+async def test_classifier(text: str, user: Optional[User] = Depends(require_user)):
     """
     Utility endpoint to test how the DNA engine categorizes a specific string.
     """
@@ -413,7 +523,7 @@ async def test_classifier(text: str):
     }
 
 @app.post("/classify")
-async def classify(payload: ClassifyRequest):
+async def classify(payload: ClassifyRequest, user: Optional[User] = Depends(require_user)):
     result = get_classifier_engine().classify_text_with_scores(
         payload.text,
         threshold=payload.threshold,
@@ -424,7 +534,7 @@ async def classify(payload: ClassifyRequest):
     return {"result": result}
 
 @app.post("/classify/batch")
-async def classify_batch(payload: ClassifyBatchRequest):
+async def classify_batch(payload: ClassifyBatchRequest, user: Optional[User] = Depends(require_user)):
     clf = get_classifier_engine()
     results = [
         clf.classify_text_with_scores(
@@ -439,7 +549,7 @@ async def classify_batch(payload: ClassifyBatchRequest):
     return {"results": results}
 
 @app.get("/taxonomy/reload")
-async def reload_taxonomy():
+async def reload_taxonomy(user: Optional[User] = Depends(require_user)):
     """
     Call this if you update your taxonomy.json while the server is running.
     """
@@ -447,7 +557,7 @@ async def reload_taxonomy():
     return {"message": "Taxonomy centroids recalculated successfully."}
 
 @app.get("/digest/taxonomy")
-async def get_taxonomy(lang: str = "en"):
+async def get_taxonomy(lang: str = "en", user: Optional[User] = Depends(require_user)):
     """
     Returns taxonomy labels and tree. Usage: /digest/taxonomy?lang=en
     """
