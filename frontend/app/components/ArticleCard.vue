@@ -24,7 +24,26 @@
       </div>
       
       <div :class="[compact ? 'mt-3' : 'mt-4', ' border-t border-gray-50 text-gray-700 text-sm leading-relaxed']">
-        <div v-html="formatSummary(article.summary)" class="prose prose-sm prose-indigo custom-summary"></div>
+        <div
+          v-if="fullTextOpen"
+          v-html="formatFullText(article.full_text)"
+          class="prose prose-sm max-w-none"
+        ></div>
+        <div
+          v-else
+          v-html="formatSummary(article.summary)"
+          class="prose prose-sm prose-indigo custom-summary"
+        ></div>
+      </div>
+
+      <div v-if="article.full_text" :class="[compact ? 'mt-3' : 'mt-4']">
+        <button
+          class="btn btn-xs btn-ghost"
+          type="button"
+          @click="fullTextOpen = !fullTextOpen"
+        >
+          {{ fullTextOpen ? 'Hide full text' : 'Read more' }}
+        </button>
       </div>
       
       <div :class="[compact ? 'mt-3 pt-3' : 'mt-4 pt-4', 'flex items-center justify-between gap-4']">
@@ -274,6 +293,16 @@
     return text.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
   }
   
+  function escapeHtml(text) {
+    if (!text) return "";
+    return text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
   function formatSummary(text) {
     if (!text) return "";
     let formatted = stripHtml(text);
@@ -282,6 +311,13 @@
       return `<ul class="list-disc pl-5 space-y-1">${formatted}</ul>`;
     }
     return formatted;
+  }
+
+  function formatFullText(text) {
+    if (!text) return "";
+    const safe = escapeHtml(text.trim());
+    const blocks = safe.split(/\n{2,}/).map((block) => block.replace(/\n/g, "<br />"));
+    return blocks.map((block) => `<p>${block}</p>`).join("");
   }
   
   function sourceName(url) {
@@ -354,6 +390,7 @@
   const noteDraft = ref(props.article.review_note || "");
   const overrideQuery = ref("");
   const showOverrideMenu = ref(false);
+  const fullTextOpen = ref(false);
   let overrideCloseTimer = null;
   
   const currentOverrideLabel = computed(() => {
@@ -382,6 +419,13 @@
   () => props.article.review_note,
   (next) => {
     noteDraft.value = next || "";
+  }
+  );
+
+  watch(
+  () => props.article.id,
+  () => {
+    fullTextOpen.value = false;
   }
   );
   
