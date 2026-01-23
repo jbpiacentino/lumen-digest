@@ -175,9 +175,11 @@ def extract_full_text_from_html(html: str) -> str:
     extracted = trafilatura.extract(
         html,
         output_format="markdown",
+        include_formatting=True,
+        include_images=True,
         include_comments=False,
-        include_tables=False,
-        include_links=False,
+        include_tables=True,
+        include_links=True,
     )
     if not extracted:
         return ""
@@ -429,6 +431,30 @@ def update_article_review(
     if "review_note" in data:
         article.review_note = data["review_note"]
 
+    db.commit()
+    db.refresh(article)
+    return jsonable_encoder(article)
+
+@app.post("/articles/{article_id}/refetch-full-text")
+async def refetch_article_full_text(
+    article_id: int,
+    db: Session = Depends(get_db),
+    user: Optional[User] = Depends(require_user),
+):
+    article = db.query(Article).filter(Article.id == article_id).first()
+    if not article:
+        raise HTTPException(status_code=404, detail="Article not found")
+    if not article.url:
+        raise HTTPException(status_code=400, detail="Article missing URL")
+
+    try:
+        full_text = await extract_full_text(article.url)
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Full-text extraction failed: {exc}")
+
+    article.full_text = full_text or None
+    article.full_text_source = "trafilatura" if full_text else None
+    article.full_text_format = "markdown" if full_text else None
     db.commit()
     db.refresh(article)
     return jsonable_encoder(article)
