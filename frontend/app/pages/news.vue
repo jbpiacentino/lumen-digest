@@ -167,6 +167,7 @@ const activeCategory = ref('all');
 const lang = ref('en');
 const taxonomy = ref({ labels: {}, tree: [] });
 const timeWindowDays = ref(3);
+const timeWindowHours = ref(0);
 const searchQuery = ref('');
 const languageFilter = ref('');
 const sidebarWidth = ref(256);
@@ -223,6 +224,10 @@ onMounted(async () => {
   await syncAndRefresh();
 });
 
+watch(timeWindowDays, () => {
+  timeWindowHours.value = timeWindowDays.value === 1 ? 24 : 0;
+}, { immediate: true });
+
 function selectedCategoryIds() {
   if (activeCategory.value === 'all') return null;
   if (activeCategory.value === 'other') return ['other', 'uncategorized'];
@@ -232,7 +237,8 @@ function selectedCategoryIds() {
 async function fetchArticles() {
   try {
     const params = new URLSearchParams({
-      days: String(timeWindowDays.value),
+      days: String(timeWindowHours.value ? 0 : timeWindowDays.value),
+      hours: String(timeWindowHours.value),
       page: String(currentPage.value),
       page_size: String(pageSize.value)
     });
@@ -257,7 +263,12 @@ async function fetchArticles() {
 
 async function fetchAllArticles() {
   try {
-    const params = new URLSearchParams({ days: String(timeWindowDays.value), page: '1', page_size: '0' });
+    const params = new URLSearchParams({
+      days: String(timeWindowHours.value ? 0 : timeWindowDays.value),
+      hours: String(timeWindowHours.value),
+      page: '1',
+      page_size: '0'
+    });
     const data = await $fetch(`${config.public.apiBase}/articles?${params.toString()}`, {
       headers: authHeaders.value
     });

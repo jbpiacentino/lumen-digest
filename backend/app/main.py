@@ -345,6 +345,7 @@ async def root():
 @app.get("/articles")
 def get_articles(
     days: int = Query(default=0, description="Number of days to look back (0 for all)"),
+    hours: int = Query(default=0, description="Number of hours to look back (0 for all)"),
     category_ids: Optional[List[str]] = Query(default=None),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=50, ge=0),
@@ -369,7 +370,10 @@ def get_articles(
     # Start the query
     query = db.query(Article)
 
-    if days and days > 0:
+    if hours and hours > 0:
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
+        query = query.filter(Article.published_at >= cutoff)
+    elif days and days > 0:
         # Calculate the cutoff time (default 24h ago)
         # Using timezone-aware UTC if your DB stores it that way
         cutoff = datetime.now(timezone.utc) - timedelta(days=days)
