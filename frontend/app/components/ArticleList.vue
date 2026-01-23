@@ -12,6 +12,7 @@
       @update-review="emit('update-review', $event)"
       @reclassify="emit('reclassify', $event)"
       @load-debug="emit('load-debug', $event)"
+      @refetch-full-text="emit('refetch-full-text', $event)"
     />
   </div>
 </template>
@@ -26,5 +27,5 @@ const props = defineProps({
   dateFormat: { type: Object, default: null }
 });
 
-const emit = defineEmits(['update-review', 'reclassify', 'load-debug']);
+const emit = defineEmits(['update-review', 'reclassify', 'load-debug', 'refetch-full-text']);
 </script>

@@ -107,6 +107,7 @@
               @update-review="updateArticleReview"
               @reclassify="reclassifyArticle"
               @load-debug="loadArticleDebug"
+              @refetch-full-text="refetchArticleFullText"
             />
             <Pager
               :current-page="currentPage"
@@ -440,6 +441,19 @@ async function reclassifyArticle(payload) {
     }
   } catch (err) {
     console.error('Failed to reclassify article:', err);
+  }
+}
+
+async function refetchArticleFullText(payload) {
+  try {
+    const { articleId } = payload;
+    const data = await $fetch(`${config.public.apiBase}/articles/${articleId}/refetch-full-text`, {
+      method: 'POST',
+      headers: authHeaders.value
+    });
+    updateArticleInState(data?.article || data);
+  } catch (err) {
+    console.error('Failed to refetch full text:', err);
   }
 }
 

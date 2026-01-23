@@ -151,6 +151,19 @@
         </div>
 
         <div class="flex flex-wrap gap-4">
+          <div :class="[labelWidthClass, 'text-sm font-semibold text-gray-600']">Content</div>
+          <div class="flex-1 flex flex-wrap items-center gap-2">
+            <button
+              class="btn btn-xs btn-outline"
+              type="button"
+              @click="refetchFullText"
+            >
+              Refetch with trafilatura
+            </button>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-4">
           <div :class="[labelWidthClass, 'text-sm font-semibold text-gray-600']">Reclassify</div>
           <div class="flex-1 flex flex-wrap items-center gap-2">
             <label class="text-[11px] text-gray-500">Threshold</label>
@@ -228,7 +241,7 @@
     open: { type: Boolean, default: false },
   });
 
-  const emit = defineEmits(['update-review', 'reclassify', 'load-debug', 'update:open']);
+  const emit = defineEmits(['update-review', 'reclassify', 'load-debug', 'update:open', 'refetch-full-text']);
 
   const reviewOpen = computed({
     get: () => props.open,
@@ -437,6 +450,10 @@
   const formatScore = (value) => {
     if (value === null || value === undefined) return "";
     return Number(value).toFixed(3);
+  };
+
+  const refetchFullText = () => {
+    emit('refetch-full-text', { articleId: props.article.id });
   };
 
   onBeforeUnmount(() => {

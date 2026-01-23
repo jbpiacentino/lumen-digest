@@ -37,6 +37,7 @@
         @update-review="emit('update-review', $event)"
         @reclassify="emit('reclassify', $event)"
         @load-debug="emit('load-debug', $event)"
+        @refetch-full-text="emit('refetch-full-text', $event)"
       />
 
       <a :href="article.url" target="_blank" :class="[compact ? 'text-base' : 'text-lg', 'font-bold text-gray-900 hover:text-indigo-600 leading-snug']">
@@ -46,7 +47,7 @@
       <div :class="[compact ? 'mt-3' : 'mt-4', ' border-t border-gray-50 text-gray-700 text-sm leading-relaxed']">
         <div
           v-if="fullTextOpen"
-          v-html="formatFullText(article.full_text)"
+          v-html="formatFullText(article.full_text, article.full_text_format)"
           class="prose prose-sm max-w-none"
         ></div>
         <div v-else class="prose prose-sm prose-indigo custom-summary">
@@ -77,6 +78,7 @@
 
 <script setup>
   import { computed, ref, watch } from 'vue';
+  import MarkdownIt from 'markdown-it';
   import ArticleReviewPanel from './ArticleReviewPanel.vue';
   
   const props = defineProps({
@@ -88,23 +90,13 @@
     dateFormat: { type: Object, default: null }
   });
   
-  const emit = defineEmits(['update-review', 'reclassify', 'load-debug']);
+  const emit = defineEmits(['update-review', 'reclassify', 'load-debug', 'refetch-full-text']);
   
   function stripHtml(text) {
     if (!text) return "";
     return text.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
   }
   
-  function escapeHtml(text) {
-    if (!text) return "";
-    return text
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
-  }
-
   function formatSummary(text) {
     if (!text) return "";
     let formatted = stripHtml(text);
@@ -115,10 +107,35 @@
     return formatted;
   }
 
-  function formatFullText(text) {
+  const markdownRenderer = new MarkdownIt({
+    html: false,
+    linkify: true,
+    typographer: true,
+    breaks: false,
+  });
+
+  const defaultLinkOpen = markdownRenderer.renderer.rules.link_open || ((tokens, idx, options, env, self) => (
+    self.renderToken(tokens, idx, options)
+  ));
+
+  markdownRenderer.renderer.rules.link_open = (tokens, idx, options, env, self) => {
+    const token = tokens[idx];
+    token.attrSet("target", "_blank");
+    token.attrSet("rel", "noopener noreferrer");
+    const classIndex = token.attrIndex("class");
+    const existing = classIndex >= 0 ? token.attrs[classIndex][1] : "";
+    const next = `${existing} text-indigo-600 underline decoration-1 underline-offset-2 hover:text-indigo-800`.trim();
+    token.attrSet("class", next);
+    return defaultLinkOpen(tokens, idx, options, env, self);
+  };
+
+  function formatFullText(text, format) {
     if (!text) return "";
-    const safe = escapeHtml(text.trim());
-    const blocks = safe.split(/\n{2,}/).map((block) => block.replace(/\n/g, "<br />"));
+    if (format === "markdown") {
+      return markdownRenderer.render(text);
+    }
+    const sanitized = stripHtml(text);
+    const blocks = sanitized.split(/\n{2,}/).map((block) => block.replace(/\n/g, "<br />"));
     return blocks.map((block) => `<p>${block}</p>`).join("");
   }
   
