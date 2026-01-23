@@ -6,6 +6,51 @@
       :style="{ width: `${sidebarWidth}px` }"
     >
       <aside class="w-full bg-white border-r border-gray-200 overflow-y-auto">
+        <div class="p-4 space-y-3 border-b border-gray-200">
+          <div class="relative w-full">
+            <MagnifyingGlassIcon class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              id="news-search"
+              v-model="searchQuery"
+              type="text"
+              class="input input-sm input-bordered w-full pl-9 pr-8"
+              placeholder="Search"
+            />
+            <button
+              class="btn btn-circle btn-xs absolute right-2 top-1/2 -translate-y-1/2 transition-opacity"
+              type="button"
+              @click="searchQuery = ''"
+              aria-label="Clear search"
+              :class="searchQuery ? 'opacity-100' : 'opacity-0 pointer-events-none'"
+            >
+              <XMarkIcon class="w-3.5 h-3.5" />
+            </button>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <label for="lang-filter" class="text-xs font-medium text-gray-500">Lang</label>
+            <select
+              id="lang-filter"
+              v-model="languageFilter"
+              class="text-xs rounded-md border-gray-300 bg-white px-2 py-1 text-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            >
+              <option value="">All</option>
+              <option v-for="langOption in languageOptions" :key="langOption" :value="langOption">
+                {{ langOption.toUpperCase() }}
+              </option>
+            </select>
+            <select
+              id="time-window"
+              v-model="timeWindowDays"
+              class="text-xs rounded-md border-gray-300 bg-white px-2 py-1 text-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            >
+              <option :value="0">All time</option>
+              <option :value="1">Last 24 hours</option>
+              <option :value="3">Last 3 days</option>
+              <option :value="7">Last 7 days</option>
+              <option :value="30">Last 30 days</option>
+            </select>
+          </div>
+        </div>
         <CategoryList
           :category-tree-with-counts="categoryTreeWithCounts"
           :active-category="activeCategory"
@@ -34,116 +79,50 @@
         </div>
       </div>
 
-      <div v-else class="max-w-4xl mx-auto space-y-6">
-        <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm space-y-3">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <div class="flex items-center gap-2">
-              <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded">
-                {{ totalArticles }} Total Articles
-              </span>
-              <span :class="['px-2 py-1 text-xs font-medium rounded', uncategorizedCount > 0 ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600']">
-                {{ uncategorizedCount }} Uncategorized
-              </span>
-            </div>
-            <button
-              @click="syncAndRefresh"
-              :disabled="loading"
-              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 transition-all"
-            >
-              <span v-if="loading" class="animate-spin mr-2">🔄</span>
-              {{ loading ? 'Processing...' : 'Refresh' }}
-            </button>
+      <div v-else class="w-full space-y-6">
+        <div class="max-w-4xl mx-auto space-y-6">
+          <div v-if="loading && articles.length === 0" class="flex flex-col items-center justify-center h-64 text-gray-500">
+            <div class="animate-bounce text-4xl mb-4">🤖</div>
+            <p class="italic text-lg">Lumen AI is reading and sorting your news...</p>
           </div>
-          <div class="flex flex-wrap items-center gap-3">
-            <div class="relative w-72">
-              <MagnifyingGlassIcon class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input
-                id="news-search"
-                v-model="searchQuery"
-                type="text"
-                class="input input-sm input-bordered w-full pl-9 pr-8"
-                placeholder="Search"
-              />
-              <button
-                class="btn btn-circle btn-xs absolute right-2 top-1/2 -translate-y-1/2 transition-opacity"
-                type="button"
-                @click="searchQuery = ''"
-                aria-label="Clear search"
-                :class="searchQuery ? 'opacity-100' : 'opacity-0 pointer-events-none'"
-              >
-                <XMarkIcon class="w-3.5 h-3.5" />
-              </button>
-            </div>
-            <div class="flex items-center gap-2">
-              <label for="lang-filter" class="text-xs font-medium text-gray-500">Lang</label>
-              <select
-                id="lang-filter"
-                v-model="languageFilter"
-                class="text-xs rounded-md border-gray-300 bg-white px-2 py-1 text-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              >
-                <option value="">All</option>
-                <option v-for="langOption in languageOptions" :key="langOption" :value="langOption">
-                  {{ langOption.toUpperCase() }}
-                </option>
-              </select>
-            </div>
-            <div class="flex items-center gap-2">
-              <select
-                id="time-window"
-                v-model="timeWindowDays"
-                class="text-xs rounded-md border-gray-300 bg-white px-2 py-1 text-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              >
-                <option :value="0">All time</option>
-                <option :value="1">Last 24 hours</option>
-                <option :value="3">Last 3 days</option>
-                <option :value="7">Last 7 days</option>
-                <option :value="30">Last 30 days</option>
-              </select>
-            </div>
+
+          <div v-else-if="displayArticles.length > 0" class="space-y-6">
+            <Pager
+              :current-page="currentPage"
+              :total-pages="totalPages"
+              :filtered-total="displayTotal"
+              :page-size="pageSize"
+              @prev="prevPage"
+              @next="nextPage"
+              @go="goToPage"
+              @page-size="setPageSize"
+            />
+            <ArticleList
+              :articles="displayArticles"
+              :category-label="categoryLabel"
+              :category-options="categoryOptions"
+              :debug-data-by-id="debugDataById"
+              :compact="true"
+              :date-format="dateFormatOptions"
+              @update-review="updateArticleReview"
+              @reclassify="reclassifyArticle"
+              @load-debug="loadArticleDebug"
+            />
+            <Pager
+              :current-page="currentPage"
+              :total-pages="totalPages"
+              :filtered-total="displayTotal"
+              :page-size="pageSize"
+              @prev="prevPage"
+              @next="nextPage"
+              @go="goToPage"
+              @page-size="setPageSize"
+            />
           </div>
-        </div>
 
-        <div v-if="loading && articles.length === 0" class="flex flex-col items-center justify-center h-64 text-gray-500">
-          <div class="animate-bounce text-4xl mb-4">🤖</div>
-          <p class="italic text-lg">Lumen AI is reading and sorting your news...</p>
-        </div>
-
-        <div v-else-if="displayArticles.length > 0" class="space-y-6">
-          <Pager
-            :current-page="currentPage"
-            :total-pages="totalPages"
-            :filtered-total="displayTotal"
-            :page-size="pageSize"
-            @prev="prevPage"
-            @next="nextPage"
-            @go="goToPage"
-            @page-size="setPageSize"
-          />
-          <ArticleList
-            :articles="displayArticles"
-            :category-label="categoryLabel"
-            :category-options="categoryOptions"
-            :debug-data-by-id="debugDataById"
-            :compact="true"
-            :date-format="dateFormatOptions"
-            @update-review="updateArticleReview"
-            @reclassify="reclassifyArticle"
-            @load-debug="loadArticleDebug"
-          />
-          <Pager
-            :current-page="currentPage"
-            :total-pages="totalPages"
-            :filtered-total="displayTotal"
-            :page-size="pageSize"
-            @prev="prevPage"
-            @next="nextPage"
-            @go="goToPage"
-            @page-size="setPageSize"
-          />
-        </div>
-
-        <div v-else class="text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-200">
-          <p class="text-gray-400">No articles found. Click "Refresh" to fetch new content.</p>
+          <div v-else class="text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-200">
+            <p class="text-gray-400">No articles found. Click \"Refresh\" to fetch new content.</p>
+          </div>
         </div>
       </div>
     </main>
@@ -151,8 +130,8 @@
 </template>
 
 <script setup>
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/vue/24/solid';
-import { computed, onMounted, ref, watch } from 'vue';
 
 const config = useRuntimeConfig();
 const { authHeaders, isAuthenticated } = useAuth();
@@ -222,6 +201,15 @@ onMounted(async () => {
     lang.value = 'en';
   }
   await syncAndRefresh();
+});
+
+onMounted(() => {
+  if (!process.client) return;
+  const handler = () => {
+    if (isAuthenticated.value) syncAndRefresh();
+  };
+  window.addEventListener('lumen:refresh', handler);
+  onBeforeUnmount(() => window.removeEventListener('lumen:refresh', handler));
 });
 
 watch(timeWindowDays, () => {

@@ -82,6 +82,14 @@
             </div>
           </div>
         </div>
+        <button
+          v-if="showRefresh"
+          class="inline-flex items-center px-3 py-2 border border-transparent text-xs font-semibold rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
+          type="button"
+          @click="emitRefresh"
+        >
+          Refresh
+        </button>
       </div>
     </header>
 
@@ -90,6 +98,9 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
+
+const route = useRoute();
 const {
   authUser,
   authOpen,
@@ -102,4 +113,12 @@ const {
   login,
   logout
 } = useAuth();
+
+const showRefresh = computed(() => isAuthenticated.value && route.path === '/news');
+
+const emitRefresh = () => {
+  if (process.client) {
+    window.dispatchEvent(new CustomEvent('lumen:refresh'));
+  }
+};
 </script>
