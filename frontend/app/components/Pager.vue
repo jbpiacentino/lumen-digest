@@ -18,7 +18,7 @@
         @click="$emit('go', pageNum)"
         :class="[
           'px-2 py-1 rounded border text-gray-600',
-          pageNum === currentPage ? 'border-indigo-300 bg-indigo-50 text-indigo-700' : 'border-gray-200'
+          pageNum === currentPage ? 'border-indigo-300 bg-indigo-50 text-primary' : 'border-gray-200'
         ]"
       >
         {{ pageNum }}

@@ -6,62 +6,14 @@
       :style="{ width: `${sidebarWidth}px` }"
     >
       <aside class="w-full bg-white border-r border-gray-200 overflow-y-auto">
-        <div class="p-4 space-y-3 border-b border-gray-200">
-          <div class="relative w-full">
-            <MagnifyingGlassIcon class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              id="news-search"
-              v-model="searchQuery"
-              type="text"
-              class="input input-sm input-bordered w-full pl-9 pr-8"
-              placeholder="Search"
-            />
-            <button
-              class="btn btn-circle btn-xs absolute right-2 top-1/2 -translate-y-1/2 transition-opacity"
-              type="button"
-              @click="searchQuery = ''"
-              aria-label="Clear search"
-              :class="searchQuery ? 'opacity-100' : 'opacity-0 pointer-events-none'"
-            >
-              <XMarkIcon class="w-3.5 h-3.5" />
-            </button>
-          </div>
-          <div class="flex items-center gap-2 flex-wrap">
-            <label for="lang-filter" class="text-xs font-medium text-gray-500">Lang</label>
-            <select
-              id="lang-filter"
-              v-model="languageFilter"
-              class="text-xs rounded-md border-gray-300 bg-white px-2 py-1 text-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-            >
-              <option value="">All</option>
-              <option v-for="langOption in languageOptions" :key="langOption" :value="langOption">
-                {{ langOption.toUpperCase() }}
-              </option>
-            </select>
-            <label for="source-filter" class="text-xs font-medium text-gray-500">Source</label>
-            <select
-              id="source-filter"
-              v-model="sourceFilter"
-              class="text-xs rounded-md border-gray-300 bg-white px-2 py-1 text-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-            >
-              <option value="">All</option>
-              <option v-for="sourceOption in sourceOptions" :key="sourceOption" :value="sourceOption">
-                {{ sourceOption }}
-              </option>
-            </select>
-            <select
-              id="time-window"
-              v-model="timeWindowDays"
-              class="text-xs rounded-md border-gray-300 bg-white px-2 py-1 text-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-            >
-              <option :value="0">All time</option>
-              <option :value="1">Last 24 hours</option>
-              <option :value="3">Last 3 days</option>
-              <option :value="7">Last 7 days</option>
-              <option :value="30">Last 30 days</option>
-            </select>
-          </div>
-        </div>
+        <NewsFilters
+          v-model:searchQuery="searchQuery"
+          v-model:languageFilter="languageFilter"
+          v-model:sourceFilter="sourceFilter"
+          v-model:timeWindowDays="timeWindowDays"
+          :language-options="languageOptions"
+          :source-options="sourceOptions"
+        />
         <CategoryList
           :category-tree-with-counts="categoryTreeWithCounts"
           :active-category="activeCategory"
@@ -99,6 +51,29 @@
             </div>
 
             <div v-else-if="displayArticles.length > 0" class="space-y-6">
+              <div class="flex items-center justify-between gap-3">
+                <div class="text-xs font-semibold uppercase tracking-widest text-gray-400">
+                  View
+                </div>
+                <div class="join">
+                  <button
+                    class="btn btn-xs join-item"
+                    type="button"
+                    :class="viewMode === 'cards' ? 'btn-primary' : 'btn-outline'"
+                    @click="viewMode = 'cards'"
+                  >
+                    <Square3Stack3DIcon class="inline-block w-4 h-4 mr-1" />
+                  </button>
+                  <button
+                    class="btn btn-xs join-item"
+                    type="button"
+                    :class="viewMode === 'list' ? 'btn-primary' : 'btn-outline'"
+                    @click="viewMode = 'list'"
+                  >
+                    <TableCellsIcon class="inline-block w-4 h-4 mr-1" />
+                  </button>
+                </div>
+              </div>
               <Pager
                 :current-page="currentPage"
                 :total-pages="totalPages"
@@ -109,19 +84,89 @@
                 @go="goToPage"
                 @page-size="setPageSize"
               />
-            <ArticleList
-              :articles="displayArticles"
-              :category-label="categoryLabel"
-              :category-options="categoryOptions"
-              :debug-data-by-id="debugDataById"
-              :compact="true"
-              :date-format="dateFormatOptions"
-              @update-review="updateArticleReview"
-              @reclassify="reclassifyArticle"
-              @load-debug="loadArticleDebug"
-              @refetch-full-text="refetchArticleFullText"
-              @delete-article="deleteArticle"
-            />
+              <ArticleList
+                v-if="viewMode === 'cards'"
+                :articles="displayArticles"
+                :category-label="categoryLabel"
+                :category-options="categoryOptions"
+                :debug-data-by-id="debugDataById"
+                :compact="true"
+                :date-format="dateFormatOptions"
+                @update-review="updateArticleReview"
+                @reclassify="reclassifyArticle"
+                @load-debug="loadArticleDebug"
+                @refetch-full-text="refetchArticleFullText"
+                @delete-article="deleteArticle"
+              />
+              <div v-else class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                <div class="overflow-x-auto">
+                  <table class="table table-zebra w-full">
+                    <thead>
+                      <tr class="text-xs uppercase tracking-widest text-gray-400">
+                        <th class="w-48">
+                          <button
+                            class="inline-flex items-center gap-1"
+                            type="button"
+                            @click="toggleSort('category')"
+                          >
+                            Category
+                            <span class="text-[10px]">{{ sortIndicator('category') }}</span>
+                          </button>
+                        </th>
+                        <th class="w-48">
+                          <button
+                            class="inline-flex items-center gap-1"
+                            type="button"
+                            @click="toggleSort('source')"
+                          >
+                            Source
+                            <span class="text-[10px]">{{ sortIndicator('source') }}</span>
+                          </button>
+                        </th>
+                        <th>
+                          <button
+                            class="inline-flex items-center gap-1"
+                            type="button"
+                            @click="toggleSort('title')"
+                          >
+                            Title
+                            <span class="text-[10px]">{{ sortIndicator('title') }}</span>
+                          </button>
+                        </th>
+                        <th class="w-32">
+                          <button
+                            class="inline-flex items-center gap-1"
+                            type="button"
+                            @click="toggleSort('date')"
+                          >
+                            Date
+                            <span class="text-[10px]">{{ sortIndicator('date') }}</span>
+                          </button>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="article in listArticles" :key="article.id">
+                        <td class="text-xs font-medium text-gray-600">{{ categoryLabel(article.category_id) }}</td>
+                        <td class="text-sm text-gray-700">{{ getArticleSource(article) }}</td>
+                        <td class="text-sm font-semibold text-gray-900">
+                          <a
+                            v-if="article.url"
+                            :href="article.url"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="hover:underline"
+                          >
+                            {{ article.title }}
+                          </a>
+                          <span v-else>{{ article.title }}</span>
+                        </td>
+                        <td class="text-xs text-gray-500">{{ formatPublishedAt(article.published_at) }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
               <Pager
                 :current-page="currentPage"
                 :total-pages="totalPages"
@@ -146,7 +191,7 @@
 
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/vue/24/solid';
+import { Square3Stack3DIcon, TableCellsIcon } from '@heroicons/vue/24/solid';
 
 const config = useRuntimeConfig();
 const { authHeaders, isAuthenticated } = useAuth();
@@ -165,6 +210,9 @@ const timeWindowHours = ref(0);
 const searchQuery = ref('');
 const languageFilter = ref('');
 const sourceFilter = ref('');
+const viewMode = ref('cards');
+const sortKey = ref('date');
+const sortDir = ref('desc');
 const sidebarWidth = ref(256);
 const sidebarMinWidth = 200;
 const sidebarMaxWidth = 420;
@@ -358,9 +406,7 @@ const categoryOptions = computed(() => {
 
 const searchActive = computed(() => searchQuery.value.trim().length > 0);
 
-const searchResults = computed(() => {
-  if (!searchActive.value) return [];
-  const query = searchQuery.value.trim().toLowerCase();
+const filteredAllArticles = computed(() => {
   const ids = selectedCategoryIds();
   return allArticles.value.filter((article) => {
     const categoryId = article.category_id || 'uncategorized';
@@ -368,6 +414,14 @@ const searchResults = computed(() => {
     if (!matchesCategory) return false;
     if (languageFilter.value && article.language !== languageFilter.value) return false;
     if (sourceFilter.value && getArticleSource(article) !== sourceFilter.value) return false;
+    return true;
+  });
+});
+
+const searchResults = computed(() => {
+  if (!searchActive.value) return [];
+  const query = searchQuery.value.trim().toLowerCase();
+  return filteredAllArticles.value.filter((article) => {
     const haystack = [article.title || '', article.summary || '', article.source || '']
       .join(' ')
       .toLowerCase();
@@ -375,7 +429,13 @@ const searchResults = computed(() => {
   });
 });
 
-const displayTotal = computed(() => (searchActive.value ? searchResults.value.length : filteredTotal.value));
+const listBase = computed(() => (searchActive.value ? searchResults.value : filteredAllArticles.value));
+
+const displayTotal = computed(() => {
+  if (searchActive.value) return searchResults.value.length;
+  if (viewMode.value === 'list') return listBase.value.length;
+  return filteredTotal.value;
+});
 
 const displayArticles = computed(() => {
   if (!searchActive.value) {
@@ -387,6 +447,29 @@ const displayArticles = computed(() => {
   }
   const start = (currentPage.value - 1) * pageSize.value;
   return searchResults.value.slice(start, start + pageSize.value);
+});
+
+const listArticles = computed(() => {
+  if (viewMode.value !== 'list') return displayArticles.value;
+  const sorted = [...listBase.value];
+  const direction = sortDir.value === 'asc' ? 1 : -1;
+  const collator = new Intl.Collator('en', { sensitivity: 'base', numeric: true });
+  sorted.sort((a, b) => {
+    if (sortKey.value === 'date') {
+      const aTime = new Date(a.published_at || 0).getTime();
+      const bTime = new Date(b.published_at || 0).getTime();
+      return (aTime - bTime) * direction;
+    }
+    if (sortKey.value === 'source') {
+      return collator.compare(getArticleSource(a), getArticleSource(b)) * direction;
+    }
+    if (sortKey.value === 'category') {
+      return collator.compare(categoryLabel(a.category_id), categoryLabel(b.category_id)) * direction;
+    }
+    return collator.compare(a.title || '', b.title || '') * direction;
+  });
+  const start = (currentPage.value - 1) * pageSize.value;
+  return sorted.slice(start, start + pageSize.value);
 });
 
 const languageOptions = computed(() => {
@@ -541,7 +624,10 @@ async function syncAndRefresh() {
 
 watch(activeCategory, () => {
   currentPage.value = 1;
-  if (isAuthenticated.value) fetchArticles();
+  if (isAuthenticated.value) {
+    fetchAllArticles();
+    if (viewMode.value === 'cards') fetchArticles();
+  }
 });
 
 watch(searchQuery, () => {
@@ -550,12 +636,18 @@ watch(searchQuery, () => {
 
 watch(languageFilter, () => {
   currentPage.value = 1;
-  if (isAuthenticated.value) fetchArticles();
+  if (isAuthenticated.value) {
+    fetchAllArticles();
+    if (viewMode.value === 'cards') fetchArticles();
+  }
 });
 
 watch(sourceFilter, () => {
   currentPage.value = 1;
-  if (isAuthenticated.value) fetchArticles();
+  if (isAuthenticated.value) {
+    fetchAllArticles();
+    if (viewMode.value === 'cards') fetchArticles();
+  }
 });
 
 watch(timeWindowDays, () => {
@@ -565,25 +657,35 @@ watch(timeWindowDays, () => {
 const totalArticles = computed(() => allArticles.value.length);
 const totalPages = computed(() => Math.max(1, Math.ceil(displayTotal.value / pageSize.value)));
 const dateFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+const dateFormatter = new Intl.DateTimeFormat('en-US', dateFormatOptions);
+
+function formatPublishedAt(value) {
+  if (!value) return '';
+  try {
+    return dateFormatter.format(new Date(value));
+  } catch (_) {
+    return '';
+  }
+}
 
 function nextPage() {
   if (currentPage.value < totalPages.value) {
     currentPage.value += 1;
-    fetchArticles();
+    if (viewMode.value === 'cards') fetchArticles();
   }
 }
 
 function prevPage() {
   if (currentPage.value > 1) {
     currentPage.value -= 1;
-    fetchArticles();
+    if (viewMode.value === 'cards') fetchArticles();
   }
 }
 
 function goToPage(pageNum) {
   if (pageNum >= 1 && pageNum <= totalPages.value && pageNum !== currentPage.value) {
     currentPage.value = pageNum;
-    fetchArticles();
+    if (viewMode.value === 'cards') fetchArticles();
   }
 }
 
@@ -591,6 +693,20 @@ function setPageSize(newSize) {
   if (newSize === pageSize.value) return;
   pageSize.value = newSize;
   currentPage.value = 1;
-  fetchArticles();
+  if (viewMode.value === 'cards') fetchArticles();
+}
+
+function toggleSort(key) {
+  if (sortKey.value === key) {
+    sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortKey.value = key;
+    sortDir.value = key === 'date' ? 'desc' : 'asc';
+  }
+}
+
+function sortIndicator(key) {
+  if (sortKey.value !== key) return '';
+  return sortDir.value === 'asc' ? '▲' : '▼';
 }
 </script>

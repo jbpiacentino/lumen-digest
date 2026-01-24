@@ -4,7 +4,7 @@
       <div class="flex justify-between items-start gap-4">
         <div class="flex-1">
           <div class="flex items-center gap-2 mb-2">
-            <span :class="['text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full border', (article.category_id || 'uncategorized') === 'uncategorized' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-indigo-50 text-indigo-600 border-indigo-100']">
+            <span :class="['text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full border', (article.category_id || 'uncategorized') === 'uncategorized' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-indigo-50 text-primary border-indigo-100']">
               {{ categoryLabel(displayCategoryId) }}
             </span>
             <span v-if="article.override_category_id" class="text-[10px] font-semibold uppercase tracking-wider text-amber-600">
@@ -17,17 +17,17 @@
               • {{ articleSource }}
             </span>
             <label
-              class="text-[10px] font-semibold uppercase tracking-wider text-indigo-600 cursor-pointer ml-1"
+              class="text-[10px] font-semibold uppercase tracking-wider text-primary cursor-pointer ml-1"
               :for="`review-toggle-${article.id}`"
             >
-              Review
+              <PencilSquareIcon class="inline-block w-4 h-4 mr-1" />
             </label>
             <button
               class="text-[10px] font-semibold uppercase tracking-wider text-red-600 hover:text-red-700 ml-auto"
               type="button"
               @click="openDeleteModal"
             >
-              Delete
+              <TrashIcon class="inline-block w-4 h-4 mr-2" />
             </button>
           </div>
         </div>
@@ -47,9 +47,25 @@
         @refetch-full-text="emit('refetch-full-text', $event)"
       />
 
-      <a :href="article.url" target="_blank" :class="[compact ? 'text-base' : 'text-lg', 'font-bold text-gray-900 hover:text-indigo-600 leading-snug']">
-        {{ stripHtml(article.title) }}
-      </a>
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          :class="[compact ? 'text-base' : 'text-lg', 'font-bold text-gray-900 hover:text-primary leading-snug text-left']"
+          @click="fullTextOpen = !fullTextOpen"
+        >
+          {{ stripHtml(article.title) }}
+        </button>
+        <a
+          v-if="article.url"
+          :href="article.url"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-ghost text-primary btn-xs"
+          aria-label="Open original article"
+        >
+          <ArrowTopRightOnSquareIcon class="w-4 h-4" />
+        </a>
+      </div>
 
       <div :class="[compact ? 'mt-3' : 'mt-4', ' border-t border-gray-50 text-gray-700 text-sm leading-relaxed']">
         <div
@@ -58,15 +74,7 @@
           class="prose prose-sm max-w-none"
         ></div>
         <div v-else class="prose prose-sm prose-indigo custom-summary">
-          <span v-html="formatSummary(article.summary)"></span>
-          <button
-            v-if="article.full_text"
-            class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-semibold text-xs ml-1"
-            type="button"
-            @click="fullTextOpen = true"
-          >
-            Read more
-          </button>
+          <span v-html="renderSummaryWithSideImage(article.summary)"></span>
         </div>
       </div>
 
@@ -103,6 +111,7 @@
   import { computed, ref, watch } from 'vue';
   import MarkdownIt from 'markdown-it';
   import ArticleReviewPanel from './ArticleReviewPanel.vue';
+  import { ArrowTopRightOnSquareIcon, PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline';
   
   const props = defineProps({
     article: { type: Object, required: true },
@@ -132,7 +141,7 @@
     token.attrSet("rel", "noopener noreferrer");
     const classIndex = token.attrIndex("class");
     const existing = classIndex >= 0 ? token.attrs[classIndex][1] : "";
-    const next = `${existing} text-indigo-600 underline decoration-1 underline-offset-2 hover:text-indigo-800`.trim();
+    const next = `${existing} text-primary underline decoration-1 underline-offset-2 hover:text-primary`.trim();
     token.attrSet("class", next);
     return defaultLinkOpen(tokens, idx, options, env, self);
   };
@@ -157,6 +166,17 @@
       return `<ul class="list-disc pl-5 space-y-1">${formatted}</ul>`;
     }
     return formatted;
+  }
+
+  function renderSummaryWithSideImage(text) {
+    if (!text) return "";
+    const html = formatSummary(text);
+    const imgRegex = /<img[^>]*>/i;
+    const match = html.match(imgRegex);
+    if (!match) return html;
+    const imageTag = match[0];
+    const cleaned = html.replace(imgRegex, "");
+    return `<div class="summary-with-image">${imageTag}<div class="summary-text">${cleaned}</div></div>`;
   }
 
   function formatFullText(text, format) {
@@ -230,3 +250,28 @@
   }
   );
 </script>
+
+<style scoped>
+:deep(.custom-summary img) {
+  max-height: 120px !important;
+  max-width: 180px !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain;
+}
+
+:deep(.summary-with-image) {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+:deep(.summary-with-image img) {
+  flex-shrink: 0;
+  border-radius: 8px;
+}
+
+:deep(.summary-with-image .summary-text) {
+  flex: 1 1 auto;
+}
+</style>
