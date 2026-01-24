@@ -38,6 +38,17 @@
                 {{ langOption.toUpperCase() }}
               </option>
             </select>
+            <label for="source-filter" class="text-xs font-medium text-gray-500">Source</label>
+            <select
+              id="source-filter"
+              v-model="sourceFilter"
+              class="text-xs rounded-md border-gray-300 bg-white px-2 py-1 text-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            >
+              <option value="">All</option>
+              <option v-for="sourceOption in sourceOptions" :key="sourceOption" :value="sourceOption">
+                {{ sourceOption }}
+              </option>
+            </select>
             <select
               id="time-window"
               v-model="timeWindowDays"
@@ -69,34 +80,35 @@
     </div>
 
     <main class="flex-1 overflow-y-auto bg-gray-50 p-6">
-      <div v-if="!isAuthenticated" class="max-w-3xl mx-auto">
-        <div class="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
-          <div class="text-xs font-semibold uppercase tracking-widest text-gray-400">Access</div>
-          <h2 class="mt-2 text-2xl font-bold text-gray-900">Sign in required</h2>
-          <p class="mt-3 text-sm text-gray-600 leading-relaxed">
-            Please log in to view your news digest.
-          </p>
-        </div>
-      </div>
-
-      <div v-else class="w-full space-y-6">
-        <div class="max-w-4xl mx-auto space-y-6">
-          <div v-if="loading && articles.length === 0" class="flex flex-col items-center justify-center h-64 text-gray-500">
-            <div class="animate-bounce text-4xl mb-4">🤖</div>
-            <p class="italic text-lg">Lumen AI is reading and sorting your news...</p>
+      <ClientOnly>
+        <div v-if="!isAuthenticated" class="max-w-3xl mx-auto">
+          <div class="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+            <div class="text-xs font-semibold uppercase tracking-widest text-gray-400">Access</div>
+            <h2 class="mt-2 text-2xl font-bold text-gray-900">Sign in required</h2>
+            <p class="mt-3 text-sm text-gray-600 leading-relaxed">
+              Please log in to view your news digest.
+            </p>
           </div>
+        </div>
 
-          <div v-else-if="displayArticles.length > 0" class="space-y-6">
-            <Pager
-              :current-page="currentPage"
-              :total-pages="totalPages"
-              :filtered-total="displayTotal"
-              :page-size="pageSize"
-              @prev="prevPage"
-              @next="nextPage"
-              @go="goToPage"
-              @page-size="setPageSize"
-            />
+        <div v-else class="w-full space-y-6">
+          <div class="max-w-4xl mx-auto space-y-6">
+            <div v-if="loading && articles.length === 0" class="flex flex-col items-center justify-center h-64 text-gray-500">
+              <div class="animate-bounce text-4xl mb-4">🤖</div>
+              <p class="italic text-lg">Lumen AI is reading and sorting your news...</p>
+            </div>
+
+            <div v-else-if="displayArticles.length > 0" class="space-y-6">
+              <Pager
+                :current-page="currentPage"
+                :total-pages="totalPages"
+                :filtered-total="displayTotal"
+                :page-size="pageSize"
+                @prev="prevPage"
+                @next="nextPage"
+                @go="goToPage"
+                @page-size="setPageSize"
+              />
             <ArticleList
               :articles="displayArticles"
               :category-label="categoryLabel"
@@ -108,24 +120,26 @@
               @reclassify="reclassifyArticle"
               @load-debug="loadArticleDebug"
               @refetch-full-text="refetchArticleFullText"
+              @delete-article="deleteArticle"
             />
-            <Pager
-              :current-page="currentPage"
-              :total-pages="totalPages"
-              :filtered-total="displayTotal"
-              :page-size="pageSize"
-              @prev="prevPage"
-              @next="nextPage"
-              @go="goToPage"
-              @page-size="setPageSize"
-            />
-          </div>
+              <Pager
+                :current-page="currentPage"
+                :total-pages="totalPages"
+                :filtered-total="displayTotal"
+                :page-size="pageSize"
+                @prev="prevPage"
+                @next="nextPage"
+                @go="goToPage"
+                @page-size="setPageSize"
+              />
+            </div>
 
-          <div v-else class="text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-200">
-            <p class="text-gray-400">No articles found. Click \"Refresh\" to fetch new content.</p>
+            <div v-else class="text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-200">
+              <p class="text-gray-400">No articles found. Click \"Refresh\" to fetch new content.</p>
+            </div>
           </div>
         </div>
-      </div>
+      </ClientOnly>
     </main>
   </div>
 </template>
@@ -150,6 +164,7 @@ const timeWindowDays = ref(3);
 const timeWindowHours = ref(0);
 const searchQuery = ref('');
 const languageFilter = ref('');
+const sourceFilter = ref('');
 const sidebarWidth = ref(256);
 const sidebarMinWidth = 200;
 const sidebarMaxWidth = 420;
@@ -235,6 +250,9 @@ async function fetchArticles() {
     if (ids && ids.length) {
       ids.forEach((id) => params.append('category_ids', id));
     }
+    if (sourceFilter.value) {
+      params.append('sources', sourceFilter.value);
+    }
     const data = await $fetch(`${config.public.apiBase}/articles?${params.toString()}`, {
       headers: authHeaders.value
     });
@@ -258,6 +276,9 @@ async function fetchAllArticles() {
       page: '1',
       page_size: '0'
     });
+    if (sourceFilter.value) {
+      params.append('sources', sourceFilter.value);
+    }
     const data = await $fetch(`${config.public.apiBase}/articles?${params.toString()}`, {
       headers: authHeaders.value
     });
@@ -346,6 +367,7 @@ const searchResults = computed(() => {
     const matchesCategory = !ids || ids.includes(categoryId);
     if (!matchesCategory) return false;
     if (languageFilter.value && article.language !== languageFilter.value) return false;
+    if (sourceFilter.value && getArticleSource(article) !== sourceFilter.value) return false;
     const haystack = [article.title || '', article.summary || '', article.source || '']
       .join(' ')
       .toLowerCase();
@@ -357,8 +379,11 @@ const displayTotal = computed(() => (searchActive.value ? searchResults.value.le
 
 const displayArticles = computed(() => {
   if (!searchActive.value) {
-    if (!languageFilter.value) return articles.value;
-    return articles.value.filter((article) => article.language === languageFilter.value);
+    return articles.value.filter((article) => {
+      if (languageFilter.value && article.language !== languageFilter.value) return false;
+      if (sourceFilter.value && getArticleSource(article) !== sourceFilter.value) return false;
+      return true;
+    });
   }
   const start = (currentPage.value - 1) * pageSize.value;
   return searchResults.value.slice(start, start + pageSize.value);
@@ -371,6 +396,26 @@ const languageOptions = computed(() => {
   });
   return Array.from(set).sort();
 });
+
+const sourceOptions = computed(() => {
+  const set = new Set();
+  allArticles.value.forEach((article) => {
+    const source = getArticleSource(article);
+    if (source) set.add(source);
+  });
+  return Array.from(set).sort();
+});
+
+function getArticleSource(article) {
+  const name = (article.source || '').trim();
+  if (name) return name;
+  const url = article.url || '';
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch (_) {
+    return '';
+  }
+}
 
 function categoryLabel(categoryId) {
   if (!categoryId || categoryId === 'uncategorized') return 'Uncategorized';
@@ -387,6 +432,12 @@ function updateArticleInState(updated) {
   };
   updateList(articles.value);
   updateList(allArticles.value);
+}
+
+function removeArticleFromState(articleId) {
+  articles.value = articles.value.filter((item) => item.id !== articleId);
+  allArticles.value = allArticles.value.filter((item) => item.id !== articleId);
+  filteredTotal.value = Math.max(0, filteredTotal.value - 1);
 }
 
 async function updateArticleReview(payload) {
@@ -457,6 +508,19 @@ async function refetchArticleFullText(payload) {
   }
 }
 
+async function deleteArticle(payload) {
+  try {
+    const { articleId } = payload;
+    await $fetch(`${config.public.apiBase}/articles/${articleId}`, {
+      method: 'DELETE',
+      headers: authHeaders.value
+    });
+    removeArticleFromState(articleId);
+  } catch (err) {
+    console.error('Failed to delete article:', err);
+  }
+}
+
 async function syncAndRefresh() {
   if (!isAuthenticated.value) return;
   loading.value = true;
@@ -485,6 +549,11 @@ watch(searchQuery, () => {
 });
 
 watch(languageFilter, () => {
+  currentPage.value = 1;
+  if (isAuthenticated.value) fetchArticles();
+});
+
+watch(sourceFilter, () => {
   currentPage.value = 1;
   if (isAuthenticated.value) fetchArticles();
 });

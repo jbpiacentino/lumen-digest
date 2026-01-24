@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>The New York Times — RSS Feeds (from provided list)</title>
+    <dateCreated>Sat, 24 Jan 2026 00:00:00 +0100</dateCreated>
+    <ownerName>NYT</ownerName>
+    <docs>http://opml.org/spec2.opml</docs>
+  </head>
+
+  <body>
+
+    <!-- NEWS -->
+    <outline text="News" title="News">
+
+      <outline
+        text="NYTimes.com Home Page (U.S.)"
+        title="NYTimes.com Home Page (U.S.)"
+        type="rss"
+        xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml"
+        htmlUrl="https://www.nytimes.com/"
+      />
+
+      <outline text="World" title="World">
+        <outline text="World" title="World" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/World.xml"
+          htmlUrl="https://www.nytimes.com/section/world"
+        />
+        <outline text="Africa" title="Africa" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Africa.xml"
+          htmlUrl="https://www.nytimes.com/section/world/africa"
+        />
+        <outline text="Americas" title="Americas" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Americas.xml"
+          htmlUrl="https://www.nytimes.com/section/world/americas"
+        />
+        <outline text="Asia Pacific" title="Asia Pacific" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/AsiaPacific.xml"
+          htmlUrl="https://www.nytimes.com/section/world/asia"
+        />
+        <outline text="Europe" title="Europe" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Europe.xml"
+          htmlUrl="https://www.nytimes.com/section/world/europe"
+        />
+        <outline text="Middle East" title="Middle East" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/MiddleEast.xml"
+          htmlUrl="https://www.nytimes.com/section/world/middleeast"
+        />
+      </outline>
+
+      <outline text="U.S." title="U.S.">
+        <outline text="U.S." title="U.S." type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/US.xml"
+          htmlUrl="https://www.nytimes.com/section/us"
+        />
+        <outline text="Education" title="Education" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Education.xml"
+          htmlUrl="https://www.nytimes.com/section/education"
+        />
+        <outline text="Politics" title="Politics">
+          <outline text="Politics" title="Politics" type="rss"
+            xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml"
+            htmlUrl="https://www.nytimes.com/section/politics"
+          />
+          <outline text="The Upshot" title="The Upshot" type="rss"
+            xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Upshot.xml"
+            htmlUrl="https://www.nytimes.com/section/upshot"
+          />
+        </outline>
+      </outline>
+
+      <outline
+        text="N.Y./Region"
+        title="N.Y./Region"
+        type="rss"
+        xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/NYRegion.xml"
+        htmlUrl="https://www.nytimes.com/section/nyregion"
+      />
+
+      <outline text="Business" title="Business">
+        <outline text="Business" title="Business" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Business.xml"
+          htmlUrl="https://www.nytimes.com/section/business"
+        />
+        <outline text="Energy &amp; Environment" title="Energy &amp; Environment" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/EnergyEnvironment.xml"
+          htmlUrl="https://www.nytimes.com/section/business/energy-environment"
+        />
+        <outline text="Small Business" title="Small Business" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/SmallBusiness.xml"
+          htmlUrl="https://www.nytimes.com/section/business/smallbusiness"
+        />
+        <outline text="Economy" title="Economy" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Economy.xml"
+          htmlUrl="https://www.nytimes.com/section/business/economy"
+        />
+        <outline text="DealBook" title="DealBook" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Dealbook.xml"
+          htmlUrl="https://www.nytimes.com/section/business/dealbook"
+        />
+        <outline text="Media &amp; Advertising" title="Media &amp; Advertising" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/MediaandAdvertising.xml"
+          htmlUrl="https://www.nytimes.com/section/business/media"
+        />
+        <outline text="Your Money" title="Your Money" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/YourMoney.xml"
+          htmlUrl="https://www.nytimes.com/section/your-money"
+        />
+      </outline>
+
+      <outline text="Technology" title="Technology">
+        <outline text="Technology" title="Technology" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml"
+          htmlUrl="https://www.nytimes.com/section/technology"
+        />
+        <outline text="Personal Tech" title="Personal Tech" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/PersonalTech.xml"
+          htmlUrl="https://www.nytimes.com/section/technology/personaltech"
+        />
+      </outline>
+
+      <outline text="Sports" title="Sports">
+        <outline text="Sports" title="Sports" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Sports.xml"
+          htmlUrl="https://www.nytimes.com/section/sports"
+        />
+        <outline text="Baseball" title="Baseball" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Baseball.xml"
+          htmlUrl="https://www.nytimes.com/section/sports/baseball"
+        />
+        <outline text="College Basketball" title="College Basketball" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/CollegeBasketball.xml"
+          htmlUrl="https://www.nytimes.com/section/sports/ncaabasketball"
+        />
+        <outline text="College Football" title="College Football" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/CollegeFootball.xml"
+          htmlUrl="https://www.nytimes.com/section/sports/ncaafootball"
+        />
+        <outline text="Golf" title="Golf" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Golf.xml"
+          htmlUrl="https://www.nytimes.com/section/sports/golf"
+        />
+        <outline text="Hockey" title="Hockey" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Hockey.xml"
+          htmlUrl="https://www.nytimes.com/section/sports/hockey"
+        />
+        <outline text="Pro-Basketball" title="Pro-Basketball" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/ProBasketball.xml"
+          htmlUrl="https://www.nytimes.com/section/sports/basketball"
+        />
+        <outline text="Pro-Football" title="Pro-Football" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/ProFootball.xml"
+          htmlUrl="https://www.nytimes.com/section/sports/football"
+        />
+        <outline text="Soccer" title="Soccer" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Soccer.xml"
+          htmlUrl="https://www.nytimes.com/section/sports/soccer"
+        />
+        <outline text="Tennis" title="Tennis" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Tennis.xml"
+          htmlUrl="https://www.nytimes.com/section/sports/tennis"
+        />
+      </outline>
+
+      <outline text="Science" title="Science">
+        <outline text="Science" title="Science" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Science.xml"
+          htmlUrl="https://www.nytimes.com/section/science"
+        />
+        <outline text="Environment" title="Environment" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Climate.xml"
+          htmlUrl="https://www.nytimes.com/section/climate"
+        />
+        <outline text="Space &amp; Cosmos" title="Space &amp; Cosmos" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Space.xml"
+          htmlUrl="https://www.nytimes.com/section/science/space"
+        />
+      </outline>
+
+      <outline text="Health" title="Health">
+        <outline text="Health" title="Health" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Health.xml"
+          htmlUrl="https://www.nytimes.com/section/health"
+        />
+        <outline text="Well Blog" title="Well Blog" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Well.xml"
+          htmlUrl="https://www.nytimes.com/section/well"
+        />
+      </outline>
+
+      <outline text="Climate &amp; Weather" title="Climate &amp; Weather">
+        <outline text="Climate" title="Climate" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Climate.xml"
+          htmlUrl="https://www.nytimes.com/section/climate"
+        />
+        <outline text="Weather" title="Weather" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Weather.xml"
+          htmlUrl="https://www.nytimes.com/section/weather"
+        />
+      </outline>
+
+    </outline>
+
+    <!-- CULTURE & LIFESTYLE -->
+    <outline text="Culture &amp; Lifestyle" title="Culture &amp; Lifestyle">
+
+      <outline text="Arts" title="Arts">
+        <outline text="Arts" title="Arts" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Arts.xml"
+          htmlUrl="https://www.nytimes.com/section/arts"
+        />
+        <outline text="Art &amp; Design" title="Art &amp; Design" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/ArtandDesign.xml"
+          htmlUrl="https://www.nytimes.com/section/arts/design"
+        />
+        <outline text="Book Review" title="Book Review" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Books/Review.xml"
+          htmlUrl="https://www.nytimes.com/section/books/review"
+        />
+        <outline text="Dance" title="Dance" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Dance.xml"
+          htmlUrl="https://www.nytimes.com/section/arts/dance"
+        />
+        <outline text="Movies" title="Movies" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Movies.xml"
+          htmlUrl="https://www.nytimes.com/section/movies"
+        />
+        <outline text="Music" title="Music" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Music.xml"
+          htmlUrl="https://www.nytimes.com/section/arts/music"
+        />
+        <outline text="Television" title="Television" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Television.xml"
+          htmlUrl="https://www.nytimes.com/section/arts/television"
+        />
+        <outline text="Theater" title="Theater" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Theater.xml"
+          htmlUrl="https://www.nytimes.com/section/theater"
+        />
+      </outline>
+
+      <outline text="Style" title="Style">
+        <outline text="Fashion &amp; Style" title="Fashion &amp; Style" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/FashionandStyle.xml"
+          htmlUrl="https://www.nytimes.com/section/fashion"
+        />
+        <outline text="Dining &amp; Wine" title="Dining &amp; Wine" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/DiningandWine.xml"
+          htmlUrl="https://www.nytimes.com/section/dining"
+        />
+        <outline text="Love" title="Love" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Weddings.xml"
+          htmlUrl="https://www.nytimes.com/section/fashion/weddings"
+        />
+        <outline text="T Magazine" title="T Magazine" type="rss"
+          xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/tmagazine.xml"
+          htmlUrl="https://www.nytimes.com/section/t-magazine"
+        />
+      </outline>
+
+      <outline
+        text="Travel"
+        title="Travel"
+        type="rss"
+        xmlUrl="https://www.nytimes.com/services/xml/rss/nyt/Travel.xml"
+        htmlUrl="https://www.nytimes.com/section/travel"
+      />
+
+    </outline>
+
+    <!-- MARKETPLACE -->
+    <outline text="Marketplace" title="Marketplace">
+      <outline text="Jobs" title="Jobs" type="rss"
+        xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Jobs.xml"
+        htmlUrl="https://www.nytimes.com/section/jobs"
+      />
+      <outline text="Real Estate" title="Real Estate" type="rss"
+        xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/RealEstate.xml"
+        htmlUrl="https://www.nytimes.com/section/realestate"
+      />
+      <outline text="Autos" title="Autos" type="rss"
+        xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Automobiles.xml"
+        htmlUrl="https://www.nytimes.com/section/automobiles"
+      />
+    </outline>
+
+    <!-- OTHER -->
+    <outline text="Other" title="Other">
+      <outline text="Lens Blog" title="Lens Blog" type="rss"
+        xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Lens.xml"
+        htmlUrl="https://www.nytimes.com/section/lens"
+      />
+      <outline text="Obituaries" title="Obituaries" type="rss"
+        xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Obituaries.xml"
+        htmlUrl="https://www.nytimes.com/section/obituaries"
+      />
+      <outline text="Times Wire" title="Times Wire" type="rss"
+        xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/recent.xml"
+        htmlUrl="https://www.nytimes.com/section/timeswire"
+      />
+      <outline text="Most E-Mailed" title="Most E-Mailed" type="rss"
+        xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/MostEmailed.xml"
+        htmlUrl="https://www.nytimes.com/most-popular"
+      />
+      <outline text="Most Shared" title="Most Shared" type="rss"
+        xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/MostShared.xml"
+        htmlUrl="https://www.nytimes.com/most-popular"
+      />
+      <outline text="Most Viewed" title="Most Viewed" type="rss"
+        xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/MostViewed.xml"
+        htmlUrl="https://www.nytimes.com/most-popular"
+      />
+    </outline>
+
+    <!-- OPINION -->
+    <outline text="Opinion" title="Opinion">
+
+      <outline text="Columnists" title="Columnists">
+        <outline text="Charles M. Blow" title="Charles M. Blow" type="rss"
+          xmlUrl="https://www.nytimes.com/svc/collections/v1/publish/www.nytimes.com/column/charles-m-blow/rss.xml"
+          htmlUrl="https://www.nytimes.com/column/charles-m-blow"
+        />
+        <outline text="Jamelle Bouie" title="Jamelle Bouie" type="rss"
+          xmlUrl="https://www.nytimes.com/svc/collections/v1/publish/www.nytimes.com/column/jamelle-bouie/rss.xml"
+          htmlUrl="https://www.nytimes.com/column/jamelle-bouie"
+        />
+        <outline text="David Brooks" title="David Brooks" type="rss"
+          xmlUrl="https://www.nytimes.com/svc/collections/v1/publish/www.nytimes.com/column/david-brooks/rss.xml"
+          htmlUrl="https://www.nytimes.com/column/david-brooks"
+        />
+        <outline text="Frank Bruni" title="Frank Bruni" type="rss"
+          xmlUrl="https://www.nytimes.com/svc/collections/v1/publish/www.nytimes.com/column/frank-bruni/rss.xml"
+          htmlUrl="https://www.nytimes.com/column/frank-bruni"
+        />
+        <outline text="Gail Collins" title="Gail Collins" type="rss"
+          xmlUrl="https://www.nytimes.com/svc/collections/v1/publish/www.nytimes.com/column/gail-collins/rss.xml"
+          htmlUrl="https://www.nytimes.com/column/gail-collins"
+        />
+        <outline text="Ross Douthat" title="Ross Douthat" type="rss"
+          xmlUrl="https://www.nytimes.com/svc/collections/v1/publish/www.nytimes.com/column/ross-douthat/rss.xml"
+          htmlUrl="https://www.nytimes.com/column/ross-douthat"
+        />
+        <outline text="Maureen Dowd" title="Maureen Dowd" type="rss"
+          xmlUrl="https://www.nytimes.com/svc/collections/v1/publish/www.nytimes.com/column/maureen-dowd/rss.xml"
+          htmlUrl="https://www.nytimes.com/column/maureen-dowd"
+        />
+        <outline text="Thomas L. Friedman" title="Thomas L. Friedman" type="rss"
+          xmlUrl="https://www.nytimes.com/svc/collections/v1/publish/www.nytimes.com/column/thomas-l-friedman/rss.xml"
+          htmlUrl="https://www.nytimes.com/column/thomas-l-friedman"
+        />
+        <outline text="Michelle Goldberg" title="Michelle Goldberg" type="rss"
+          xmlUrl="https://www.nytimes.com/svc/collections/v1/publish/www.nytimes.com/column/michelle-goldberg/rss.xml"
+          htmlUrl="https://www.nytimes.com/column/michelle-goldberg"
+        />
+        <outline text="Ezra Klein" title="Ezra Klein" type="rss"
+          xmlUrl="https://www.nytimes.com/svc/collections/v1/publish/www.nytimes.com/column/ezra-klein/rss.xml"
+          htmlUrl="https://www.nytimes.com/column/ezra-klein"
+        />
+        <outline text="Nicholas D. Kristof" title="Nicholas D. Kristof" type="rss"
+          xmlUrl="https://www.nytimes.com/svc/collections/v1/publish/www.nytimes.com/column/nicholas-kristof/rss.xml"
+          htmlUrl="https://www.nytimes.com/column/nicholas-kristof"
+        />
+        <outline text="Paul Krugman" title="Paul Krugman" type="rss"
+          xmlUrl="https://www.nytimes.com/svc/collections/v1/publish/www.nytimes.com/column/paul-krugman/rss.xml"
+          htmlUrl="https://www.nytimes.com/column/paul-krugman"
+        />
+        <outline text="Farhad Manjoo" title="Farhad Manjoo" type="rss"
+          xmlUrl="https://www.nytimes.com/svc/collections/v1/publish/www.nytimes.com/column/farhad-manjoo/rss.xml"
+          htmlUrl="https://www.nytimes.com/column/farhad-manjoo"
+        />
+        <outline text="Bret Stephens" title="Bret Stephens" type="rss"
+          xmlUrl="https://www.nytimes.com/svc/collections/v1/publish/www.nytimes.com/column/bret-stephens/rss.xml"
+          htmlUrl="https://www.nytimes.com/column/bret-stephens"
+        />
+      </outline>
+
+      <outline text="Sunday Opinion" title="Sunday Opinion" type="rss"
+        xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/sunday-review.xml"
+        htmlUrl="https://www.nytimes.com/section/sunday-review"
+      />
+
+    </outline>
+
+  </body>
+</opml>

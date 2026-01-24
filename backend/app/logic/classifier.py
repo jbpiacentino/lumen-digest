@@ -14,6 +14,15 @@ WS_RE  = re.compile(r"\s+")
 MODEL_NAME = "paraphrase-multilingual-mpnet-base-v2"
 # MODEL_NAME = "paraphrase-multilingual-MiniLM-L12-v2"
 DEFAULT_TAXONOMY_PATH = "/shared/lumen_taxonomy_iptc_l1l2_subcategories_tight_v3.1.0.json"
+DEFAULT_EDITOR_TAXONOMY_PATH = "/shared/taxonomy.json"
+
+def resolve_taxonomy_path(default_path: str = DEFAULT_TAXONOMY_PATH) -> str:
+    env_path = os.getenv("TAXONOMY_PATH")
+    if env_path and os.path.exists(env_path):
+        return env_path
+    if os.path.exists(DEFAULT_EDITOR_TAXONOMY_PATH):
+        return DEFAULT_EDITOR_TAXONOMY_PATH
+    return default_path
 
 def clean_text(raw: Optional[str]) -> str:
     if not raw:
@@ -297,7 +306,7 @@ _classifier_engine = None
 
 
 def get_classifier_engine(
-    taxonomy_path: str = DEFAULT_TAXONOMY_PATH,
+    taxonomy_path: Optional[str] = None,
     model_name: str = MODEL_NAME,
     device: str = "cpu",
     centroids_cache: Optional[str] = None,
@@ -309,6 +318,8 @@ def get_classifier_engine(
             centroids_cache = os.getenv("CLASSIFIER_CENTROIDS_CACHE") or None
         if not centroids_cache and os.path.isdir("/shared"):
             centroids_cache = "/shared/lumen_classifier_centroids.pt"
+        if not taxonomy_path:
+            taxonomy_path = resolve_taxonomy_path()
         _classifier_engine = NewsClassifier(
             taxonomy_path=taxonomy_path,
             model_name=model_name,

@@ -6,6 +6,8 @@ start_time = time.time()
 import os
 import httpx
 import trafilatura
+import pathlib
+import yake
 from fastapi import FastAPI, HTTPException, Query, Depends, Header
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,7 +19,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.dialects.postgresql import insert # For idempotency (no duplicates)
 from sqlalchemy import or_
 
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 import logging
 from dotenv import load_dotenv
 from pydantic import BaseModel
@@ -27,7 +29,7 @@ from jose import jwt, JWTError
 # Import our logic modules
 from .logic.freshrss import get_unread_entries, mark_entries_read
 from .logic.summarizer import summarize_article
-from .logic.classifier import get_classifier_engine
+from .logic.classifier import get_classifier_engine, clean_text
 from .logic.lang import detect_language
 
 # Load environment variables from .env file
@@ -46,6 +48,7 @@ AUTH_ENABLED = os.getenv("AUTH_ENABLED", "true").lower() == "true"
 AUTH_SECRET = os.getenv("AUTH_SECRET", "change-me")
 AUTH_ALGORITHM = "HS256"
 AUTH_ACCESS_TOKEN_MINUTES = int(os.getenv("AUTH_ACCESS_TOKEN_MINUTES", "1440"))
+TAXONOMY_EDIT_PATH = os.getenv("TAXONOMY_EDIT_PATH", "/shared/taxonomy.json")
 
 SYNC_LIMIT = int(os.getenv("FRESHRSS_SYNC_LIMIT", "200"))
 
@@ -109,6 +112,16 @@ class AuthResponse(BaseModel):
     user: dict
 
 
+class TaxonomySaveRequest(BaseModel):
+    taxonomy: Dict[str, Any]
+
+
+class TaxonomyExtractRequest(BaseModel):
+    text: str
+    language: str = "en"
+    top_k: int = 20
+
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
@@ -133,6 +146,50 @@ def verify_password(plain: str, hashed: str) -> bool:
         return pwd_context.verify(plain, hashed)
     except Exception:
         return False
+
+
+def get_taxonomy_edit_path() -> pathlib.Path:
+    return pathlib.Path(TAXONOMY_EDIT_PATH)
+
+
+def get_taxonomy_versions() -> List[pathlib.Path]:
+    base = get_taxonomy_edit_path()
+    directory = base.parent
+    pattern = f"{base.stem}.v*.json"
+    return sorted(directory.glob(pattern), key=lambda p: p.stat().st_mtime, reverse=True)
+
+
+def read_taxonomy_json() -> Dict[str, Any]:
+    path = get_taxonomy_edit_path()
+    if not path.exists():
+        raise HTTPException(status_code=404, detail=f"Taxonomy not found at {path}")
+    with path.open("r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def write_taxonomy_json(payload: Dict[str, Any]) -> Dict[str, str]:
+    path = get_taxonomy_edit_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    versioned_path = path.with_name(f"{path.stem}.v{timestamp}.json")
+    with versioned_path.open("w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=2)
+    with path.open("w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=2)
+    return {
+        "current": str(path),
+        "versioned": str(versioned_path),
+        "timestamp": timestamp,
+    }
+
+
+def extract_yake_keywords(text: str, language: str = "en", top_k: int = 20) -> List[Dict[str, Any]]:
+    cleaned = clean_text(text)
+    if not cleaned:
+        return []
+    extractor = yake.KeywordExtractor(lan=language, n=3, top=top_k, dedupLim=0.9, features=None)
+    keywords = extractor.extract_keywords(cleaned)
+    return [{"phrase": phrase, "score": float(score)} for phrase, score in keywords]
 
 
 def create_access_token(user: User) -> str:
@@ -234,7 +291,7 @@ async def sync_entries(limit: int, db: Session):
             pub_date = datetime.now(datetime.timezone.utc)
         
         # Generate AI Summary
-        summary_input = full_text or raw_content
+        summary_input = raw_content or full_text
         if SUMMARIZATION_ENABLED:
             logger.debug(f"Summarizing: {title}")
             summary = await summarize_article(summary_input[:2000])
@@ -349,6 +406,7 @@ def get_articles(
     days: int = Query(default=0, description="Number of days to look back (0 for all)"),
     hours: int = Query(default=0, description="Number of hours to look back (0 for all)"),
     category_ids: Optional[List[str]] = Query(default=None),
+    sources: Optional[List[str]] = Query(default=None),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=50, ge=0),
     db: Session = Depends(get_db),
@@ -394,6 +452,10 @@ def get_articles(
             )
         else:
             query = query.filter(Article.category_id.in_(ids))
+
+    srcs = [s.strip() for s in (sources or []) if s and s.strip()]
+    if srcs:
+        query = query.filter(Article.source.in_(srcs))
         
     total = query.order_by(None).count()
 
@@ -507,6 +569,19 @@ def reclassify_article(
         },
     }
 
+@app.delete("/articles/{article_id}")
+def delete_article(
+    article_id: int,
+    db: Session = Depends(get_db),
+    user: Optional[User] = Depends(require_user),
+):
+    article = db.query(Article).filter(Article.id == article_id).first()
+    if not article:
+        raise HTTPException(status_code=404, detail="Article not found")
+    db.delete(article)
+    db.commit()
+    return {"status": "ok", "article_id": article_id}
+
 @app.get("/digest/sync")
 async def sync_and_classify(
     limit: int = Query(default=SYNC_LIMIT, le=SYNC_LIMIT),
@@ -585,6 +660,37 @@ async def reload_taxonomy(user: Optional[User] = Depends(require_user)):
     """
     get_classifier_engine().load_taxonomy()
     return {"message": "Taxonomy centroids recalculated successfully."}
+
+@app.get("/taxonomy/raw")
+async def get_taxonomy_raw(user: Optional[User] = Depends(require_user)):
+    payload = read_taxonomy_json()
+    return {"taxonomy": payload}
+
+@app.get("/taxonomy/versions")
+async def list_taxonomy_versions(user: Optional[User] = Depends(require_user)):
+    versions = []
+    for path in get_taxonomy_versions():
+        versions.append({
+            "name": path.name,
+            "path": str(path),
+            "modified_at": datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc),
+            "size": path.stat().st_size,
+        })
+    return {"items": versions}
+
+@app.post("/taxonomy/save")
+async def save_taxonomy(payload: TaxonomySaveRequest, user: Optional[User] = Depends(require_user)):
+    result = write_taxonomy_json(payload.taxonomy)
+    return result
+
+@app.post("/taxonomy/extract-anchors")
+async def extract_taxonomy_anchors(payload: TaxonomyExtractRequest, user: Optional[User] = Depends(require_user)):
+    language = (payload.language or "en").lower()
+    if language not in ("en", "fr"):
+        language = "en"
+    top_k = min(max(payload.top_k, 1), 100)
+    anchors = extract_yake_keywords(payload.text, language=language, top_k=top_k)
+    return {"anchors": anchors, "language": language}
 
 @app.get("/digest/taxonomy")
 async def get_taxonomy(lang: str = "en", user: Optional[User] = Depends(require_user)):

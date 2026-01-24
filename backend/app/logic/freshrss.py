@@ -86,6 +86,50 @@ async def get_unread_entries(limit: int = DEFAULT_FETCH_LIMIT):
         
         return items
 
+
+async def get_entries_since(
+    since_ts: int,
+    limit: int = DEFAULT_FETCH_LIMIT,
+    max_items: int = 2000,
+):
+    """Fetch entries from reading-list since an epoch timestamp (seconds)."""
+    auth_token = await get_auth_token()
+
+    url = f"{API_ROOT}/reader/api/0/stream/contents/reading-list"
+    headers = {"Authorization": f"GoogleLogin auth={auth_token}"}
+    params = {
+        "output": "json",
+        "n": limit,
+        "r": "o",
+        "ot": int(since_ts),
+    }
+
+    items = []
+    continuation = None
+    async with httpx.AsyncClient(verify=VERIFY_SSL) as client:
+        while True:
+            if continuation:
+                params["c"] = continuation
+            resp = await client.get(url, headers=headers, params=params, timeout=20)
+            if resp.status_code != 200:
+                logger.error(f"Fetch failed: {resp.status_code}")
+                raise Exception(f"FreshRSS Fetch Error: {resp.status_code}")
+
+            data = resp.json()
+            batch = data.get("items", []) or []
+            if not batch:
+                break
+            items.extend(batch)
+            if len(items) >= max_items:
+                items = items[:max_items]
+                break
+            continuation = data.get("continuation")
+            if not continuation:
+                break
+
+    logger.info(f"Fetched {len(items)} entries since {since_ts}.")
+    return items
+
 async def mark_entries_read(entry_ids):
     """Mark FreshRSS entries as read so they are not re-fetched."""
     if not entry_ids:

@@ -22,6 +22,13 @@
             >
               Review
             </label>
+            <button
+              class="text-[10px] font-semibold uppercase tracking-wider text-red-600 hover:text-red-700 ml-auto"
+              type="button"
+              @click="openDeleteModal"
+            >
+              Delete
+            </button>
           </div>
         </div>
       </div>
@@ -73,6 +80,22 @@
         </button>
       </div>
     </div>
+
+    <dialog ref="deleteDialog" class="modal">
+      <div class="modal-box">
+        <h3 class="font-semibold text-lg">Delete article?</h3>
+        <p class="py-4 text-sm text-gray-600">
+          This will permanently remove the article. This action cannot be undone.
+        </p>
+        <div class="modal-action">
+          <button class="btn btn-outline btn-error" type="button" @click="confirmDelete">Delete</button>
+          <button class="btn btn-primary" type="button" autofocus @click="closeDeleteModal">Cancel</button>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button aria-label="Close">close</button>
+      </form>
+    </dialog>
   </div>
 </template>
 
@@ -90,23 +113,8 @@
     dateFormat: { type: Object, default: null }
   });
   
-  const emit = defineEmits(['update-review', 'reclassify', 'load-debug', 'refetch-full-text']);
+  const emit = defineEmits(['update-review', 'reclassify', 'load-debug', 'refetch-full-text', 'delete-article']);
   
-  function stripHtml(text) {
-    if (!text) return "";
-    return text.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
-  }
-  
-  function formatSummary(text) {
-    if (!text) return "";
-    let formatted = stripHtml(text);
-    if (formatted.includes("- ") || formatted.includes("* ")) {
-      formatted = formatted.replace(/^\s*[-*]\s+(.*)$/gm, "<li>$1</li>");
-      return `<ul class="list-disc pl-5 space-y-1">${formatted}</ul>`;
-    }
-    return formatted;
-  }
-
   const markdownRenderer = new MarkdownIt({
     html: false,
     linkify: true,
@@ -129,6 +137,28 @@
     return defaultLinkOpen(tokens, idx, options, env, self);
   };
 
+  function stripHtml(text) {
+    if (!text) return "";
+    return text.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+  }
+  
+  function formatSummary(text) {
+    if (!text) return "";
+    const trimmed = text.trim();
+    if (/<[a-z][\s\S]*>/i.test(trimmed)) {
+      return trimmed;
+    }
+    if (/[#*_`-]\s/.test(trimmed)) {
+      return markdownRenderer.render(trimmed);
+    }
+    let formatted = stripHtml(trimmed);
+    if (formatted.includes("- ") || formatted.includes("* ")) {
+      formatted = formatted.replace(/^\s*[-*]\s+(.*)$/gm, "<li>$1</li>");
+      return `<ul class="list-disc pl-5 space-y-1">${formatted}</ul>`;
+    }
+    return formatted;
+  }
+
   function formatFullText(text, format) {
     if (!text) return "";
     if (format === "markdown") {
@@ -138,6 +168,25 @@
     const blocks = sanitized.split(/\n{2,}/).map((block) => block.replace(/\n/g, "<br />"));
     return blocks.map((block) => `<p>${block}</p>`).join("");
   }
+
+  const deleteDialog = ref(null);
+
+  const openDeleteModal = () => {
+    if (deleteDialog.value?.showModal) {
+      deleteDialog.value.showModal();
+    }
+  };
+
+  const closeDeleteModal = () => {
+    if (deleteDialog.value?.close) {
+      deleteDialog.value.close();
+    }
+  };
+
+  const confirmDelete = () => {
+    emit('delete-article', { articleId: props.article.id });
+    closeDeleteModal();
+  };
   
   function sourceName(url) {
     if (!url) return "";

@@ -18,3 +18,5 @@ transformers>=4.36.0
 uvicorn[standard]
 publicsuffix2
 langdetect
+scikit-learn
+yake
