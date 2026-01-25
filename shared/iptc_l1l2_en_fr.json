@@ -1,0 +1,2323 @@
+{
+  "version": "iptc_full_l1l2_import_v1",
+  "source": "IPTC Media Topics (SKOS Turtle import)",
+  "categories": [
+    {
+      "id": "medtop:01000000",
+      "labels": {
+        "en": "arts, culture, entertainment and media",
+        "fr": "Arts, culture, divertissement et médias"
+      },
+      "definitions": {
+        "en": "All forms of arts, entertainment, cultural heritage and media",
+        "fr": "Toutes les formes d'arts, de divertissement, de culture et de médias"
+      },
+      "subcategories": [
+        {
+          "id": "medtop:20000002",
+          "parent_id": "medtop:01000000",
+          "labels": {
+            "en": "arts and entertainment",
+            "fr": "Arts et divertissement"
+          },
+          "definitions": {
+            "en": "All forms of arts and entertainment",
+            "fr": "Toutes les formes d'arts et de divertissement"
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000038",
+          "parent_id": "medtop:01000000",
+          "labels": {
+            "en": "culture",
+            "fr": "Culture"
+          },
+          "definitions": {
+            "en": "The ideas, customs, arts, traditions of a particular group of persons",
+            "fr": "Idées, coutumes, arts, traditions d'un groupe particulier de personnes"
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000045",
+          "parent_id": "medtop:01000000",
+          "labels": {
+            "en": "mass media",
+            "fr": "Médias"
+          },
+          "definitions": {
+            "en": "Media addressing a large audience",
+            "fr": "Médias s'adressant à une large audience"
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "medtop:02000000",
+      "labels": {
+        "en": "crime, law and justice",
+        "fr": "Criminalité, droit et justice"
+      },
+      "definitions": {
+        "en": "The establishment and/or statement of the rules of behaviour in society, the enforcement of these rules, breaches of the rules, the punishment of offenders and the organisations and bodies involved in these activities",
+        "fr": ""
+      },
+      "subcategories": [
+        {
+          "id": "medtop:20000082",
+          "parent_id": "medtop:02000000",
+          "labels": {
+            "en": "crime",
+            "fr": "Criminalité"
+          },
+          "definitions": {
+            "en": "Violations of laws by individuals, companies or organisations",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000106",
+          "parent_id": "medtop:02000000",
+          "labels": {
+            "en": "judiciary",
+            "fr": "Système judiciaire"
+          },
+          "definitions": {
+            "en": "The system of courts of law",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000119",
+          "parent_id": "medtop:02000000",
+          "labels": {
+            "en": "justice",
+            "fr": "Droits juridiques"
+          },
+          "definitions": {
+            "en": "The equitable administration of laws and regulations",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000121",
+          "parent_id": "medtop:02000000",
+          "labels": {
+            "en": "law",
+            "fr": "Lois"
+          },
+          "definitions": {
+            "en": "The codification of rules of behaviour",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000129",
+          "parent_id": "medtop:02000000",
+          "labels": {
+            "en": "law enforcement",
+            "fr": "Forces de l'ordre"
+          },
+          "definitions": {
+            "en": "Agencies that attempt to prevent disobedience to established laws or bring to justice those who disobey those laws",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "medtop:03000000",
+      "labels": {
+        "en": "disaster, accident and emergency incident",
+        "fr": "Désastres et accidents"
+      },
+      "definitions": {
+        "en": "Man made or natural event resulting in loss of life or injury to living creatures and/or damage to inanimate objects or property",
+        "fr": ""
+      },
+      "subcategories": [
+        {
+          "id": "medtop:20000139",
+          "parent_id": "medtop:03000000",
+          "labels": {
+            "en": "accident and emergency incident",
+            "fr": "Accident"
+          },
+          "definitions": {
+            "en": "A sudden, unexpected event that causes unwanted consequences or requires immediate action",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000148",
+          "parent_id": "medtop:03000000",
+          "labels": {
+            "en": "disaster",
+            "fr": "Désastres"
+          },
+          "definitions": {
+            "en": "A sudden, unplanned event that causes great damage or loss of life, such as an accident or a natural catastrophe",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000160",
+          "parent_id": "medtop:03000000",
+          "labels": {
+            "en": "emergency incident",
+            "fr": "Situation d'urgence"
+          },
+          "definitions": {
+            "en": "A sudden, unexpected event that requires immediate action to prevent serious consequences",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000167",
+          "parent_id": "medtop:03000000",
+          "labels": {
+            "en": "emergency planning",
+            "fr": "Prévention et organisation des secours"
+          },
+          "definitions": {
+            "en": "Planning for actions to deal with sudden, unplanned events",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000168",
+          "parent_id": "medtop:03000000",
+          "labels": {
+            "en": "emergency response",
+            "fr": "Secours d'urgence"
+          },
+          "definitions": {
+            "en": "The planning and efforts made by people and organizations to help victims of a sudden, unplanned event, natural disaster or crisis",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "medtop:04000000",
+      "labels": {
+        "en": "economy, business and finance",
+        "fr": "Économie et finances"
+      },
+      "definitions": {
+        "en": "All matters concerning the planning, production and exchange of wealth.",
+        "fr": ""
+      },
+      "subcategories": [
+        {
+          "id": "medtop:20000170",
+          "parent_id": "medtop:04000000",
+          "labels": {
+            "en": "business information",
+            "fr": "Microéconomie"
+          },
+          "definitions": {
+            "en": "Information about individual business entities, including companies, corporations, charities",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000209",
+          "parent_id": "medtop:04000000",
+          "labels": {
+            "en": "products and services",
+            "fr": "Secteurs économiques"
+          },
+          "definitions": {
+            "en": "Products and services consumed by companies and individuals and the companies that manufacture or manage them",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000344",
+          "parent_id": "medtop:04000000",
+          "labels": {
+            "en": "economy",
+            "fr": "Économie"
+          },
+          "definitions": {
+            "en": "Production, consumption, distribution and trade activities affecting regions or countries as a whole",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000349",
+          "parent_id": "medtop:04000000",
+          "labels": {
+            "en": "business enterprise",
+            "fr": "Entreprises"
+          },
+          "definitions": {
+            "en": "Organisations set up to create and sell a product or service",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000385",
+          "parent_id": "medtop:04000000",
+          "labels": {
+            "en": "market and exchange",
+            "fr": "Marchés"
+          },
+          "definitions": {
+            "en": "Market for buying and selling stocks, currencies, commodities and other goods",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "medtop:05000000",
+      "labels": {
+        "en": "education",
+        "fr": "Éducation"
+      },
+      "definitions": {
+        "en": "All aspects of furthering knowledge, formally or informally",
+        "fr": ""
+      },
+      "subcategories": [
+        {
+          "id": "medtop:20000398",
+          "parent_id": "medtop:05000000",
+          "labels": {
+            "en": "parents group",
+            "fr": "Parents d'élèves"
+          },
+          "definitions": {
+            "en": "Group of parents set up to support educational activities of their children",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000399",
+          "parent_id": "medtop:05000000",
+          "labels": {
+            "en": "religious education",
+            "fr": "Éducation religieuse"
+          },
+          "definitions": {
+            "en": "Instruction by any faith about that faith's principles and beliefs, including Sunday school or preparation for a religious rite, such as a bar mitzvah",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000400",
+          "parent_id": "medtop:05000000",
+          "labels": {
+            "en": "school",
+            "fr": "Écoles, collèges, lycées"
+          },
+          "definitions": {
+            "en": "A building or institution in which education is provided",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000410",
+          "parent_id": "medtop:05000000",
+          "labels": {
+            "en": "social learning",
+            "fr": "Apprentissage social"
+          },
+          "definitions": {
+            "en": "The learning of social skills and behaviours through the imitation and observation of others. This can include formal and informal instruction around empathy, emotions and mental health.",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000411",
+          "parent_id": "medtop:05000000",
+          "labels": {
+            "en": "teaching and learning",
+            "fr": "Pédagogie"
+          },
+          "definitions": {
+            "en": "Either end of the education equation",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000412",
+          "parent_id": "medtop:05000000",
+          "labels": {
+            "en": "curriculum",
+            "fr": "Programmes d'études"
+          },
+          "definitions": {
+            "en": "The courses offered by a learning institution and the regulation of those courses",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000413",
+          "parent_id": "medtop:05000000",
+          "labels": {
+            "en": "educational testing and examinations",
+            "fr": "Examen"
+          },
+          "definitions": {
+            "en": "Polices and standards around the testing and assessment of students, including the merits of standardised testing, and testing methods",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000414",
+          "parent_id": "medtop:05000000",
+          "labels": {
+            "en": "entrance examination",
+            "fr": "Examen ou concours d'entrée"
+          },
+          "definitions": {
+            "en": "Exams for entering colleges, universities and all other higher and lower education institutions",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000415",
+          "parent_id": "medtop:05000000",
+          "labels": {
+            "en": "students",
+            "fr": "Étudiants"
+          },
+          "definitions": {
+            "en": "Students as a demographic, including student protests and requests for change and trends among students",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000416",
+          "parent_id": "medtop:05000000",
+          "labels": {
+            "en": "teachers",
+            "fr": "Enseignants"
+          },
+          "definitions": {
+            "en": "Teachers as a demographic, including teacher unions, teacher education and training and the criteria for teachers in various locations",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001216",
+          "parent_id": "medtop:05000000",
+          "labels": {
+            "en": "vocational education",
+            "fr": "Enseignement professionnel"
+          },
+          "definitions": {
+            "en": "Education that provides students with practical experience and training in a particular occupational field. It is sometimes referred to as career education or technical education",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001217",
+          "parent_id": "medtop:05000000",
+          "labels": {
+            "en": "educational grading",
+            "fr": "Classement scolaire"
+          },
+          "definitions": {
+            "en": "The evaluation of a student's achievement on a test, assignment or course and the policies and methods around assigning those grades",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001337",
+          "parent_id": "medtop:05000000",
+          "labels": {
+            "en": "online and remote learning",
+            "fr": "Enseignement à distance"
+          },
+          "definitions": {
+            "en": "Learning where a student and teacher are not physically present in the same location. Instruction can occur synchronously or asynchronously and utilizes technology such as video conferencing, online assessments and video conferencing.",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "medtop:06000000",
+      "labels": {
+        "en": "environment",
+        "fr": "Environnement"
+      },
+      "definitions": {
+        "en": "The protection, damage, and condition of the ecosystem of the planet Earth and its surroundings",
+        "fr": ""
+      },
+      "subcategories": [
+        {
+          "id": "medtop:20000418",
+          "parent_id": "medtop:06000000",
+          "labels": {
+            "en": "climate change",
+            "fr": "Changement climatique"
+          },
+          "definitions": {
+            "en": "All issues relating to extreme changes in climate, including rising global temperature, debate on the causes and solutions of global warming, greenhouse gases and ways to reduce emissions",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000420",
+          "parent_id": "medtop:06000000",
+          "labels": {
+            "en": "conservation",
+            "fr": "Protection de la nature"
+          },
+          "definitions": {
+            "en": "Preservation of the natural world, such as wilderness areas, flora and fauna",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000424",
+          "parent_id": "medtop:06000000",
+          "labels": {
+            "en": "environmental pollution",
+            "fr": "Pollution de l'environnement"
+          },
+          "definitions": {
+            "en": "The contamination of natural resources by harmful substances",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000430",
+          "parent_id": "medtop:06000000",
+          "labels": {
+            "en": "natural resource",
+            "fr": "Ressources naturelles"
+          },
+          "definitions": {
+            "en": "Assets afforded by nature without human intervention that can be used for various purposes, such as providing energy or industrial materials",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000441",
+          "parent_id": "medtop:06000000",
+          "labels": {
+            "en": "nature",
+            "fr": "Nature"
+          },
+          "definitions": {
+            "en": "The natural world",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001374",
+          "parent_id": "medtop:06000000",
+          "labels": {
+            "en": "sustainability",
+            "fr": "sustainability"
+          },
+          "definitions": {
+            "en": "Actions by organizations, governments, and individuals in response to environmental problems",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "medtop:07000000",
+      "labels": {
+        "en": "health",
+        "fr": "Santé"
+      },
+      "definitions": {
+        "en": "All aspects of physical and mental well-being",
+        "fr": ""
+      },
+      "subcategories": [
+        {
+          "id": "medtop:20000446",
+          "parent_id": "medtop:07000000",
+          "labels": {
+            "en": "disease and condition",
+            "fr": "Maladies et état de santé"
+          },
+          "definitions": {
+            "en": "Any health conditions affecting humans",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000461",
+          "parent_id": "medtop:07000000",
+          "labels": {
+            "en": "health facility",
+            "fr": "Centre de soins"
+          },
+          "definitions": {
+            "en": "Facilities used for any kind of health care",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000463",
+          "parent_id": "medtop:07000000",
+          "labels": {
+            "en": "health organisation",
+            "fr": "Organisations de santé"
+          },
+          "definitions": {
+            "en": "Specific health organisations, including professional associations, non-profit and international groups",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000464",
+          "parent_id": "medtop:07000000",
+          "labels": {
+            "en": "health treatment and procedure",
+            "fr": "Traitements"
+          },
+          "definitions": {
+            "en": "Remedies, therapies, interventions, medications, testing and treatments to prevent, diagnose, manage or improve a health condition",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000480",
+          "parent_id": "medtop:07000000",
+          "labels": {
+            "en": "government health care",
+            "fr": "Soins de santé publics"
+          },
+          "definitions": {
+            "en": "Health care provided by governments at any level",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000483",
+          "parent_id": "medtop:07000000",
+          "labels": {
+            "en": "health insurance",
+            "fr": "Assurance maladie"
+          },
+          "definitions": {
+            "en": "Insurance covering medical costs",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000484",
+          "parent_id": "medtop:07000000",
+          "labels": {
+            "en": "private health care",
+            "fr": "Soins de santé privés"
+          },
+          "definitions": {
+            "en": "Health care provided by private organisations",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000485",
+          "parent_id": "medtop:07000000",
+          "labels": {
+            "en": "medical profession",
+            "fr": "Profession médicale"
+          },
+          "definitions": {
+            "en": "Profession requiring formal training in the study, diagnosis, treatment, care and prevention of disease, medical condition or injury",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000493",
+          "parent_id": "medtop:07000000",
+          "labels": {
+            "en": "non-human diseases",
+            "fr": "Maladies non-humaines"
+          },
+          "definitions": {
+            "en": "Any harmful or destructive health condition affecting animals, plants or microorganisms.",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001358",
+          "parent_id": "medtop:07000000",
+          "labels": {
+            "en": "public health",
+            "fr": "Santé publique"
+          },
+          "definitions": {
+            "en": "Organised public or private measures designed to prevent disease, promote health and prolong life among the population as a whole",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "medtop:08000000",
+      "labels": {
+        "en": "human interest",
+        "fr": "Gens animaux insolite"
+      },
+      "definitions": {
+        "en": "Item that discusses individuals, groups, animals, plants or other objects in an emotional way",
+        "fr": ""
+      },
+      "subcategories": [
+        {
+          "id": "medtop:20000497",
+          "parent_id": "medtop:08000000",
+          "labels": {
+            "en": "accomplishment",
+            "fr": "Succès"
+          },
+          "definitions": {
+            "en": "Achievements by individuals or groups, animals, plants or other objects, such as winning a competitive contest etc",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000498",
+          "parent_id": "medtop:08000000",
+          "labels": {
+            "en": "award and prize",
+            "fr": "Prix et récompenses"
+          },
+          "definitions": {
+            "en": "The recognition of an achievement in a field in the form of a symbolic item, such as a plaque or trophy or in the form of a monetary gift, such as a cash prize or grant, given by a government or private institution",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000499",
+          "parent_id": "medtop:08000000",
+          "labels": {
+            "en": "record and achievement",
+            "fr": "Record"
+          },
+          "definitions": {
+            "en": "Non-sport achievement by an individual or group that sets a new record, such as most books read or holding one's breath the longest",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000501",
+          "parent_id": "medtop:08000000",
+          "labels": {
+            "en": "ceremony",
+            "fr": "Cérémonie"
+          },
+          "definitions": {
+            "en": "Rituals, such as dedications, wreath laying or celebrating the launching of a ship",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000502",
+          "parent_id": "medtop:08000000",
+          "labels": {
+            "en": "people",
+            "fr": "Gens"
+          },
+          "definitions": {
+            "en": "Individuals or groups with a focus on emotional facets",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000503",
+          "parent_id": "medtop:08000000",
+          "labels": {
+            "en": "human mishap",
+            "fr": "Mésaventures"
+          },
+          "definitions": {
+            "en": "Silly or stupid human errors",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000504",
+          "parent_id": "medtop:08000000",
+          "labels": {
+            "en": "high society",
+            "fr": "Mondanités"
+          },
+          "definitions": {
+            "en": "Life and behaviour of the rich and socialites",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000505",
+          "parent_id": "medtop:08000000",
+          "labels": {
+            "en": "celebrity",
+            "fr": "Célébrités"
+          },
+          "definitions": {
+            "en": "Life and behaviour of famous people",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001237",
+          "parent_id": "medtop:08000000",
+          "labels": {
+            "en": "anniversary",
+            "fr": "Anniversaire"
+          },
+          "definitions": {
+            "en": "The celebration or commemoration of a significant amount of years since an event or a notable person's birth or death",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001238",
+          "parent_id": "medtop:08000000",
+          "labels": {
+            "en": "birthday",
+            "fr": "Anniversaire (jour de naissance)"
+          },
+          "definitions": {
+            "en": "A celebration on the anniversary of a person's birth.",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "medtop:09000000",
+      "labels": {
+        "en": "labour",
+        "fr": "Social"
+      },
+      "definitions": {
+        "en": "Social aspects, organisations, rules and conditions affecting the employment of human effort for the generation of wealth or provision of services and the economic support of the unemployed.",
+        "fr": ""
+      },
+      "subcategories": [
+        {
+          "id": "medtop:20000509",
+          "parent_id": "medtop:09000000",
+          "labels": {
+            "en": "employment",
+            "fr": "Emploi"
+          },
+          "definitions": {
+            "en": "The state of having work, usually paid, for a company, organisation, or individual",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000521",
+          "parent_id": "medtop:09000000",
+          "labels": {
+            "en": "employment legislation",
+            "fr": "Législation du travail"
+          },
+          "definitions": {
+            "en": "Laws governing employment",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000523",
+          "parent_id": "medtop:09000000",
+          "labels": {
+            "en": "labour market",
+            "fr": "Marché du travail"
+          },
+          "definitions": {
+            "en": "The supply and demand of labour in an economy",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000524",
+          "parent_id": "medtop:09000000",
+          "labels": {
+            "en": "labour relations",
+            "fr": "Relations du travail"
+          },
+          "definitions": {
+            "en": "The relationship between workers and employers",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000531",
+          "parent_id": "medtop:09000000",
+          "labels": {
+            "en": "retirement",
+            "fr": "Retraite"
+          },
+          "definitions": {
+            "en": "The years after work",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000533",
+          "parent_id": "medtop:09000000",
+          "labels": {
+            "en": "unemployment",
+            "fr": "Chômage"
+          },
+          "definitions": {
+            "en": "The state of being available to work but not having a job",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000536",
+          "parent_id": "medtop:09000000",
+          "labels": {
+            "en": "unions",
+            "fr": "Syndicats"
+          },
+          "definitions": {
+            "en": "Groups established to represent bodies of workers in order to obtain better workplace conditions through collective bargaining",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "medtop:10000000",
+      "labels": {
+        "en": "lifestyle and leisure",
+        "fr": "Vie quotidienne et loisirs"
+      },
+      "definitions": {
+        "en": "Activities undertaken for pleasure, relaxation or recreation outside paid employment, including eating and travel.",
+        "fr": ""
+      },
+      "subcategories": [
+        {
+          "id": "medtop:20000538",
+          "parent_id": "medtop:10000000",
+          "labels": {
+            "en": "leisure",
+            "fr": "Loisirs"
+          },
+          "definitions": {
+            "en": "Activities carried out in ones' spare time and not in a competitive way.",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000565",
+          "parent_id": "medtop:10000000",
+          "labels": {
+            "en": "lifestyle",
+            "fr": "Mode de vie"
+          },
+          "definitions": {
+            "en": "The way in which a person lives, including their style and possessions",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001339",
+          "parent_id": "medtop:10000000",
+          "labels": {
+            "en": "wellness",
+            "fr": "Bien-être"
+          },
+          "definitions": {
+            "en": "The active pursuit of good mental and physical health",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "medtop:11000000",
+      "labels": {
+        "en": "politics and government",
+        "fr": "Politique"
+      },
+      "definitions": {
+        "en": "Local, regional, national and international exercise of power, the day-to-day running of government, and the relationships between governing bodies and states.",
+        "fr": ""
+      },
+      "subcategories": [
+        {
+          "id": "medtop:20000574",
+          "parent_id": "medtop:11000000",
+          "labels": {
+            "en": "election",
+            "fr": "Élections"
+          },
+          "definitions": {
+            "en": "The selection of government representatives by the casting of votes by the populace",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000593",
+          "parent_id": "medtop:11000000",
+          "labels": {
+            "en": "government",
+            "fr": "Gouvernement"
+          },
+          "definitions": {
+            "en": "The systems, institutions and people who run a political entity",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000621",
+          "parent_id": "medtop:11000000",
+          "labels": {
+            "en": "government policy",
+            "fr": "Politique du gouvernement"
+          },
+          "definitions": {
+            "en": "An overall plan or course of action set out by a government intended to influence and guide decisions",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000638",
+          "parent_id": "medtop:11000000",
+          "labels": {
+            "en": "international relations",
+            "fr": "Relations internationales"
+          },
+          "definitions": {
+            "en": "Relations between nations through negotiation, treaty, or diplomacy",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000646",
+          "parent_id": "medtop:11000000",
+          "labels": {
+            "en": "non-governmental organisation (NGO)",
+            "fr": "Organisation non gouvernementale"
+          },
+          "definitions": {
+            "en": "Groups officially outside of government that lobby, demonstrate or campaign on a wide range of issues such as economics, the environment and healthcare",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000647",
+          "parent_id": "medtop:11000000",
+          "labels": {
+            "en": "political crisis",
+            "fr": "Crise politique"
+          },
+          "definitions": {
+            "en": "Conflict that rises to a level where, depending on events, governments can fall etc",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000648",
+          "parent_id": "medtop:11000000",
+          "labels": {
+            "en": "political prisoners and dissenters",
+            "fr": "Dissidence"
+          },
+          "definitions": {
+            "en": "Individuals who put themselves at risk by expressing their political views and the imprisonment of individuals who speak out against a political authority",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000649",
+          "parent_id": "medtop:11000000",
+          "labels": {
+            "en": "political process",
+            "fr": "Participation politique"
+          },
+          "definitions": {
+            "en": "The art or science of participating in the affairs of government, a state of political party",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "medtop:12000000",
+      "labels": {
+        "en": "religion",
+        "fr": "Religion et croyance"
+      },
+      "definitions": {
+        "en": "Belief systems, institutions and people who provide moral guidance to followers",
+        "fr": ""
+      },
+      "subcategories": [
+        {
+          "id": "medtop:20000657",
+          "parent_id": "medtop:12000000",
+          "labels": {
+            "en": "belief systems",
+            "fr": "Croyances"
+          },
+          "definitions": {
+            "en": "A set of beliefs prescribed by an institution or text often focusing on the worship of a higher power and the outlining of moral guidelines",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000687",
+          "parent_id": "medtop:12000000",
+          "labels": {
+            "en": "interreligious dialogue",
+            "fr": "Dialogue interreligieux"
+          },
+          "definitions": {
+            "en": "Any form of communication between religions",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000688",
+          "parent_id": "medtop:12000000",
+          "labels": {
+            "en": "religious conflict",
+            "fr": "Conflit religieux"
+          },
+          "definitions": {
+            "en": "Conflicts involving religious differences",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000689",
+          "parent_id": "medtop:12000000",
+          "labels": {
+            "en": "religious event",
+            "fr": "Événement religieux"
+          },
+          "definitions": {
+            "en": "News regarding a religious event but not a festival or holiday",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000690",
+          "parent_id": "medtop:12000000",
+          "labels": {
+            "en": "religious festival and holiday",
+            "fr": "Fête religieuse"
+          },
+          "definitions": {
+            "en": "Holy day or period of observance in a religion which is sometimes a public holiday",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000696",
+          "parent_id": "medtop:12000000",
+          "labels": {
+            "en": "religious ritual",
+            "fr": "Rites religieux"
+          },
+          "definitions": {
+            "en": "Established religious rituals such as mass, baptism, prayer meetings and bar and bat mitzvah",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000697",
+          "parent_id": "medtop:12000000",
+          "labels": {
+            "en": "religious facility",
+            "fr": "Établissement religieux"
+          },
+          "definitions": {
+            "en": "Any facility where a group carries out its religious rites",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000702",
+          "parent_id": "medtop:12000000",
+          "labels": {
+            "en": "relations between religion and government",
+            "fr": "Relations entre les institutions religieuses et l'Etat"
+          },
+          "definitions": {
+            "en": "Matters arising from the relationship between religions and a government, including the question of whether churches should pay taxes, the push to keep religion out of publicly funded institutions and the freedom, or lack of to wear religious symbols in a school setting",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000703",
+          "parent_id": "medtop:12000000",
+          "labels": {
+            "en": "religious leader",
+            "fr": "Chefs religieux"
+          },
+          "definitions": {
+            "en": "Person or persons who have a ritual, juridical or otherwise leading role in their respective church or religion",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000705",
+          "parent_id": "medtop:12000000",
+          "labels": {
+            "en": "religious text",
+            "fr": "Textes religieux"
+          },
+          "definitions": {
+            "en": "Texts regarded as holy or important by a religion",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "medtop:13000000",
+      "labels": {
+        "en": "science and technology",
+        "fr": "Science et technologie"
+      },
+      "definitions": {
+        "en": "All aspects pertaining to human understanding of, as well as methodical study and research of natural, formal and social sciences, such as astronomy, linguistics or economics",
+        "fr": "Tous les domaines relatifs à la compréhension humaine, ainsi qu'à l'étude méthodique et à la recherche des sciences naturelles, formelles et sociales, telles que l'astronomie, la linguistique ou l'économie"
+      },
+      "subcategories": [
+        {
+          "id": "medtop:20000710",
+          "parent_id": "medtop:13000000",
+          "labels": {
+            "en": "biomedical science",
+            "fr": "Sciences biomédicales"
+          },
+          "definitions": {
+            "en": "The application of biology-based science to medical fields such as research, health monitoring or medical treatment",
+            "fr": "Application de la science basée sur la biologie à des domaines médicaux tels que la recherche, les contrôles de santé ou le traitement médical"
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000715",
+          "parent_id": "medtop:13000000",
+          "labels": {
+            "en": "mathematics",
+            "fr": "Mathématiques"
+          },
+          "definitions": {
+            "en": "The study of structure, space, change and number in abstract, often using symbolic logic and language, and including subjects such as geometry, algebra or trigonometry",
+            "fr": "Etude concrète ou abstraite des nombres, des formes, des structures, de l'espace, basée sur des raisonnements logiques, utilisant souvent un langage symbolique, et incluant des sujets tels que la géométrie, l'algèbre ou la trigonométrie"
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000717",
+          "parent_id": "medtop:13000000",
+          "labels": {
+            "en": "natural science",
+            "fr": "Sciences naturelles"
+          },
+          "definitions": {
+            "en": "The sciences that deal with matter, energy and the physical world, including physics, biology, chemistry and astronomy",
+            "fr": "Sciences traitant de la matière, de l'énergie et du monde physique, et comprenant la physique, la biologie, la chimie et l'astronomie"
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000735",
+          "parent_id": "medtop:13000000",
+          "labels": {
+            "en": "scientific research",
+            "fr": "Recherche scientifique"
+          },
+          "definitions": {
+            "en": "The scientific and methodical investigation of events, procedures and interactions to explain why they occur, or to find solutions for problems",
+            "fr": "Investigation scientifique et méthodique des événements, des procédures et des interactions pour expliquer pourquoi elles se produisent ou pour trouver des solutions aux problèmes"
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000741",
+          "parent_id": "medtop:13000000",
+          "labels": {
+            "en": "scientific institution",
+            "fr": "Institution scientifique"
+          },
+          "definitions": {
+            "en": "Institution that carries out or governs scientific work, such as the National Academy of Arts and Sciences",
+            "fr": "Institution qui exécute ou gère des travaux scientifiques, tels que l'Académie des arts et des sciences"
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000742",
+          "parent_id": "medtop:13000000",
+          "labels": {
+            "en": "social sciences",
+            "fr": "Sciences sociales"
+          },
+          "definitions": {
+            "en": "The study of human society in such aspects as linguistics, anthropology, economics or sociology",
+            "fr": "Etude de la société humaine dans des domaines tels que la linguistique, l'anthropologie, l'économie ou la sociologie"
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000755",
+          "parent_id": "medtop:13000000",
+          "labels": {
+            "en": "scientific standards",
+            "fr": "Standards"
+          },
+          "definitions": {
+            "en": "Nationally or internationally established rules governing scientific and technological study and development, such as calibration standards for scientific tools or equipment",
+            "fr": "Règles établies au niveau national ou international régissant les études et le développement scientifiques et technologiques, telles que les normes d'étalonnage pour les outils ou les équipements scientifiques"
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000756",
+          "parent_id": "medtop:13000000",
+          "labels": {
+            "en": "technology and engineering",
+            "fr": "Technologie et ingénierie"
+          },
+          "definitions": {
+            "en": "The study and practice of industrial or applied sciences such as physics, hydrodynamics or thermodynamics",
+            "fr": "Etude et pratique des sciences industrielles ou appliquées telles que la physique, l'hydrodynamique ou la thermodynamique"
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "medtop:14000000",
+      "labels": {
+        "en": "society",
+        "fr": "Société"
+      },
+      "definitions": {
+        "en": "The concerns, issues, affairs and institutions relevant to human social interactions, problems and welfare, such as poverty, human rights and family planning",
+        "fr": ""
+      },
+      "subcategories": [
+        {
+          "id": "medtop:20000587",
+          "parent_id": "medtop:14000000",
+          "labels": {
+            "en": "fundamental rights",
+            "fr": "Droits fondamentaux"
+          },
+          "definitions": {
+            "en": "The political, social, cultural and economic rights to which all people are entitled, usually upheld by law",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000768",
+          "parent_id": "medtop:14000000",
+          "labels": {
+            "en": "communities",
+            "fr": "Communauté"
+          },
+          "definitions": {
+            "en": "A group of individuals actively sharing a common value or interest",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000770",
+          "parent_id": "medtop:14000000",
+          "labels": {
+            "en": "demographics",
+            "fr": "Démographie"
+          },
+          "definitions": {
+            "en": "The study of human populations and their characteristics, for example statistics or trends around aging populations in a particular geographic region",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000771",
+          "parent_id": "medtop:14000000",
+          "labels": {
+            "en": "immigration",
+            "fr": "Immigration"
+          },
+          "definitions": {
+            "en": "The movement of individuals or groups of people from one country to another",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000772",
+          "parent_id": "medtop:14000000",
+          "labels": {
+            "en": "emigration",
+            "fr": "Émigrés"
+          },
+          "definitions": {
+            "en": "Leaving one's country of residence to settle permanently elsewhere",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000775",
+          "parent_id": "medtop:14000000",
+          "labels": {
+            "en": "discrimination",
+            "fr": "Discrimination"
+          },
+          "definitions": {
+            "en": "Unfair treatment of, or policies or practices against, individuals or groups of people on the basis of real or perceived membership in a group, such as race, sexual orientation, political or religious beliefs, age or height",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000780",
+          "parent_id": "medtop:14000000",
+          "labels": {
+            "en": "family",
+            "fr": "Famille"
+          },
+          "definitions": {
+            "en": "A group of people related genetically or by a legal bond, or who consider themselves part of a familial unit regardless of genetic or legal status",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000788",
+          "parent_id": "medtop:14000000",
+          "labels": {
+            "en": "demographic group",
+            "fr": "L'humanité"
+          },
+          "definitions": {
+            "en": "A subset of society with shared traits",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000799",
+          "parent_id": "medtop:14000000",
+          "labels": {
+            "en": "social condition",
+            "fr": "Condition sociale"
+          },
+          "definitions": {
+            "en": "The circumstances or state of affairs affecting a person's life, welfare and relations with others in a society",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000802",
+          "parent_id": "medtop:14000000",
+          "labels": {
+            "en": "social problem",
+            "fr": "Problèmes sociaux"
+          },
+          "definitions": {
+            "en": "Issues related to human rights, human welfare and other areas of societal concern",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000808",
+          "parent_id": "medtop:14000000",
+          "labels": {
+            "en": "values",
+            "fr": "Valeurs"
+          },
+          "definitions": {
+            "en": "A person's or group's principles or standards of behaviour, which guide their way of living and choices made",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000817",
+          "parent_id": "medtop:14000000",
+          "labels": {
+            "en": "welfare",
+            "fr": "Protection sociale"
+          },
+          "definitions": {
+            "en": "Help for those in need of food, housing, health and other services",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001373",
+          "parent_id": "medtop:14000000",
+          "labels": {
+            "en": "diversity, equity and inclusion",
+            "fr": "diversity, equity and inclusion"
+          },
+          "definitions": {
+            "en": "Efforts that seeks to promote the fair treatment and full participation of groups of people who have historically been underrepresented or subject to discrimination on the basis of identity or disability",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "medtop:15000000",
+      "labels": {
+        "en": "sport",
+        "fr": "Sport"
+      },
+      "definitions": {
+        "en": "Competitive activity or skill that involves physical and/or mental effort and organisations and bodies involved in these activities",
+        "fr": ""
+      },
+      "subcategories": [
+        {
+          "id": "medtop:20000822",
+          "parent_id": "medtop:15000000",
+          "labels": {
+            "en": "competition discipline",
+            "fr": "Discipline"
+          },
+          "definitions": {
+            "en": "Different types of sport which can be executed in competitions",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001103",
+          "parent_id": "medtop:15000000",
+          "labels": {
+            "en": "disciplinary action in sport",
+            "fr": "Mesures disciplinaires dans le sport"
+          },
+          "definitions": {
+            "en": "Actions, including fines and suspensions levied by sports organisations and teams",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001104",
+          "parent_id": "medtop:15000000",
+          "labels": {
+            "en": "drug use in sport",
+            "fr": "Médicaments autorisés dans le sport"
+          },
+          "definitions": {
+            "en": "Drug use associated with sport activities, including doping, abuse, testing and permitted medical uses",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001108",
+          "parent_id": "medtop:15000000",
+          "labels": {
+            "en": "sport event",
+            "fr": "Évènement sportif"
+          },
+          "definitions": {
+            "en": "An event featuring one or more sport competitions",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001124",
+          "parent_id": "medtop:15000000",
+          "labels": {
+            "en": "sport industry",
+            "fr": "Industrie du sport"
+          },
+          "definitions": {
+            "en": "Commercial issues related to sport",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001125",
+          "parent_id": "medtop:15000000",
+          "labels": {
+            "en": "sport organisation",
+            "fr": "Organisation sportive"
+          },
+          "definitions": {
+            "en": "Organisations or associations that govern sports",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001126",
+          "parent_id": "medtop:15000000",
+          "labels": {
+            "en": "sport venue",
+            "fr": "Site sportif"
+          },
+          "definitions": {
+            "en": "Gymnasiums, stadiums, arenas or facilities where sports events take place",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001148",
+          "parent_id": "medtop:15000000",
+          "labels": {
+            "en": "sports transaction",
+            "fr": "Transfert (sport)"
+          },
+          "definitions": {
+            "en": "The transfer of an athlete from one team to another, the hiring or drafting of an athlete onto a team or the change in professional status of a player on a team",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001301",
+          "parent_id": "medtop:15000000",
+          "labels": {
+            "en": "sport achievement",
+            "fr": "Exploit sportif"
+          },
+          "definitions": {
+            "en": "Records or honours earned by athletes for their performance",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001323",
+          "parent_id": "medtop:15000000",
+          "labels": {
+            "en": "sports coaching",
+            "fr": "Entraînement sportif"
+          },
+          "definitions": {
+            "en": "The staff responsible for the training and on-field management of a sports team",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001324",
+          "parent_id": "medtop:15000000",
+          "labels": {
+            "en": "sports management and ownership",
+            "fr": "Dirigeants sportifs"
+          },
+          "definitions": {
+            "en": "The executive leadership and owners of a sports team",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001325",
+          "parent_id": "medtop:15000000",
+          "labels": {
+            "en": "sports officiating",
+            "fr": "Arbitrage sportif"
+          },
+          "definitions": {
+            "en": "Referees, umpires and other staff who enforce the rules of a sport from on the field of play",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "medtop:16000000",
+      "labels": {
+        "en": "conflict, war and peace",
+        "fr": "Conflit, guerre et paix"
+      },
+      "definitions": {
+        "en": "Acts of socially or politically motivated protest or violence, military activities, geopolitical conflicts, as well as resolution efforts",
+        "fr": "Actes de violence dont les motifs peuvent être sociaux ou politiques, activités militaires, conflits géopolitiques, efforts de résolution de conflit"
+      },
+      "subcategories": [
+        {
+          "id": "medtop:20000053",
+          "parent_id": "medtop:16000000",
+          "labels": {
+            "en": "act of terror",
+            "fr": "Acte de terrorisme"
+          },
+          "definitions": {
+            "en": "Act of violence, often resulting in casualties, designed to raise fear and anxiety in a population",
+            "fr": "Acte de violence, entraînant souvent des victimes, destiné à susciter la peur et l'anxiété dans une population"
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000056",
+          "parent_id": "medtop:16000000",
+          "labels": {
+            "en": "armed conflict",
+            "fr": "Conflit armé"
+          },
+          "definitions": {
+            "en": "Disputes between opposing groups involving the use of weapons, but not necessarily formally declared wars",
+            "fr": "Conflits entre groupes opposés impliquant l'utilisation d'armes, pas nécessairement des guerres déclarées"
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000065",
+          "parent_id": "medtop:16000000",
+          "labels": {
+            "en": "civil unrest",
+            "fr": "Troubles civils"
+          },
+          "definitions": {
+            "en": "Rallies, strikes, demonstrations, riots or other disturbances by a population, often in protest to a government or other organization's policies or actions",
+            "fr": "Rassemblements, grèves, manifestations, émeutes ou autres perturbations menées par une population, souvent pour protester contre les politiques ou les actions d'un gouvernement ou d'une autre organisation"
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000070",
+          "parent_id": "medtop:16000000",
+          "labels": {
+            "en": "coup d'etat",
+            "fr": "Coup d'Etat"
+          },
+          "definitions": {
+            "en": "The overthrow of an established government by an organised military or political group",
+            "fr": "Renversement d'un gouvernement par un groupe militaire ou politique organisé"
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000071",
+          "parent_id": "medtop:16000000",
+          "labels": {
+            "en": "massacre",
+            "fr": "Massacre"
+          },
+          "definitions": {
+            "en": "The mass killing of people, usually civilians, during wartime hostilities",
+            "fr": "Massacre de personnes, généralement des civils, pendant les hostilités en temps de guerre"
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000073",
+          "parent_id": "medtop:16000000",
+          "labels": {
+            "en": "peace process",
+            "fr": "Processus de paix"
+          },
+          "definitions": {
+            "en": "Organized actions to end a war or conflict, usually involving peace negotiations and agreements",
+            "fr": "Actions organisées pour mettre fin à une guerre ou à un conflit, impliquant généralement des négociations de paix et des accords"
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20000077",
+          "parent_id": "medtop:16000000",
+          "labels": {
+            "en": "post-war reconstruction",
+            "fr": "Reconstruction"
+          },
+          "definitions": {
+            "en": "Actions to rebuild a society, economy or political system in an area affected by war",
+            "fr": "Actions pour reconstruire une société, une économie ou un système politique dans une zone touchée par la guerre"
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001361",
+          "parent_id": "medtop:16000000",
+          "labels": {
+            "en": "cyber warfare",
+            "fr": "cyber warfare"
+          },
+          "definitions": {
+            "en": "Cyber attacks, or suspected attacks, involving a government entity as either the sponsor or the target, or preventive measures against these types of actions",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001377",
+          "parent_id": "medtop:16000000",
+          "labels": {
+            "en": "war victims",
+            "fr": "war victims"
+          },
+          "definitions": {
+            "en": "Individuals who are injured or killed in a war or armed conflict, including civilians",
+            "fr": ""
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "medtop:17000000",
+      "labels": {
+        "en": "weather",
+        "fr": "Météo"
+      },
+      "definitions": {
+        "en": "The study, prediction and reporting of meteorological phenomena",
+        "fr": "Etude, observation et prévision des phénomènes météorologiques"
+      },
+      "subcategories": [
+        {
+          "id": "medtop:20001128",
+          "parent_id": "medtop:17000000",
+          "labels": {
+            "en": "weather forecast",
+            "fr": "Prévisions météorologiques"
+          },
+          "definitions": {
+            "en": "The long- or short-term meteorological prediction and reporting of the upcoming weather for a given region",
+            "fr": "Prévision ou rapport météorologique à long ou à court terme pour une région donnée"
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001129",
+          "parent_id": "medtop:17000000",
+          "labels": {
+            "en": "weather phenomena",
+            "fr": "Phénomène météorologique"
+          },
+          "definitions": {
+            "en": "Short- or long-term meteorological phenomena worthy of study, reporting or public advisory such as climate change, storms, heat waves or tornadoes",
+            "fr": "Phénomène météorologique à court ou à long terme digne d'être étudié, signalé ou rapporté tel que le changement climatique, les tempêtes, les vagues de chaleur ou les tornades"
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001130",
+          "parent_id": "medtop:17000000",
+          "labels": {
+            "en": "weather statistic",
+            "fr": "Statistiques météorologiques"
+          },
+          "definitions": {
+            "en": "Numerical facts about the weather such as temperature, barometric pressure, river levels, humidity or high and low tides",
+            "fr": "Données numériques telles que la température, le taux d'humidité, la pression atmosphérique, le niveau de crue ou la variation des marées"
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        },
+        {
+          "id": "medtop:20001131",
+          "parent_id": "medtop:17000000",
+          "labels": {
+            "en": "weather warning",
+            "fr": "Alertes météorologiques"
+          },
+          "definitions": {
+            "en": "Alerts issued to the public about severe or notable weather in their area",
+            "fr": "Alertes aux populations les avertissant de conditions météorologiques dangeureuses dans leur région"
+          },
+          "anchors": {
+            "en": [],
+            "fr": []
+          }
+        }
+      ]
+    }
+  ]
+}

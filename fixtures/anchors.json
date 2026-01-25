@@ -1,0 +1,307 @@
+{
+  "lang": "en",
+  "topk": 50,
+  "max_ngram": 3,
+  "anchors": [
+    {
+      "phrase": "World Economic Forum",
+      "score": 0.0018754151129825468,
+      "key": "world economic forum",
+      "multiword": true
+    },
+    {
+      "phrase": "Carney",
+      "score": 0.005547380753889118,
+      "key": "carney",
+      "multiword": false
+    },
+    {
+      "phrase": "Economic Forum",
+      "score": 0.007334638417222485,
+      "key": "economic forum",
+      "multiword": true
+    },
+    {
+      "phrase": "prime minister",
+      "score": 0.008519052467361947,
+      "key": "prime minister",
+      "multiword": true
+    },
+    {
+      "phrase": "Trump",
+      "score": 0.010543452701450292,
+      "key": "trump",
+      "multiword": false
+    },
+    {
+      "phrase": "Canada",
+      "score": 0.011416990262434167,
+      "key": "canada",
+      "multiword": false
+    },
+    {
+      "phrase": "Canada Letter",
+      "score": 0.014825673996177556,
+      "key": "canada letter",
+      "multiword": true
+    },
+    {
+      "phrase": "World Economic",
+      "score": 0.014854899800326664,
+      "key": "world economic",
+      "multiword": true
+    },
+    {
+      "phrase": "Minister Mark Carney",
+      "score": 0.01596416218017565,
+      "key": "minister mark carney",
+      "multiword": true
+    },
+    {
+      "phrase": "Mark Carney",
+      "score": 0.01742948438753616,
+      "key": "mark carney",
+      "multiword": true
+    },
+    {
+      "phrase": "Trump Rescinds Canada",
+      "score": 0.02202366593499982,
+      "key": "trump rescinds canada",
+      "multiword": true
+    },
+    {
+      "phrase": "United States",
+      "score": 0.024119363565184796,
+      "key": "united states",
+      "multiword": true
+    },
+    {
+      "phrase": "prime",
+      "score": 0.029538293088540765,
+      "key": "prime",
+      "multiword": false
+    },
+    {
+      "phrase": "Prime Minister Mark",
+      "score": 0.029959358862075867,
+      "key": "prime minister mark",
+      "multiword": true
+    },
+    {
+      "phrase": "minister",
+      "score": 0.030000615127647654,
+      "key": "minister",
+      "multiword": false
+    },
+    {
+      "phrase": "world order",
+      "score": 0.03374204921603914,
+      "key": "world order",
+      "multiword": true
+    },
+    {
+      "phrase": "Davos",
+      "score": 0.03517730609112533,
+      "key": "davos",
+      "multiword": false
+    },
+    {
+      "phrase": "World",
+      "score": 0.04039797929253636,
+      "key": "world",
+      "multiword": false
+    },
+    {
+      "phrase": "United",
+      "score": 0.04418362714121871,
+      "key": "united",
+      "multiword": false
+    },
+    {
+      "phrase": "Mark Carney made",
+      "score": 0.049304290604049984,
+      "key": "mark carney made",
+      "multiword": true
+    },
+    {
+      "phrase": "Read",
+      "score": 0.055002766439526264,
+      "key": "read",
+      "multiword": false
+    },
+    {
+      "phrase": "Economic",
+      "score": 0.059517405112659856,
+      "key": "economic",
+      "multiword": false
+    },
+    {
+      "phrase": "Forum",
+      "score": 0.06072677452770755,
+      "key": "forum",
+      "multiword": false
+    },
+    {
+      "phrase": "president",
+      "score": 0.061447601236906256,
+      "key": "president",
+      "multiword": false
+    },
+    {
+      "phrase": "President Trump",
+      "score": 0.06632033516772301,
+      "key": "president trump",
+      "multiword": true
+    },
+    {
+      "phrase": "Carney Doctrine",
+      "score": 0.06935343796754609,
+      "key": "carney doctrine",
+      "multiword": true
+    },
+    {
+      "phrase": "Letter",
+      "score": 0.0710884204476471,
+      "key": "letter",
+      "multiword": false
+    },
+    {
+      "phrase": "prime minister yesterday",
+      "score": 0.08283652071254491,
+      "key": "prime minister yesterday",
+      "multiword": true
+    },
+    {
+      "phrase": "States",
+      "score": 0.08297619622338165,
+      "key": "states",
+      "multiword": false
+    },
+    {
+      "phrase": "Trump Calls",
+      "score": 0.09231364412711753,
+      "key": "trump calls",
+      "multiword": true
+    },
+    {
+      "phrase": "Canada Flexes",
+      "score": 0.09342734412060003,
+      "key": "canada flexes",
+      "multiword": true
+    },
+    {
+      "phrase": "Carney stole",
+      "score": 0.0936504582807428,
+      "key": "carney stole",
+      "multiword": true
+    },
+    {
+      "phrase": "speech",
+      "score": 0.0942056219942658,
+      "key": "speech",
+      "multiword": false
+    },
+    {
+      "phrase": "Trump Rescinds",
+      "score": 0.09489159081541132,
+      "key": "trump rescinds",
+      "multiword": true
+    },
+    {
+      "phrase": "Carney made",
+      "score": 0.09820898164529251,
+      "key": "carney made",
+      "multiword": true
+    },
+    {
+      "phrase": "n’t",
+      "score": 0.10581892271908104,
+      "key": "n’t",
+      "multiword": false
+    },
+    {
+      "phrase": "Carney warned",
+      "score": 0.11074061771335253,
+      "key": "carney warned",
+      "multiword": true
+    },
+    {
+      "phrase": "Minister Mark",
+      "score": 0.11206632524871124,
+      "key": "minister mark",
+      "multiword": true
+    },
+    {
+      "phrase": "Carney speak",
+      "score": 0.11664157444110139,
+      "key": "carney speak",
+      "multiword": true
+    },
+    {
+      "phrase": "Canada lives",
+      "score": 0.11676377897065213,
+      "key": "canada lives",
+      "multiword": true
+    },
+    {
+      "phrase": "Rescinds Canada",
+      "score": 0.11804183755155138,
+      "key": "rescinds canada",
+      "multiword": true
+    },
+    {
+      "phrase": "Forum in Davos",
+      "score": 0.11873512285932487,
+      "key": "forum in davos",
+      "multiword": true
+    },
+    {
+      "phrase": "Carney called",
+      "score": 0.11934091146918763,
+      "key": "carney called",
+      "multiword": true
+    },
+    {
+      "phrase": "Carney shot",
+      "score": 0.1233581899636814,
+      "key": "carney shot",
+      "multiword": true
+    },
+    {
+      "phrase": "Mark",
+      "score": 0.12440863286945553,
+      "key": "mark",
+      "multiword": false
+    },
+    {
+      "phrase": "Canada ’s prime",
+      "score": 0.12477244792840167,
+      "key": "canada ’s prime",
+      "multiword": true
+    },
+    {
+      "phrase": "Carney pushed",
+      "score": 0.12508614865333523,
+      "key": "carney pushed",
+      "multiword": true
+    },
+    {
+      "phrase": "order",
+      "score": 0.12641076138654297,
+      "key": "order",
+      "multiword": false
+    },
+    {
+      "phrase": "Trump made",
+      "score": 0.12779040001333172,
+      "key": "trump made",
+      "multiword": true
+    },
+    {
+      "phrase": "Davos Speech",
+      "score": 0.13120444429380715,
+      "key": "davos speech",
+      "multiword": true
+    }
+  ]
+}

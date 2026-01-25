@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 space-y-3 border-b border-gray-200">
+  <div class="space-y-3">
     <div class="relative w-full">
       <MagnifyingGlassIcon class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
       <input
@@ -53,19 +53,41 @@
         <option :value="7">Last 7 days</option>
         <option :value="30">Last 30 days</option>
       </select>
+      <div class="ml-auto flex items-center gap-2">
+        <!-- <div class="text-xs font-semibold uppercase tracking-widest text-gray-400">View</div> -->
+        <div class="join">
+          <button
+            class="btn btn-xs join-item"
+            type="button"
+            :class="viewModeModel === 'cards' ? 'btn-primary' : 'btn-outline'"
+            @click="viewModeModel = 'cards'"
+          >
+            <Square3Stack3DIcon class="inline-block w-4 h-4" />
+          </button>
+          <button
+            class="btn btn-xs join-item"
+            type="button"
+            :class="viewModeModel === 'list' ? 'btn-primary' : 'btn-outline'"
+            @click="viewModeModel = 'list'"
+          >
+            <TableCellsIcon class="inline-block w-4 h-4" />
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue';
-import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/vue/24/solid';
+import { MagnifyingGlassIcon, XMarkIcon, Square3Stack3DIcon, TableCellsIcon } from '@heroicons/vue/24/solid';
 
 const props = defineProps({
   searchQuery: { type: String, default: '' },
   languageFilter: { type: String, default: '' },
   sourceFilter: { type: String, default: '' },
   timeWindowDays: { type: Number, default: 0 },
+  viewMode: { type: String, default: 'cards' },
   languageOptions: { type: Array, default: () => [] },
   sourceOptions: { type: Array, default: () => [] }
 });
@@ -74,7 +96,8 @@ const emit = defineEmits([
   'update:searchQuery',
   'update:languageFilter',
   'update:sourceFilter',
-  'update:timeWindowDays'
+  'update:timeWindowDays',
+  'update:viewMode'
 ]);
 
 const searchModel = computed({
@@ -95,5 +118,10 @@ const sourceModel = computed({
 const timeWindowModel = computed({
   get: () => props.timeWindowDays,
   set: (value) => emit('update:timeWindowDays', value)
+});
+
+const viewModeModel = computed({
+  get: () => props.viewMode,
+  set: (value) => emit('update:viewMode', value)
 });
 </script>

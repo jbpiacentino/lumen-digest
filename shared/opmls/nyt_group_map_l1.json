@@ -1,0 +1,22 @@
+{
+  "World": ["medtop:11000000"],
+  "U.S.": ["medtop:11000000"],
+  "US": ["medtop:11000000"],
+  "Politics": ["medtop:11000000"],
+
+  "Business": ["medtop:04000000"],
+  "Technology": ["medtop:13000000"],
+  "Science": ["medtop:13000000"],
+  "Climate": ["medtop:06000000"],
+  "Health": ["medtop:07000000"],
+  "Sports": ["medtop:15000000"],
+
+  "Arts": ["medtop:01000000"],
+  "Style": ["medtop:10000000"],
+  "Travel": ["medtop:10000000"],
+  "Food": ["medtop:10000000"],
+  "Dining": ["medtop:10000000"],
+
+  "Education": ["medtop:05000000"],
+  "Opinion": ["medtop:14000000"]
+}

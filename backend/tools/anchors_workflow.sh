@@ -1,0 +1,3 @@
+python backend/tools/clean_article.py --in fixtures/full_text.txt --out fixtures/cleaned.txt
+python backend/tools/extract_anchors.py --lang en --topk 50 --max-ngram 3 --in fixtures/cleaned.txt --json fixtures/anchors.json 
+python backend/tools/bm25_classify.py --taxonomy shared/lumen_taxonomy_iptc_l1l2_subcategories_tight_v3.1.0.json --lang en --title "Mark Carney Takes On Donald Trump and Emerges as a Global Political Star" --in fixtures/cleaned.txt --anchors-json fixtures/anchors.json --anchors-top 25 --topk 10 --max-labels 3 --within-best 0.85

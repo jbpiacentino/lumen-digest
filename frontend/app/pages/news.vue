@@ -6,14 +6,6 @@
       :style="{ width: `${sidebarWidth}px` }"
     >
       <aside class="w-full bg-white border-r border-gray-200 overflow-y-auto">
-        <NewsFilters
-          v-model:searchQuery="searchQuery"
-          v-model:languageFilter="languageFilter"
-          v-model:sourceFilter="sourceFilter"
-          v-model:timeWindowDays="timeWindowDays"
-          :language-options="languageOptions"
-          :source-options="sourceOptions"
-        />
         <CategoryList
           :category-tree-with-counts="categoryTreeWithCounts"
           :active-category="activeCategory"
@@ -50,30 +42,20 @@
               <p class="italic text-lg">Lumen AI is reading and sorting your news...</p>
             </div>
 
-            <div v-else-if="displayArticles.length > 0" class="space-y-6">
-              <div class="flex items-center justify-between gap-3">
-                <div class="text-xs font-semibold uppercase tracking-widest text-gray-400">
-                  View
-                </div>
-                <div class="join">
-                  <button
-                    class="btn btn-xs join-item"
-                    type="button"
-                    :class="viewMode === 'cards' ? 'btn-primary' : 'btn-outline'"
-                    @click="viewMode = 'cards'"
-                  >
-                    <Square3Stack3DIcon class="inline-block w-4 h-4 mr-1" />
-                  </button>
-                  <button
-                    class="btn btn-xs join-item"
-                    type="button"
-                    :class="viewMode === 'list' ? 'btn-primary' : 'btn-outline'"
-                    @click="viewMode = 'list'"
-                  >
-                    <TableCellsIcon class="inline-block w-4 h-4 mr-1" />
-                  </button>
-                </div>
+            <div v-else class="space-y-6">
+              <NewsFilters
+                v-model:searchQuery="searchQuery"
+                v-model:languageFilter="languageFilter"
+                v-model:sourceFilter="sourceFilter"
+                v-model:timeWindowDays="timeWindowDays"
+                v-model:viewMode="viewMode"
+                :language-options="languageOptions"
+                :source-options="sourceOptions"
+              />
+              <div v-if="displayArticles.length === 0" class="text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-200">
+                <p class="text-gray-400">No articles found. Click \"Refresh\" to fetch new content.</p>
               </div>
+              <div v-else class="space-y-6">
               <Pager
                 :current-page="currentPage"
                 :total-pages="totalPages"
@@ -146,23 +128,39 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-for="article in listArticles" :key="article.id">
-                        <td class="text-xs font-medium text-gray-600">{{ categoryLabel(article.category_id) }}</td>
-                        <td class="text-sm text-gray-700">{{ getArticleSource(article) }}</td>
-                        <td class="text-sm font-semibold text-gray-900">
-                          <a
-                            v-if="article.url"
-                            :href="article.url"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="hover:underline"
-                          >
-                            {{ article.title }}
-                          </a>
-                          <span v-else>{{ article.title }}</span>
-                        </td>
-                        <td class="text-xs text-gray-500">{{ formatPublishedAt(article.published_at) }}</td>
-                      </tr>
+                      <template v-for="article in listArticles" :key="article.id">
+                        <tr>
+                          <td class="text-xs font-medium text-gray-600">{{ categoryLabel(article.category_id) }}</td>
+                          <td class="text-sm text-gray-700">{{ getArticleSource(article) }}</td>
+                          <td class="text-sm font-semibold text-gray-900">
+                            <button
+                              type="button"
+                              class="text-left hover:text-indigo-600"
+                              @click="toggleListExpand(article.id)"
+                            >
+                              {{ article.title }}
+                            </button>
+                          </td>
+                          <td class="text-xs text-gray-500">{{ formatPublishedAt(article.published_at) }}</td>
+                        </tr>
+                        <tr v-if="expandedArticleId === article.id">
+                          <td colspan="4" class="bg-gray-50">
+                            <ArticleList
+                              :articles="[article]"
+                              :category-label="categoryLabel"
+                              :category-options="categoryOptions"
+                              :debug-data-by-id="debugDataById"
+                              :compact="true"
+                              :date-format="dateFormatOptions"
+                              @update-review="updateArticleReview"
+                              @reclassify="reclassifyArticle"
+                              @load-debug="loadArticleDebug"
+                              @refetch-full-text="refetchArticleFullText"
+                              @delete-article="deleteArticle"
+                            />
+                          </td>
+                        </tr>
+                      </template>
                     </tbody>
                   </table>
                 </div>
@@ -178,9 +176,6 @@
                 @page-size="setPageSize"
               />
             </div>
-
-            <div v-else class="text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-200">
-              <p class="text-gray-400">No articles found. Click \"Refresh\" to fetch new content.</p>
             </div>
           </div>
         </div>
@@ -191,7 +186,6 @@
 
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { Square3Stack3DIcon, TableCellsIcon } from '@heroicons/vue/24/solid';
 
 const config = useRuntimeConfig();
 const { authHeaders, isAuthenticated } = useAuth();
@@ -217,6 +211,8 @@ const sidebarWidth = ref(256);
 const sidebarMinWidth = 200;
 const sidebarMaxWidth = 420;
 const debugDataById = ref({});
+const storageKey = 'lumen.newsView';
+const expandedArticleId = ref(null);
 
 const startSidebarResize = (event) => {
   if (event.button !== 0) return;
@@ -252,12 +248,36 @@ onMounted(() => {
 
 watch(isAuthenticated, (value) => {
   if (!value) {
+    if (process.client) {
+      try {
+        localStorage.removeItem(storageKey);
+      } catch (_) {
+        // ignore storage errors
+      }
+    }
     navigateTo('/');
   }
 });
 
 onMounted(async () => {
   if (!isAuthenticated.value) return;
+  if (process.client) {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (typeof saved.searchQuery === 'string') searchQuery.value = saved.searchQuery;
+        if (typeof saved.languageFilter === 'string') languageFilter.value = saved.languageFilter;
+        if (typeof saved.sourceFilter === 'string') sourceFilter.value = saved.sourceFilter;
+        if (typeof saved.timeWindowDays === 'number') timeWindowDays.value = saved.timeWindowDays;
+        if (typeof saved.activeCategory === 'string') activeCategory.value = saved.activeCategory;
+        if (typeof saved.currentPage === 'number' && saved.currentPage > 0) currentPage.value = saved.currentPage;
+        if (saved.viewMode === 'cards' || saved.viewMode === 'list') viewMode.value = saved.viewMode;
+      }
+    } catch (_) {
+      // ignore storage errors
+    }
+  }
   try {
     const navLang = (navigator.language || 'en').toLowerCase();
     lang.value = navLang.startsWith('fr') ? 'fr' : 'en';
@@ -634,6 +654,28 @@ watch(searchQuery, () => {
   currentPage.value = 1;
 });
 
+watch(
+  [searchQuery, languageFilter, sourceFilter, timeWindowDays, activeCategory, currentPage, viewMode],
+  () => {
+    if (!process.client) return;
+    const payload = {
+      searchQuery: searchQuery.value,
+      languageFilter: languageFilter.value,
+      sourceFilter: sourceFilter.value,
+      timeWindowDays: timeWindowDays.value,
+      activeCategory: activeCategory.value,
+      currentPage: currentPage.value,
+      viewMode: viewMode.value,
+    };
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(payload));
+    } catch (_) {
+      // ignore storage errors
+    }
+  },
+  { deep: false }
+);
+
 watch(languageFilter, () => {
   currentPage.value = 1;
   if (isAuthenticated.value) {
@@ -708,5 +750,9 @@ function toggleSort(key) {
 function sortIndicator(key) {
   if (sortKey.value !== key) return '';
   return sortDir.value === 'asc' ? '▲' : '▼';
+}
+
+function toggleListExpand(articleId) {
+  expandedArticleId.value = expandedArticleId.value === articleId ? null : articleId;
 }
 </script>
