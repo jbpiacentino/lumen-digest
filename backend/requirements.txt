@@ -20,3 +20,4 @@ publicsuffix2
 langdetect
 scikit-learn
 yake
+rank-bm25

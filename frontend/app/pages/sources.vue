@@ -80,7 +80,6 @@
               @update-review="updateArticleReview"
               @reclassify="reclassifyArticle"
               @load-debug="loadArticleDebug"
-              @refetch-full-text="refetchArticleFullText"
               @delete-article="deleteArticle"
             />
             <Pager
@@ -272,21 +271,6 @@ async function reclassifyArticle(payload) {
     }
   } catch (err) {
     console.error('Failed to reclassify article:', err);
-  }
-}
-
-async function refetchArticleFullText(payload) {
-  try {
-    const { articleId } = payload;
-    const data = await $fetch(`${config.public.apiBase}/articles/${articleId}/refetch-full-text`, {
-      method: 'POST',
-      headers: authHeaders.value
-    });
-    const updated = data?.article || data;
-    const idx = articles.value.findIndex((item) => item.id === updated.id);
-    if (idx >= 0) articles.value[idx] = updated;
-  } catch (err) {
-    console.error('Failed to refetch full text:', err);
   }
 }
 

@@ -77,7 +77,6 @@
                 @update-review="updateArticleReview"
                 @reclassify="reclassifyArticle"
                 @load-debug="loadArticleDebug"
-                @refetch-full-text="refetchArticleFullText"
                 @delete-article="deleteArticle"
               />
               <div v-else class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
@@ -155,7 +154,6 @@
                               @update-review="updateArticleReview"
                               @reclassify="reclassifyArticle"
                               @load-debug="loadArticleDebug"
-                              @refetch-full-text="refetchArticleFullText"
                               @delete-article="deleteArticle"
                             />
                           </td>
@@ -595,19 +593,6 @@ async function reclassifyArticle(payload) {
     }
   } catch (err) {
     console.error('Failed to reclassify article:', err);
-  }
-}
-
-async function refetchArticleFullText(payload) {
-  try {
-    const { articleId } = payload;
-    const data = await $fetch(`${config.public.apiBase}/articles/${articleId}/refetch-full-text`, {
-      method: 'POST',
-      headers: authHeaders.value
-    });
-    updateArticleInState(data?.article || data);
-  } catch (err) {
-    console.error('Failed to refetch full text:', err);
   }
 }
 

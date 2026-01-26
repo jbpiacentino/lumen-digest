@@ -156,10 +156,60 @@
             <button
               class="btn btn-xs btn-outline"
               type="button"
-              @click="refetchFullText"
+              :disabled="anchorsPending"
+              @click="extractAnchors"
             >
-              Refetch with trafilatura
+              {{ anchorsPending ? 'Extracting anchors…' : 'Extract anchors' }}
             </button>
+          </div>
+        </div>
+
+        <div v-if="anchors.length" class="flex flex-wrap gap-4">
+          <div :class="[labelWidthClass, 'text-sm font-semibold text-gray-600']">Anchors</div>
+          <div class="flex-1">
+            <div class="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+              <table class="table table-zebra w-full">
+                <thead>
+                  <tr class="text-[11px]  tracking-widest text-gray-400">
+                    <th class="w-12">
+                      <div class="flex items-center gap-1">
+                        <span>Rank</span>
+                        <div class="tooltip tooltip-bottom" data-tip="Order by BM25 score (1 is strongest).">
+                          <InformationCircleIcon class="w-3.5 h-3.5 text-gray-400" />
+                        </div>
+                      </div>
+                    </th>
+                    <th>Phrase</th>
+                    <th class="w-24 text-right">Score</th>
+                    <th class="w-20 text-right">
+                      <div class="flex items-center justify-end gap-1">
+                        <span>Count</span>
+                        <div class="tooltip tooltip-bottom" data-tip="How many times the phrase appears in the cleaned text.">
+                          <InformationCircleIcon class="w-3.5 h-3.5 text-gray-400" />
+                        </div>
+                      </div>
+                    </th>
+                    <th class="w-24 text-right">
+                      <div class="flex items-center justify-end gap-1">
+                        <span>Presence</span>
+                        <div class="tooltip tooltip-bottom" data-tip="Number of taxonomy categories/subcategories that already contain this anchor phrase.">
+                          <InformationCircleIcon class="w-3.5 h-3.5 text-gray-400" />
+                        </div>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(anchor, index) in anchors" :key="anchor.phrase">
+                    <td class="text-xs text-gray-400">{{ index + 1 }}</td>
+                    <td class="text-xs font-medium text-gray-700">{{ anchor.phrase }}</td>
+                    <td class="text-xs text-right text-gray-500">{{ formatScore(anchor.score) }}</td>
+                    <td class="text-xs text-right text-gray-500">{{ anchor.count ?? 0 }}</td>
+                    <td class="text-xs text-right text-gray-500">{{ anchor.presence_count ?? 0 }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -230,6 +280,7 @@
 
 <script setup>
   import { computed, ref, watch, onBeforeUnmount } from 'vue';
+  import { InformationCircleIcon } from '@heroicons/vue/24/outline';
 
   const props = defineProps({
     article: { type: Object, required: true },
@@ -241,7 +292,9 @@
     open: { type: Boolean, default: false },
   });
 
-  const emit = defineEmits(['update-review', 'reclassify', 'load-debug', 'update:open', 'refetch-full-text']);
+  const emit = defineEmits(['update-review', 'reclassify', 'load-debug', 'update:open']);
+  const config = useRuntimeConfig();
+  const { authHeaders } = useAuth();
 
   const reviewOpen = computed({
     get: () => props.open,
@@ -339,6 +392,8 @@
   const showTopK = ref(false);
   const showInput = ref(false);
   const debugPending = ref(false);
+  const anchorsPending = ref(false);
+  const anchors = ref([]);
 
   const threshold = ref(0.36);
   const marginThreshold = ref(0.07);
@@ -452,11 +507,30 @@
     return Number(value).toFixed(3);
   };
 
-  const refetchFullText = () => {
-    emit('refetch-full-text', { articleId: props.article.id });
+  const extractAnchors = async () => {
+    anchorsPending.value = true;
+    try {
+      const data = await $fetch(`${config.public.apiBase}/articles/${props.article.id}/extract-anchors`, {
+        method: 'POST',
+        headers: authHeaders.value,
+      });
+      anchors.value = data?.anchors || [];
+    } catch (err) {
+      console.error('Failed to extract anchors:', err);
+      anchors.value = [];
+    } finally {
+      anchorsPending.value = false;
+    }
   };
 
   onBeforeUnmount(() => {
     if (overrideCloseTimer) clearTimeout(overrideCloseTimer);
   });
+
+  watch(
+    () => props.article.id,
+    () => {
+      anchors.value = [];
+    }
+  );
 </script>

@@ -44,7 +44,6 @@
         @update-review="emit('update-review', $event)"
         @reclassify="emit('reclassify', $event)"
         @load-debug="emit('load-debug', $event)"
-        @refetch-full-text="emit('refetch-full-text', $event)"
       />
 
       <div class="flex items-center gap-2">
@@ -122,7 +121,7 @@
     dateFormat: { type: Object, default: null }
   });
   
-  const emit = defineEmits(['update-review', 'reclassify', 'load-debug', 'refetch-full-text', 'delete-article']);
+  const emit = defineEmits(['update-review', 'reclassify', 'load-debug', 'delete-article']);
   
   const markdownRenderer = new MarkdownIt({
     html: false,

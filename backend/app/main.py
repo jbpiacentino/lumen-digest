@@ -29,6 +29,7 @@ from jose import jwt, JWTError
 # Import our logic modules
 from .logic.freshrss import get_unread_entries, mark_entries_read
 from .logic.summarizer import summarize_article
+from .logic.anchor_extraction import extract_anchors_bm25, add_presence_counts
 from .logic.classifier import get_classifier_engine, clean_text
 from .logic.lang import detect_language
 
@@ -497,30 +498,6 @@ def update_article_review(
     db.refresh(article)
     return jsonable_encoder(article)
 
-@app.post("/articles/{article_id}/refetch-full-text")
-async def refetch_article_full_text(
-    article_id: int,
-    db: Session = Depends(get_db),
-    user: Optional[User] = Depends(require_user),
-):
-    article = db.query(Article).filter(Article.id == article_id).first()
-    if not article:
-        raise HTTPException(status_code=404, detail="Article not found")
-    if not article.url:
-        raise HTTPException(status_code=400, detail="Article missing URL")
-
-    try:
-        full_text = await extract_full_text(article.url)
-    except Exception as exc:
-        raise HTTPException(status_code=502, detail=f"Full-text extraction failed: {exc}")
-
-    article.full_text = full_text or None
-    article.full_text_source = "trafilatura" if full_text else None
-    article.full_text_format = "markdown" if full_text else None
-    db.commit()
-    db.refresh(article)
-    return jsonable_encoder(article)
-
 @app.post("/articles/{article_id}/reclassify")
 def reclassify_article(
     article_id: int,
@@ -568,6 +545,23 @@ def reclassify_article(
             "top_k": top_k,
         },
     }
+
+@app.post("/articles/{article_id}/extract-anchors")
+def extract_article_anchors(
+    article_id: int,
+    db: Session = Depends(get_db),
+    user: Optional[User] = Depends(require_user),
+):
+    article = db.query(Article).filter(Article.id == article_id).first()
+    if not article:
+        raise HTTPException(status_code=404, detail="Article not found")
+
+    text = article.full_text or article.summary or article.title or ""
+    lang = (article.language or "en").split("-")[0]
+    result = extract_anchors_bm25(text, lang=lang)
+    taxonomy = get_classifier_engine().taxonomy_data or {}
+    result["anchors"] = add_presence_counts(result.get("anchors", []), taxonomy, lang)
+    return result
 
 @app.delete("/articles/{article_id}")
 def delete_article(

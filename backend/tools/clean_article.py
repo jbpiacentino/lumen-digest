@@ -68,6 +68,7 @@ RE_READ_COLON = re.compile(r"^\s*(read|from opinion)\s*:\s*", re.IGNORECASE)
 
 # Remove bare image URL remnants / CDN paths in extracted text
 RE_IMAGE_PATH_JUNK = re.compile(r"\b(static\d{2}\.|images\.)\S+\.(jpg|jpeg|png|webp)\b", re.IGNORECASE)
+RE_HTML_FIGURE_BLOCK = re.compile(r"<figure\b[\s\S]*?</figure>", re.IGNORECASE)
 
 
 def _requests_fetch(url: str, timeout: Tuple[int, int] = (10, 30)) -> str:
@@ -181,6 +182,7 @@ def clean_text_rules(text: str, cut_after_heading: Optional[str] = None) -> str:
     text = normalize_whitespace(text)
 
     # If source is markdown-ish, reduce common constructs
+    text = RE_HTML_FIGURE_BLOCK.sub(" ", text)
     text = RE_MD_IMAGE.sub(" ", text)
     text = RE_MD_LINK.sub(r"\1", text)
 
