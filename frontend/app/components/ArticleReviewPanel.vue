@@ -3,7 +3,15 @@
     <div :class="['collapse collapse-arrow rounded-lg', reviewOpen ? 'border border-content' : 'border-transparent']">
       <input :id="toggleId" type="checkbox" v-model="reviewOpen" hidden=""/>
       <div class="collapse-title sr-only">Review</div>
-      <div v-if="reviewOpen" class="collapse-content space-y-4">
+      <div v-if="reviewOpen" class="collapse-content space-y-4 relative">
+        <button
+          class="btn btn-xs btn-ghost absolute top-2 right-2"
+          type="button"
+          @click="reviewOpen = false"
+          aria-label="Close review"
+        >
+          <XMarkIcon class="w-4 h-4" />
+        </button>
         <div class="flex flex-wrap gap-4">
           <div :class="[labelWidthClass, 'text-sm font-semibold']">Current status</div>
           <div class="flex-1">
@@ -280,7 +288,7 @@
 
 <script setup>
   import { computed, ref, watch, onBeforeUnmount } from 'vue';
-  import { InformationCircleIcon } from '@heroicons/vue/24/outline';
+  import { InformationCircleIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 
   const props = defineProps({
     article: { type: Object, required: true },

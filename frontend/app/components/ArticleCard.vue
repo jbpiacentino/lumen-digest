@@ -16,12 +16,6 @@
             <span v-if="articleSource" class="text-gray-400 text-[10px] font-medium">
               • {{ articleSource }}
             </span>
-            <label
-              class="text-[10px] font-semibold uppercase tracking-wider text-primary cursor-pointer ml-1"
-              :for="`review-toggle-${article.id}`"
-            >
-              <PencilSquareIcon class="inline-block w-4 h-4 mr-1" />
-            </label>
             <button
               class="text-[10px] font-semibold uppercase tracking-wider text-red-600 hover:text-red-700 ml-auto"
               type="button"
@@ -29,6 +23,13 @@
             >
               <TrashIcon class="inline-block w-4 h-4 mr-2" />
             </button>
+            <label
+              v-if="!reviewOpen"
+              class="text-[10px] font-semibold uppercase tracking-wider text-primary cursor-pointer"
+              :for="`review-toggle-${article.id}`"
+            >
+              <PencilSquareIcon class="inline-block w-4 h-4 mr-1" />
+            </label>
           </div>
         </div>
       </div>
@@ -47,6 +48,15 @@
       />
 
       <div class="flex items-center gap-2">
+        <button
+          type="button"
+          class="btn btn-ghost btn-xs text-gray-500"
+          @click="fullTextOpen = !fullTextOpen"
+          aria-label="Toggle full text"
+        >
+          <ChevronDownIcon v-if="fullTextOpen" class="w-4 h-4 rotate-180" />
+          <ChevronRightIcon v-else class="w-4 h-4" />
+        </button>
         <button
           type="button"
           :class="[compact ? 'text-base' : 'text-lg', 'font-bold text-gray-900 hover:text-primary leading-snug text-left']"
@@ -110,7 +120,7 @@
   import { computed, ref, watch } from 'vue';
   import MarkdownIt from 'markdown-it';
   import ArticleReviewPanel from './ArticleReviewPanel.vue';
-  import { ArrowTopRightOnSquareIcon, PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline';
+  import { ArrowTopRightOnSquareIcon, ChevronDownIcon, ChevronRightIcon, PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline';
   
   const props = defineProps({
     article: { type: Object, required: true },
