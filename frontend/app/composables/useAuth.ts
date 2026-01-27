@@ -2,6 +2,7 @@ import { computed } from 'vue';
 
 export function useAuth() {
   const config = useRuntimeConfig();
+  const apiFetch = useApiFetch();
   const authToken = useState<string>('authToken', () => '');
   const authUser = useState<any>('authUser', () => null);
   const authOpen = useState<boolean>('authOpen', () => false);
@@ -51,7 +52,7 @@ export function useAuth() {
   async function signup() {
     authError.value = '';
     try {
-      const data = await $fetch(`${config.public.apiBase}/auth/signup`, {
+      const data = await apiFetch(`${config.public.apiBase}/auth/signup`, {
         method: 'POST',
         body: { email: authEmail.value, password: authPassword.value }
       });
@@ -66,7 +67,7 @@ export function useAuth() {
   async function login() {
     authError.value = '';
     try {
-      const data = await $fetch(`${config.public.apiBase}/auth/login`, {
+      const data = await apiFetch(`${config.public.apiBase}/auth/login`, {
         method: 'POST',
         body: { email: authEmail.value, password: authPassword.value }
       });

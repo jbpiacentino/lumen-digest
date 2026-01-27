@@ -187,6 +187,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 const config = useRuntimeConfig();
 const { authHeaders, isAuthenticated } = useAuth();
+const apiFetch = useApiFetch();
 
 const articles = ref([]);
 const allArticles = ref([]);
@@ -319,7 +320,7 @@ async function fetchArticles() {
     if (sourceFilter.value) {
       params.append('sources', sourceFilter.value);
     }
-    const data = await $fetch(`${config.public.apiBase}/articles?${params.toString()}`, {
+    const data = await apiFetch(`${config.public.apiBase}/articles?${params.toString()}`, {
       headers: authHeaders.value
     });
     articles.value = data.items || [];
@@ -345,7 +346,7 @@ async function fetchAllArticles() {
     if (sourceFilter.value) {
       params.append('sources', sourceFilter.value);
     }
-    const data = await $fetch(`${config.public.apiBase}/articles?${params.toString()}`, {
+    const data = await apiFetch(`${config.public.apiBase}/articles?${params.toString()}`, {
       headers: authHeaders.value
     });
     allArticles.value = data.items || [];
@@ -357,7 +358,7 @@ async function fetchAllArticles() {
 
 async function loadTaxonomy() {
   try {
-    taxonomy.value = await $fetch(`${config.public.apiBase}/digest/taxonomy?lang=${lang.value}`, {
+    taxonomy.value = await apiFetch(`${config.public.apiBase}/digest/taxonomy?lang=${lang.value}`, {
       headers: authHeaders.value
     });
   } catch (err) {
@@ -544,7 +545,7 @@ function removeArticleFromState(articleId) {
 async function updateArticleReview(payload) {
   try {
     const { articleId, ...body } = payload;
-    const data = await $fetch(`${config.public.apiBase}/articles/${articleId}/review`, {
+    const data = await apiFetch(`${config.public.apiBase}/articles/${articleId}/review`, {
       method: 'PATCH',
       body,
       headers: authHeaders.value
@@ -558,7 +559,7 @@ async function updateArticleReview(payload) {
 async function loadArticleDebug(payload) {
   try {
     const { articleId, ...body } = payload;
-    const data = await $fetch(`${config.public.apiBase}/articles/${articleId}/reclassify`, {
+    const data = await apiFetch(`${config.public.apiBase}/articles/${articleId}/reclassify`, {
       method: 'POST',
       body: { ...body, apply: false },
       headers: authHeaders.value
@@ -577,7 +578,7 @@ async function loadArticleDebug(payload) {
 async function reclassifyArticle(payload) {
   try {
     const { articleId, ...body } = payload;
-    const data = await $fetch(`${config.public.apiBase}/articles/${articleId}/reclassify`, {
+    const data = await apiFetch(`${config.public.apiBase}/articles/${articleId}/reclassify`, {
       method: 'POST',
       body,
       headers: authHeaders.value
@@ -599,7 +600,7 @@ async function reclassifyArticle(payload) {
 async function deleteArticle(payload) {
   try {
     const { articleId } = payload;
-    await $fetch(`${config.public.apiBase}/articles/${articleId}`, {
+    await apiFetch(`${config.public.apiBase}/articles/${articleId}`, {
       method: 'DELETE',
       headers: authHeaders.value
     });

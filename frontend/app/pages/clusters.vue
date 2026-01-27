@@ -204,6 +204,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 
 const config = useRuntimeConfig();
 const { authHeaders, isAuthenticated } = useAuth();
+const apiFetch = useApiFetch();
 
 const clusters = ref([]);
 const clusterLang = ref('en');
@@ -264,7 +265,7 @@ function updateArticleInState(updated) {
 
 async function loadTaxonomy() {
   try {
-    taxonomy.value = await $fetch(`${config.public.apiBase}/digest/taxonomy?lang=${clusterLang.value}`, {
+    taxonomy.value = await apiFetch(`${config.public.apiBase}/digest/taxonomy?lang=${clusterLang.value}`, {
       headers: authHeaders.value
     });
   } catch (_) {
@@ -275,7 +276,7 @@ async function loadTaxonomy() {
 async function updateArticleReview(payload) {
   try {
     const { articleId, ...body } = payload;
-    const data = await $fetch(`${config.public.apiBase}/articles/${articleId}/review`, {
+    const data = await apiFetch(`${config.public.apiBase}/articles/${articleId}/review`, {
       method: 'PATCH',
       body,
       headers: authHeaders.value
@@ -289,7 +290,7 @@ async function updateArticleReview(payload) {
 async function loadArticleDebug(payload) {
   try {
     const { articleId, ...body } = payload;
-    const data = await $fetch(`${config.public.apiBase}/articles/${articleId}/reclassify`, {
+    const data = await apiFetch(`${config.public.apiBase}/articles/${articleId}/reclassify`, {
       method: 'POST',
       body: { ...body, apply: false },
       headers: authHeaders.value
@@ -308,7 +309,7 @@ async function loadArticleDebug(payload) {
 async function reclassifyArticle(payload) {
   try {
     const { articleId, ...body } = payload;
-    const data = await $fetch(`${config.public.apiBase}/articles/${articleId}/reclassify`, {
+    const data = await apiFetch(`${config.public.apiBase}/articles/${articleId}/reclassify`, {
       method: 'POST',
       body,
       headers: authHeaders.value
@@ -330,7 +331,7 @@ async function reclassifyArticle(payload) {
 async function reclassifyArticleWithAnchors(payload) {
   try {
     const { articleId } = payload;
-    const data = await $fetch(`${config.public.apiBase}/articles/${articleId}/reclassify`, {
+    const data = await apiFetch(`${config.public.apiBase}/articles/${articleId}/reclassify`, {
       method: 'POST',
       body: { use_anchors: true, apply: true },
       headers: authHeaders.value
@@ -352,7 +353,7 @@ async function reclassifyArticleWithAnchors(payload) {
 async function createAnchor(payload) {
   try {
     const { articleId, categoryId, language, text } = payload;
-    await $fetch(`${config.public.apiBase}/anchors`, {
+    await apiFetch(`${config.public.apiBase}/anchors`, {
       method: 'POST',
       body: { article_id: articleId, category_id: categoryId, language, text },
       headers: authHeaders.value
@@ -365,7 +366,7 @@ async function createAnchor(payload) {
 async function extractAnchorKeywords(payload) {
   try {
     const { articleId, language } = payload;
-    const data = await $fetch(`${config.public.apiBase}/articles/${articleId}/anchor-keywords`, {
+    const data = await apiFetch(`${config.public.apiBase}/articles/${articleId}/anchor-keywords`, {
       method: 'GET',
       query: { lang: language, limit: 10 },
       headers: authHeaders.value
@@ -382,7 +383,7 @@ async function extractAnchorKeywords(payload) {
 async function fetchClusters() {
   try {
     clusterLoading.value = true;
-    const data = await $fetch(`${config.public.apiBase}/clusters`, {
+    const data = await apiFetch(`${config.public.apiBase}/clusters`, {
       method: 'GET',
       query: { lang: clusterLang.value },
       headers: authHeaders.value
@@ -396,7 +397,7 @@ async function fetchClusters() {
 async function runClusters() {
   try {
     clusterRunning.value = true;
-    await $fetch(`${config.public.apiBase}/clusters/run`, {
+    await apiFetch(`${config.public.apiBase}/clusters/run`, {
       method: 'POST',
       query: { lang: clusterLang.value, n_components: 25, limit: 800 },
       headers: authHeaders.value
@@ -414,7 +415,7 @@ async function selectCluster(id) {
 
 async function loadCluster() {
   if (!selectedClusterId.value) return;
-  const data = await $fetch(`${config.public.apiBase}/clusters/${selectedClusterId.value}`, {
+  const data = await apiFetch(`${config.public.apiBase}/clusters/${selectedClusterId.value}`, {
     headers: authHeaders.value
   });
   selectedCluster.value = data;
@@ -428,7 +429,7 @@ async function loadCluster() {
 
 async function loadClusterArticles() {
   if (!selectedClusterId.value) return;
-  const data = await $fetch(`${config.public.apiBase}/clusters/${selectedClusterId.value}/articles`, {
+  const data = await apiFetch(`${config.public.apiBase}/clusters/${selectedClusterId.value}/articles`, {
     query: { limit: 100, offset: 0 },
     headers: authHeaders.value
   });
@@ -437,7 +438,7 @@ async function loadClusterArticles() {
 
 async function saveClusterName() {
   if (!selectedClusterId.value) return;
-  const data = await $fetch(`${config.public.apiBase}/clusters/${selectedClusterId.value}`, {
+  const data = await apiFetch(`${config.public.apiBase}/clusters/${selectedClusterId.value}`, {
     method: 'PATCH',
     body: { name: clusterNameDraft.value },
     headers: authHeaders.value
@@ -450,7 +451,7 @@ async function saveClusterName() {
 
 async function addAnchor() {
   if (!selectedClusterId.value || !newAnchorPhrase.value.trim()) return;
-  const data = await $fetch(`${config.public.apiBase}/clusters/${selectedClusterId.value}/anchors`, {
+  const data = await apiFetch(`${config.public.apiBase}/clusters/${selectedClusterId.value}/anchors`, {
     method: 'POST',
     body: { phrase: newAnchorPhrase.value },
     headers: authHeaders.value
@@ -460,7 +461,7 @@ async function addAnchor() {
 }
 
 async function saveAnchor(anchor) {
-  const data = await $fetch(`${config.public.apiBase}/cluster-anchors/${anchor.id}`, {
+  const data = await apiFetch(`${config.public.apiBase}/cluster-anchors/${anchor.id}`, {
     method: 'PATCH',
     body: { phrase: anchor.phrase },
     headers: authHeaders.value
@@ -470,7 +471,7 @@ async function saveAnchor(anchor) {
 }
 
 async function deleteAnchor(anchor) {
-  await $fetch(`${config.public.apiBase}/cluster-anchors/${anchor.id}`, {
+  await apiFetch(`${config.public.apiBase}/cluster-anchors/${anchor.id}`, {
     method: 'DELETE',
     headers: authHeaders.value
   });
@@ -479,7 +480,7 @@ async function deleteAnchor(anchor) {
 
 async function assignCluster() {
   if (!selectedClusterId.value || !clusterAssignCategory.value) return;
-  await $fetch(`${config.public.apiBase}/clusters/${selectedClusterId.value}/assign`, {
+  await apiFetch(`${config.public.apiBase}/clusters/${selectedClusterId.value}/assign`, {
     method: 'POST',
     body: { category_id: clusterAssignCategory.value, apply: true },
     headers: authHeaders.value

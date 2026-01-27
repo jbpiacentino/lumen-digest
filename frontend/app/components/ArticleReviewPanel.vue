@@ -303,6 +303,7 @@
   const emit = defineEmits(['update-review', 'reclassify', 'load-debug', 'update:open']);
   const config = useRuntimeConfig();
   const { authHeaders } = useAuth();
+  const apiFetch = useApiFetch();
 
   const reviewOpen = computed({
     get: () => props.open,
@@ -518,7 +519,7 @@
   const extractAnchors = async () => {
     anchorsPending.value = true;
     try {
-      const data = await $fetch(`${config.public.apiBase}/articles/${props.article.id}/extract-anchors`, {
+      const data = await apiFetch(`${config.public.apiBase}/articles/${props.article.id}/extract-anchors`, {
         method: 'POST',
         headers: authHeaders.value,
       });

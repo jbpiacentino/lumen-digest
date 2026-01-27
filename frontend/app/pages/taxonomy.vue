@@ -159,6 +159,7 @@ import { computed, onMounted, ref } from 'vue';
 
 const config = useRuntimeConfig();
 const { authHeaders, isAuthenticated } = useAuth();
+const apiFetch = useApiFetch();
 
 const taxonomyData = ref(null);
 const loading = ref(false);
@@ -245,7 +246,7 @@ function removeAnchor(lang, idx) {
 async function loadTaxonomy() {
   try {
     loading.value = true;
-    const data = await $fetch(`${config.public.apiBase}/taxonomy/raw`, { headers: authHeaders.value });
+    const data = await apiFetch(`${config.public.apiBase}/taxonomy/raw`, { headers: authHeaders.value });
     taxonomyData.value = data?.taxonomy || null;
     if (taxonomyData.value?.taxonomy) {
       taxonomyData.value.taxonomy.forEach(normalizeAnchors);
@@ -265,7 +266,7 @@ async function loadTaxonomy() {
 
 async function loadVersions() {
   try {
-    const data = await $fetch(`${config.public.apiBase}/taxonomy/versions`, { headers: authHeaders.value });
+    const data = await apiFetch(`${config.public.apiBase}/taxonomy/versions`, { headers: authHeaders.value });
     versions.value = data?.items || [];
   } catch (_) {
     versions.value = [];
@@ -276,7 +277,7 @@ async function saveTaxonomy() {
   if (!taxonomyData.value) return;
   try {
     saving.value = true;
-    await $fetch(`${config.public.apiBase}/taxonomy/save`, {
+    await apiFetch(`${config.public.apiBase}/taxonomy/save`, {
       method: 'POST',
       body: { taxonomy: taxonomyData.value },
       headers: authHeaders.value
@@ -290,7 +291,7 @@ async function saveTaxonomy() {
 async function recalcCentroids() {
   try {
     recalcPending.value = true;
-    await $fetch(`${config.public.apiBase}/taxonomy/reload`, { headers: authHeaders.value });
+    await apiFetch(`${config.public.apiBase}/taxonomy/reload`, { headers: authHeaders.value });
   } finally {
     recalcPending.value = false;
   }
@@ -300,7 +301,7 @@ async function extractAnchors() {
   if (!extractText.value.trim()) return;
   try {
     extracting.value = true;
-    const data = await $fetch(`${config.public.apiBase}/taxonomy/extract-anchors`, {
+    const data = await apiFetch(`${config.public.apiBase}/taxonomy/extract-anchors`, {
       method: 'POST',
       body: { text: extractText.value, language: extractLang.value, top_k: 20 },
       headers: authHeaders.value

@@ -107,6 +107,7 @@ import { computed, onMounted, ref } from 'vue';
 
 const config = useRuntimeConfig();
 const { authHeaders, isAuthenticated } = useAuth();
+const apiFetch = useApiFetch();
 
 const sources = ref([]);
 const sourceQuery = ref('');
@@ -147,7 +148,7 @@ const categoryOptions = computed(() => {
 
 async function loadTaxonomy() {
   try {
-    taxonomy.value = await $fetch(`${config.public.apiBase}/digest/taxonomy?lang=en`, {
+    taxonomy.value = await apiFetch(`${config.public.apiBase}/digest/taxonomy?lang=en`, {
       headers: authHeaders.value
     });
   } catch (_) {
@@ -160,7 +161,7 @@ async function loadSources() {
   try {
     loadingSources.value = true;
     const params = new URLSearchParams({ page: '1', page_size: '0' });
-    const data = await $fetch(`${config.public.apiBase}/articles?${params.toString()}`, {
+    const data = await apiFetch(`${config.public.apiBase}/articles?${params.toString()}`, {
       headers: authHeaders.value
     });
     const set = new Set();
@@ -189,7 +190,7 @@ async function fetchArticles() {
     page_size: String(pageSize.value)
   });
   params.append('sources', selectedSource.value);
-  const data = await $fetch(`${config.public.apiBase}/articles?${params.toString()}`, {
+  const data = await apiFetch(`${config.public.apiBase}/articles?${params.toString()}`, {
     headers: authHeaders.value
   });
   articles.value = data.items || [];
@@ -232,7 +233,7 @@ function setPageSize(size) {
 async function updateArticleReview(payload) {
   try {
     const { articleId, ...body } = payload;
-    const data = await $fetch(`${config.public.apiBase}/articles/${articleId}/review`, {
+    const data = await apiFetch(`${config.public.apiBase}/articles/${articleId}/review`, {
       method: 'PATCH',
       body,
       headers: authHeaders.value
@@ -247,7 +248,7 @@ async function updateArticleReview(payload) {
 async function loadArticleDebug(payload) {
   try {
     const { articleId, ...body } = payload;
-    await $fetch(`${config.public.apiBase}/articles/${articleId}/reclassify`, {
+    await apiFetch(`${config.public.apiBase}/articles/${articleId}/reclassify`, {
       method: 'POST',
       body: { ...body, apply: false },
       headers: authHeaders.value
@@ -260,7 +261,7 @@ async function loadArticleDebug(payload) {
 async function reclassifyArticle(payload) {
   try {
     const { articleId, ...body } = payload;
-    const data = await $fetch(`${config.public.apiBase}/articles/${articleId}/reclassify`, {
+    const data = await apiFetch(`${config.public.apiBase}/articles/${articleId}/reclassify`, {
       method: 'POST',
       body,
       headers: authHeaders.value
@@ -277,7 +278,7 @@ async function reclassifyArticle(payload) {
 async function deleteArticle(payload) {
   try {
     const { articleId } = payload;
-    await $fetch(`${config.public.apiBase}/articles/${articleId}`, {
+    await apiFetch(`${config.public.apiBase}/articles/${articleId}`, {
       method: 'DELETE',
       headers: authHeaders.value
     });
