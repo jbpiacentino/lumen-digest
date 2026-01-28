@@ -15,7 +15,7 @@
       @click="$emit('select', 'all')"
       :class="[
         'btn btn-sm w-full',
-        activeCategory === 'all' ? 'btn-primary text-primary-content' : 'btn-ghost'
+        activeCategory === 'all' ? 'btn-primary' : 'btn-ghost'
       ]"
       type="button"
     >
@@ -69,11 +69,11 @@
       </button>
     </div>
 
-    <button 
+    <!-- <button 
       @click="$emit('select', 'other')"
       :class="[
         'btn btn-sm w-full',
-        activeCategory === 'other' ? 'btn-warning' : 'btn-ghost text-warning'
+        activeCategory === 'other' ? 'btn-primary' : 'btn-ghost'
       ]"
       type="button"
     >
@@ -81,7 +81,7 @@
         <span class="truncate pr-2">Other / Uncategorized</span>
         <span class="badge badge-sm shrink-0 ml-auto">{{ uncategorizedCount }}</span>
       </span>
-    </button>
+    </button> -->
   </nav>
 </template>
 
